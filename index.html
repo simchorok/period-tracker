@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a0a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>달의 기록</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0610;
+    --surface: #1a0d1f;
+    --surface2: #241329;
+    --accent: #c9607a;
+    --accent-soft: #e8a0b0;
+    --accent-dim: #6b2d3e;
+    --text: #f0e6ea;
+    --text-muted: #9a7f88;
+    --text-dim: #5c4a52;
+    --moon: #f5d6c8;
+    --today: #3d1f2a;
+    --period: #7a1f35;
+    --period-border: #c9607a;
+    --predicted: #2a1535;
+    --predicted-border: #7a4a8a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* 배경 별 효과 */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 20% 10%, #2a0a1e 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, #100a20 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 0 80px;
+    min-height: 100vh;
+  }
+
+  /* 헤더 */
+  header {
+    padding: 40px 24px 24px;
+    text-align: center;
+  }
+
+  .moon-icon {
+    font-size: 36px;
+    display: block;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 12px rgba(245,214,200,0.4));
+  }
+
+  header h1 {
+    font-family: 'Gowun Batang', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--moon);
+    letter-spacing: 0.1em;
+  }
+
+  header p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  /* 상태 카드 */
+  .status-card {
+    margin: 0 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--accent-dim);
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .status-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(201,96,122,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .status-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .status-main {
+    font-family: 'Gowun Batang', serif;
+    font-size: 32px;
+    color: var(--accent-soft);
+    line-height: 1.2;
+  }
+
+  .status-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  .status-row {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--surface2);
+  }
+
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Gowun Batang', serif;
+    font-size: 22px;
+    color: var(--text);
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* 버튼 */
+  .btn-primary {
+    display: block;
+    margin: 0 16px 20px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    width: calc(100% - 32px);
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .btn-primary:active { transform: scale(0.97); opacity: 0.9; }
+
+  .btn-secondary {
+    display: block;
+    margin: 0 16px 20px;
+    background: transparent;
+    color: var(--accent-soft);
+    border: 1px solid var(--accent-dim);
+    border-radius: 14px;
+    padding: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    width: calc(100% - 32px);
+    transition: all 0.2s;
+  }
+  .btn-secondary:active { background: var(--surface); }
+
+  /* 달력 */
+  .calendar-section {
+    margin: 0 16px 20px;
+  }
+
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding: 0 4px;
+  }
+
+  .cal-nav {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: color 0.2s;
+  }
+  .cal-nav:hover { color: var(--text); }
+
+  .cal-month {
+    font-family: 'Gowun Batang', serif;
+    font-size: 18px;
+    color: var(--text);
+  }
+
+  .calendar-grid {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid #2a1530;
+  }
+
+  .day-labels {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 8px;
+  }
+
+  .day-label {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 4px 0;
+    letter-spacing: 0.05em;
+  }
+
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+  }
+
+  .day-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 13px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s;
+    color: var(--text-muted);
+    border: 1px solid transparent;
+  }
+
+  .day-cell:hover:not(.empty) { background: var(--surface2); color: var(--text); }
+  .day-cell.empty { cursor: default; }
+  .day-cell.today { color: var(--accent-soft); font-weight: 500; }
+  .day-cell.today::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    width: 4px; height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .day-cell.period {
+    background: var(--period);
+    border-color: var(--period-border);
+    color: var(--accent-soft);
+    font-weight: 500;
+  }
+
+  .day-cell.predicted {
+    background: var(--predicted);
+    border-color: var(--predicted-border);
+    color: #b090c0;
+  }
+
+  /* 기록 목록 */
+  .records-section {
+    margin: 0 16px;
+  }
+
+  .section-title {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-left: 4px;
+  }
+
+  .record-item {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #2a1530;
+  }
+
+  .record-date {
+    font-family: 'Gowun Batang', serif;
+    font-size: 16px;
+    color: var(--text);
+  }
+  .record-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .record-delete {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: color 0.2s;
+  }
+  .record-delete:hover { color: var(--accent); }
+
+  .empty-state {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  /* 바텀 네비 */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(14,6,16,0.9);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid #2a1530;
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    padding: 12px 0 20px;
+    z-index: 100;
+  }
+
+  .nav-item {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    transition: color 0.2s;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  .nav-item.active { color: var(--accent-soft); }
+  .nav-icon { font-size: 20px; }
+
+  /* 모달 */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-backdrop.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border-radius: 24px 24px 0 0;
+    padding: 24px 24px 40px;
+    width: 100%;
+    max-width: 420px;
+    border-top: 1px solid var(--accent-dim);
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal-title {
+    font-family: 'Gowun Batang', serif;
+    font-size: 20px;
+    color: var(--text);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .modal label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  .modal input[type="date"] {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--accent-dim);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    margin-bottom: 20px;
+    outline: none;
+    color-scheme: dark;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .modal-actions button {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .btn-cancel {
+    background: var(--surface2);
+    color: var(--text-muted);
+  }
+
+  .btn-save {
+    background: var(--accent);
+    color: white;
+    font-weight: 500;
+  }
+
+  /* 탭 콘텐츠 */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* 범례 */
+  .legend {
+    display: flex;
+    gap: 16px;
+    padding: 0 4px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 1px solid;
+  }
+  .legend-dot.period { background: var(--period); border-color: var(--period-border); }
+  .legend-dot.predicted { background: var(--predicted); border-color: var(--predicted-border); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <span class="moon-icon">🌙</span>
+    <h1>달의 기록</h1>
+    <p>나의 생리주기 트래커</p>
+  </header>
+
+  <!-- 탭: 홈 -->
+  <div class="tab-content active" id="tab-home">
+
+    <!-- 상태 카드 -->
+    <div class="status-card" id="status-card">
+      <div class="status-label">다음 생리까지</div>
+      <div class="status-main" id="status-main">—</div>
+      <div class="status-sub" id="status-sub">기록을 시작해보세요</div>
+      <div class="status-row">
+        <div class="stat-item">
+          <div class="stat-num" id="stat-cycle">—</div>
+          <div class="stat-label">평균 주기</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" id="stat-count">0</div>
+          <div class="stat-label">기록 횟수</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" id="stat-last">—</div>
+          <div class="stat-label">마지막 기록</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="openModal()">🩸 생리 시작일 기록하기</button>
+
+  </div>
+
+  <!-- 탭: 달력 -->
+  <div class="tab-content" id="tab-calendar">
+    <div class="calendar-section">
+      <div class="calendar-header">
+        <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+        <span class="cal-month" id="cal-month-label"></span>
+        <button class="cal-nav" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot period"></div> 기록된 생리</div>
+        <div class="legend-item"><div class="legend-dot predicted"></div> 예상 생리</div>
+      </div>
+      <div class="calendar-grid">
+        <div class="day-labels">
+          <div class="day-label">일</div>
+          <div class="day-label">월</div>
+          <div class="day-label">화</div>
+          <div class="day-label">수</div>
+          <div class="day-label">목</div>
+          <div class="day-label">금</div>
+          <div class="day-label">토</div>
+        </div>
+        <div class="days-grid" id="days-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 탭: 기록 -->
+  <div class="tab-content" id="tab-records">
+    <div class="records-section">
+      <div class="section-title">기록 목록</div>
+      <div id="records-list"></div>
+    </div>
+  </div>
+
+  <!-- 바텀 네비 -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-home" onclick="switchTab('home')">
+      <span class="nav-icon">🌙</span>
+      <span>홈</span>
+    </button>
+    <button class="nav-item" id="nav-calendar" onclick="switchTab('calendar')">
+      <span class="nav-icon">📅</span>
+      <span>달력</span>
+    </button>
+    <button class="nav-item" id="nav-records" onclick="switchTab('records')">
+      <span class="nav-icon">📋</span>
+      <span>기록</span>
+    </button>
+  </nav>
+</div>
+
+<!-- 기록 모달 -->
+<div class="modal-backdrop" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-title">생리 시작일 기록</div>
+    <label>날짜 선택</label>
+    <input type="date" id="date-input">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">취소</button>
+      <button class="btn-save" onclick="saveRecord()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'period_records';
+  const DEFAULT_CYCLE = 28;
+  let currentYear, currentMonth;
+
+  function loadRecords() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
+  }
+
+  function saveRecords(records) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  }
+
+  function formatDate(dateStr) {
+    const [y, m, d] = dateStr.split('-');
+    return `${y}년 ${parseInt(m)}월 ${parseInt(d)}일`;
+  }
+
+  function calcAvgCycle(records) {
+    if (records.length < 2) return DEFAULT_CYCLE;
+    const sorted = [...records].sort();
+    let total = 0, count = 0;
+    for (let i = 1; i < sorted.length; i++) {
+      const diff = (new Date(sorted[i]) - new Date(sorted[i-1])) / 86400000;
+      if (diff > 10 && diff < 60) { total += diff; count++; }
+    }
+    return count > 0 ? Math.round(total / count) : DEFAULT_CYCLE;
+  }
+
+  function getPredictedDates(records) {
+    if (records.length === 0) return [];
+    const sorted = [...records].sort();
+    const last = new Date(sorted[sorted.length - 1]);
+    const cycle = calcAvgCycle(records);
+    const predictions = [];
+    for (let i = 1; i <= 3; i++) {
+      const d = new Date(last);
+      d.setDate(d.getDate() + cycle * i);
+      predictions.push(d.toISOString().split('T')[0]);
+    }
+    return predictions;
+  }
+
+  function updateStatus() {
+    const records = loadRecords();
+    const countEl = document.getElementById('stat-count');
+    const cycleEl = document.getElementById('stat-cycle');
+    const lastEl = document.getElementById('stat-last');
+    const mainEl = document.getElementById('status-main');
+    const subEl = document.getElementById('status-sub');
+
+    countEl.textContent = records.length;
+
+    if (records.length === 0) {
+      mainEl.textContent = '—';
+      subEl.textContent = '기록을 시작해보세요';
+      cycleEl.textContent = '—';
+      lastEl.textContent = '—';
+      return;
+    }
+
+    const sorted = [...records].sort();
+    const last = sorted[sorted.length - 1];
+    const [ly, lm, ld] = last.split('-');
+    lastEl.textContent = `${parseInt(lm)}/${parseInt(ld)}`;
+
+    const cycle = calcAvgCycle(records);
+    cycleEl.textContent = `${cycle}일`;
+
+    const nextDate = new Date(last);
+    nextDate.setDate(nextDate.getDate() + cycle);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const diff = Math.round((nextDate - today) / 86400000);
+
+    if (diff < 0) {
+      mainEl.textContent = `${Math.abs(diff)}일 지남`;
+      subEl.textContent = '예상 날짜가 지났어요';
+    } else if (diff === 0) {
+      mainEl.textContent = '오늘';
+      subEl.textContent = '예상일이에요';
+    } else {
+      mainEl.textContent = `${diff}일 후`;
+      const m = nextDate.getMonth() + 1, d = nextDate.getDate();
+      subEl.textContent = `예상: ${m}월 ${d}일`;
+    }
+  }
+
+  function renderCalendar() {
+    const records = loadRecords();
+    const predicted = getPredictedDates(records);
+    const today = new Date();
+
+    const label = document.getElementById('cal-month-label');
+    label.textContent = `${currentYear}년 ${currentMonth + 1}월`;
+
+    const grid = document.getElementById('days-grid');
+    grid.innerHTML = '';
+
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement('div');
+      empty.className = 'day-cell empty';
+      grid.appendChild(empty);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const cell = document.createElement('div');
+      const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      let cls = 'day-cell';
+      if (records.includes(dateStr)) cls += ' period';
+      else if (predicted.includes(dateStr)) cls += ' predicted';
+      if (today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === d) cls += ' today';
+      cell.className = cls;
+      cell.textContent = d;
+      cell.onclick = () => {
+        document.getElementById('date-input').value = dateStr;
+        openModal();
+      };
+      grid.appendChild(cell);
+    }
+  }
+
+  function renderRecords() {
+    const records = loadRecords().sort().reverse();
+    const list = document.getElementById('records-list');
+    if (records.length === 0) {
+      list.innerHTML = '<div class="empty-state">아직 기록이 없어요.<br>홈에서 생리 시작일을 기록해보세요 🌙</div>';
+      return;
+    }
+    list.innerHTML = records.map(r => {
+      const [y,m,d] = r.split('-');
+      return `
+        <div class="record-item">
+          <div>
+            <div class="record-date">${parseInt(m)}월 ${parseInt(d)}일</div>
+            <div class="record-meta">${y}년</div>
+          </div>
+          <button class="record-delete" onclick="deleteRecord('${r}')">×</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function switchTab(tab) {
+    ['home','calendar','records'].forEach(t => {
+      document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+      document.getElementById(`nav-${t}`).classList.toggle('active', t === tab);
+    });
+    if (tab === 'calendar') renderCalendar();
+    if (tab === 'records') renderRecords();
+  }
+
+  function changeMonth(delta) {
+    currentMonth += delta;
+    if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+    if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+    renderCalendar();
+  }
+
+  function openModal() {
+    const modal = document.getElementById('modal');
+    modal.classList.add('open');
+    if (!document.getElementById('date-input').value) {
+      const today = new Date();
+      document.getElementById('date-input').value = today.toISOString().split('T')[0];
+    }
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+  }
+
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('modal')) closeModal();
+  }
+
+  function saveRecord() {
+    const dateStr = document.getElementById('date-input').value;
+    if (!dateStr) return alert('날짜를 선택해주세요');
+    const records = loadRecords();
+    if (records.includes(dateStr)) {
+      alert('이미 기록된 날짜예요');
+      return;
+    }
+    records.push(dateStr);
+    saveRecords(records);
+    closeModal();
+    updateStatus();
+    renderCalendar();
+  }
+
+  function deleteRecord(dateStr) {
+    const records = loadRecords().filter(r => r !== dateStr);
+    saveRecords(records);
+    renderRecords();
+    updateStatus();
+  }
+
+  // 초기화
+  const now = new Date();
+  currentYear = now.getFullYear();
+  currentMonth = now.getMonth();
+  updateStatus();
+</script>
+</body>
+</html>
