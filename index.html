@@ -573,9 +573,11 @@
 <!-- 기록 모달 -->
 <div class="modal-backdrop" id="modal" onclick="closeModalOutside(event)">
   <div class="modal">
-    <div class="modal-title">생리 시작일 기록</div>
-    <label>날짜 선택</label>
-    <input type="date" id="date-input">
+    <div class="modal-title">생리 기간 기록</div>
+    <label>시작일</label>
+    <input type="date" id="date-start">
+    <label>종료일 <span style="color:var(--text-dim);font-size:11px">(기본 +5일, 수정 가능)</span></label>
+    <input type="date" id="date-end">
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">취소</button>
       <button class="btn-save" onclick="saveRecord()">저장</button>
@@ -584,8 +586,9 @@
 </div>
 
 <script>
-  const STORAGE_KEY = 'period_records';
+  const STORAGE_KEY = 'period_records_v2';
   const DEFAULT_CYCLE = 28;
+  const DEFAULT_DURATION = 5;
   let currentYear, currentMonth;
 
   function loadRecords() {
@@ -597,17 +600,29 @@
     localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
   }
 
-  function formatDate(dateStr) {
-    const [y, m, d] = dateStr.split('-');
-    return `${y}년 ${parseInt(m)}월 ${parseInt(d)}일`;
+  function addDays(dateStr, days) {
+    const d = new Date(dateStr);
+    d.setDate(d.getDate() + days);
+    return d.toISOString().split('T')[0];
+  }
+
+  function getPeriodDates(record) {
+    // 시작일부터 종료일까지 모든 날짜 반환
+    const dates = [];
+    const start = new Date(record.start);
+    const end = new Date(record.end);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      dates.push(d.toISOString().split('T')[0]);
+    }
+    return dates;
   }
 
   function calcAvgCycle(records) {
     if (records.length < 2) return DEFAULT_CYCLE;
-    const sorted = [...records].sort();
+    const sorted = [...records].sort((a, b) => a.start > b.start ? 1 : -1);
     let total = 0, count = 0;
     for (let i = 1; i < sorted.length; i++) {
-      const diff = (new Date(sorted[i]) - new Date(sorted[i-1])) / 86400000;
+      const diff = (new Date(sorted[i].start) - new Date(sorted[i-1].start)) / 86400000;
       if (diff > 10 && diff < 60) { total += diff; count++; }
     }
     return count > 0 ? Math.round(total / count) : DEFAULT_CYCLE;
@@ -615,16 +630,20 @@
 
   function getPredictedDates(records) {
     if (records.length === 0) return [];
-    const sorted = [...records].sort();
-    const last = new Date(sorted[sorted.length - 1]);
+    const sorted = [...records].sort((a, b) => a.start > b.start ? 1 : -1);
+    const last = sorted[sorted.length - 1];
     const cycle = calcAvgCycle(records);
-    const predictions = [];
+    const predicted = [];
     for (let i = 1; i <= 3; i++) {
-      const d = new Date(last);
-      d.setDate(d.getDate() + cycle * i);
-      predictions.push(d.toISOString().split('T')[0]);
+      const startStr = addDays(last.start, cycle * i);
+      const endStr = addDays(startStr, DEFAULT_DURATION - 1);
+      // 예상 기간 날짜 모두 추가
+      const s = new Date(startStr), e = new Date(endStr);
+      for (let d = new Date(s); d <= e; d.setDate(d.getDate() + 1)) {
+        predicted.push(d.toISOString().split('T')[0]);
+      }
     }
-    return predictions;
+    return predicted;
   }
 
   function updateStatus() {
@@ -645,19 +664,18 @@
       return;
     }
 
-    const sorted = [...records].sort();
+    const sorted = [...records].sort((a, b) => a.start > b.start ? 1 : -1);
     const last = sorted[sorted.length - 1];
-    const [ly, lm, ld] = last.split('-');
+    const [, lm, ld] = last.start.split('-');
     lastEl.textContent = `${parseInt(lm)}/${parseInt(ld)}`;
 
     const cycle = calcAvgCycle(records);
     cycleEl.textContent = `${cycle}일`;
 
-    const nextDate = new Date(last);
-    nextDate.setDate(nextDate.getDate() + cycle);
+    const nextDate = addDays(last.start, cycle);
     const today = new Date();
     today.setHours(0,0,0,0);
-    const diff = Math.round((nextDate - today) / 86400000);
+    const diff = Math.round((new Date(nextDate) - today) / 86400000);
 
     if (diff < 0) {
       mainEl.textContent = `${Math.abs(diff)}일 지남`;
@@ -667,14 +685,18 @@
       subEl.textContent = '예상일이에요';
     } else {
       mainEl.textContent = `${diff}일 후`;
-      const m = nextDate.getMonth() + 1, d = nextDate.getDate();
-      subEl.textContent = `예상: ${m}월 ${d}일`;
+      const [, nm, nd] = nextDate.split('-');
+      subEl.textContent = `예상: ${parseInt(nm)}월 ${parseInt(nd)}일`;
     }
   }
 
   function renderCalendar() {
     const records = loadRecords();
-    const predicted = getPredictedDates(records);
+    // 기록된 생리 날짜 전체 세트
+    const periodSet = new Set();
+    records.forEach(r => getPeriodDates(r).forEach(d => periodSet.add(d)));
+    // 예상 날짜 세트
+    const predictedSet = new Set(getPredictedDates(records));
     const today = new Date();
 
     const label = document.getElementById('cal-month-label');
@@ -696,13 +718,15 @@
       const cell = document.createElement('div');
       const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       let cls = 'day-cell';
-      if (records.includes(dateStr)) cls += ' period';
-      else if (predicted.includes(dateStr)) cls += ' predicted';
+      if (periodSet.has(dateStr)) cls += ' period';
+      else if (predictedSet.has(dateStr)) cls += ' predicted';
       if (today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === d) cls += ' today';
       cell.className = cls;
       cell.textContent = d;
       cell.onclick = () => {
-        document.getElementById('date-input').value = dateStr;
+        const startInput = document.getElementById('date-start');
+        startInput.value = dateStr;
+        document.getElementById('date-end').value = addDays(dateStr, DEFAULT_DURATION - 1);
         openModal();
       };
       grid.appendChild(cell);
@@ -710,21 +734,23 @@
   }
 
   function renderRecords() {
-    const records = loadRecords().sort().reverse();
+    const records = loadRecords().sort((a, b) => a.start > b.start ? -1 : 1);
     const list = document.getElementById('records-list');
     if (records.length === 0) {
       list.innerHTML = '<div class="empty-state">아직 기록이 없어요.<br>홈에서 생리 시작일을 기록해보세요 🌙</div>';
       return;
     }
-    list.innerHTML = records.map(r => {
-      const [y,m,d] = r.split('-');
+    list.innerHTML = records.map((r, i) => {
+      const [sy, sm, sd] = r.start.split('-');
+      const [, em, ed] = r.end.split('-');
+      const duration = Math.round((new Date(r.end) - new Date(r.start)) / 86400000) + 1;
       return `
         <div class="record-item">
           <div>
-            <div class="record-date">${parseInt(m)}월 ${parseInt(d)}일</div>
-            <div class="record-meta">${y}년</div>
+            <div class="record-date">${parseInt(sm)}월 ${parseInt(sd)}일 ~ ${parseInt(em)}월 ${parseInt(ed)}일</div>
+            <div class="record-meta">${sy}년 · ${duration}일간</div>
           </div>
-          <button class="record-delete" onclick="deleteRecord('${r}')">×</button>
+          <button class="record-delete" onclick="deleteRecord(${records.indexOf(r)})">×</button>
         </div>
       `;
     }).join('');
@@ -747,39 +773,48 @@
   }
 
   function openModal() {
-    const modal = document.getElementById('modal');
-    modal.classList.add('open');
-    if (!document.getElementById('date-input').value) {
-      const today = new Date();
-      document.getElementById('date-input').value = today.toISOString().split('T')[0];
+    document.getElementById('modal').classList.add('open');
+    if (!document.getElementById('date-start').value) {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('date-start').value = today;
+      document.getElementById('date-end').value = addDays(today, DEFAULT_DURATION - 1);
     }
   }
 
   function closeModal() {
     document.getElementById('modal').classList.remove('open');
+    document.getElementById('date-start').value = '';
+    document.getElementById('date-end').value = '';
   }
 
   function closeModalOutside(e) {
     if (e.target === document.getElementById('modal')) closeModal();
   }
 
-  function saveRecord() {
-    const dateStr = document.getElementById('date-input').value;
-    if (!dateStr) return alert('날짜를 선택해주세요');
-    const records = loadRecords();
-    if (records.includes(dateStr)) {
-      alert('이미 기록된 날짜예요');
-      return;
+  // 시작일 바꾸면 종료일 자동 갱신
+  document.getElementById('date-start').addEventListener('change', function() {
+    if (this.value) {
+      document.getElementById('date-end').value = addDays(this.value, DEFAULT_DURATION - 1);
     }
-    records.push(dateStr);
+  });
+
+  function saveRecord() {
+    const start = document.getElementById('date-start').value;
+    const end = document.getElementById('date-end').value;
+    if (!start) return alert('시작일을 선택해주세요');
+    if (!end) return alert('종료일을 선택해주세요');
+    if (end < start) return alert('종료일은 시작일 이후여야 해요');
+    const records = loadRecords();
+    records.push({ start, end });
     saveRecords(records);
     closeModal();
     updateStatus();
     renderCalendar();
   }
 
-  function deleteRecord(dateStr) {
-    const records = loadRecords().filter(r => r !== dateStr);
+  function deleteRecord(idx) {
+    const records = loadRecords().sort((a, b) => a.start > b.start ? -1 : 1);
+    records.splice(idx, 1);
     saveRecords(records);
     renderRecords();
     updateStatus();
