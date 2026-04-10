@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="달의 기록">
-<link rel="apple-touch-icon" href="new-icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -600,15 +600,120 @@
   .empathy-card.show { display: block; }
   .empathy-text { font-size: 13px; color: var(--text-muted); line-height: 1.8; }
   .empathy-text strong { color: var(--text); font-weight: 500; }
+
+  /* ── 로그인 화면 ── */
+  .login-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 40px 24px;
+  }
+  .login-screen.show { display: flex; }
+  .login-logo { font-size: 56px; margin-bottom: 16px; filter: drop-shadow(0 0 20px rgba(245,214,200,0.4)); }
+  .login-title { font-family: 'Gowun Batang', serif; font-size: 28px; color: var(--moon); letter-spacing: 0.1em; margin-bottom: 8px; }
+  .login-sub { font-size: 13px; color: var(--text-muted); text-align: center; line-height: 1.7; margin-bottom: 40px; }
+  .btn-google {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    color: #3c4043;
+    border: none;
+    border-radius: 14px;
+    padding: 16px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+    transition: all 0.2s;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  .btn-google:active { transform: scale(0.97); }
+  .btn-google-icon { font-size: 20px; }
+  .login-privacy { font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 20px; line-height: 1.6; }
+
+  /* 유저 정보 */
+  .user-info {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    margin: 0 16px 12px;
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid #2a1530;
+  }
+  .user-info.show { display: flex; }
+  .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--accent-soft); overflow: hidden; }
+  .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .user-name { font-size: 12px; color: var(--text-muted); flex: 1; }
+  .btn-logout { background: none; border: none; color: var(--text-dim); font-size: 11px; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+  .btn-logout:hover { color: var(--accent); }
+
+  /* 로딩 */
+  .loading-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 600;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .loading-screen.show { display: flex; }
+  .loading-moon { font-size: 40px; animation: spin 2s linear infinite; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .loading-text { font-size: 13px; color: var(--text-muted); }
 </style>
 </head>
 <body>
+
+<!-- 로딩 화면 -->
+<div class="loading-screen show" id="loading-screen">
+  <div class="loading-moon">🌙</div>
+  <div class="loading-text">불러오는 중...</div>
+</div>
+
+<!-- 로그인 화면 -->
+<div class="login-screen" id="login-screen">
+  <div class="login-logo">🌙</div>
+  <div class="login-title">달의 기록</div>
+  <div class="login-sub">나의 생리주기를 기록하고<br>몸과 감정의 패턴을 이해해요</div>
+  <button class="btn-google" onclick="signInWithGoogle()">
+    <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+    </svg>
+    Google로 시작하기
+  </button>
+  <div class="login-privacy">로그인하면 데이터가 안전하게 저장돼요.<br>개인정보는 본인만 볼 수 있어요.</div>
+</div>
+
 <div class="app">
   <header>
     <span class="moon-icon">🌙</span>
     <h1>달의 기록</h1>
     <p>나의 생리주기 트래커</p>
   </header>
+
+
+  <!-- 유저 정보 -->
+  <div class="user-info" id="user-info">
+    <div class="user-avatar" id="user-avatar">👤</div>
+    <div class="user-name" id="user-name">로딩 중...</div>
+    <button class="btn-logout" onclick="signOut()">로그아웃</button>
+  </div>
 
   <!-- 홈 -->
   <div class="tab-content active" id="tab-home">
@@ -808,7 +913,140 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+
+  // ── Supabase 설정 ──
+  const SUPABASE_URL = 'https://nzxtpfgjiysmkecktekw.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_ad3WJqIrRSfKrpQYFjyTHA_DzktkuUA';
+  const { createClient } = window.supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let currentUser = null;
+
+  // ── 인증 ──
+  async function signInWithGoogle() {
+    await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: 'https://simchorok.github.io/period-tracker/' }
+    });
+  }
+
+  async function signOut() {
+    await sb.auth.signOut();
+    currentUser = null;
+    showLoginScreen();
+  }
+
+  function showLoginScreen() {
+    document.getElementById('loading-screen').classList.remove('show');
+    document.getElementById('login-screen').classList.add('show');
+  }
+
+  function showApp(user) {
+    currentUser = user;
+    document.getElementById('loading-screen').classList.remove('show');
+    document.getElementById('login-screen').classList.remove('show');
+
+    // 유저 정보 표시
+    const userInfo = document.getElementById('user-info');
+    userInfo.classList.add('show');
+    document.getElementById('user-name').textContent = user.email || '사용자';
+    const avatar = document.getElementById('user-avatar');
+    if (user.user_metadata?.avatar_url) {
+      avatar.innerHTML = `<img src="${user.user_metadata.avatar_url}" alt="프로필">`;
+    } else {
+      avatar.textContent = (user.email || '?')[0].toUpperCase();
+    }
+
+    // 데이터 로드
+    loadAllData();
+  }
+
+  // ── Supabase DB 연동 ──
+  async function loadAllData() {
+    if (!currentUser) return;
+    const [records, logs] = await Promise.all([
+      loadRecordsFromDB(),
+      loadLogsFromDB()
+    ]);
+    updateStatus();
+    renderCalendar();
+  }
+
+  async function loadRecordsFromDB() {
+    const { data, error } = await supabase
+      .from('period_records')
+      .select('*')
+      .order('start_date', { ascending: true });
+    if (error) { console.error(error); return []; }
+    // DB → localStorage 형식으로 변환해서 캐시
+    const records = (data || []).map(r => ({ start: r.start_date, end: r.end_date, id: r.id }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    return records;
+  }
+
+  async function loadLogsFromDB() {
+    const { data, error } = await supabase
+      .from('daily_logs')
+      .select('*');
+    if (error) { console.error(error); return {}; }
+    const logs = {};
+    (data || []).forEach(r => {
+      logs[r.log_date] = { mood: r.mood||[], symptom: r.symptom||[], energy: r.energy||[], etc: r.etc||[], id: r.id };
+    });
+    localStorage.setItem(LOG_KEY, JSON.stringify(logs));
+    return logs;
+  }
+
+  // ── DB 저장 함수 오버라이드 ──
+  async function saveRecordToDB(record) {
+    if (!currentUser) return;
+    const { data, error } = await supabase
+      .from('period_records')
+      .insert([{ user_id: currentUser.id, start_date: record.start, end_date: record.end }])
+      .select();
+    if (error) { console.error(error); return null; }
+    return data[0];
+  }
+
+  async function updateRecordInDB(id, record) {
+    if (!currentUser || !id) return;
+    await supabase
+      .from('period_records')
+      .update({ start_date: record.start, end_date: record.end })
+      .eq('id', id);
+  }
+
+  async function deleteRecordFromDB(id) {
+    if (!currentUser || !id) return;
+    await sb.from('period_records').delete().eq('id', id);
+  }
+
+  async function saveLogToDB(logDate, entry) {
+    if (!currentUser) return;
+    const logs = loadLogs();
+    const existing = logs[logDate];
+    if (existing && existing.id) {
+      await sb.from('daily_logs')
+        .update({ mood: entry.mood, symptom: entry.symptom, energy: entry.energy, etc: entry.etc })
+        .eq('id', existing.id);
+    } else {
+      await sb.from('daily_logs')
+        .insert([{ user_id: currentUser.id, log_date: logDate, ...entry }]);
+    }
+    await loadLogsFromDB();
+  }
+
+  // ── 인증 상태 감지 ──
+  sb.auth.onAuthStateChange((event, session) => {
+    if (session?.user) {
+      showApp(session.user);
+    } else {
+      showLoginScreen();
+    }
+  });
+
   const STORAGE_KEY = 'period_records_v2';
   const DEFAULT_CYCLE = 28;
   const DEFAULT_DURATION = 5;
@@ -1470,7 +1708,7 @@
     if (this.value && editingIdx===null) document.getElementById('date-end').value=addDays(this.value,DEFAULT_DURATION-1);
   });
 
-  function saveRecord() {
+  async function saveRecord() {
     const start=document.getElementById('date-start').value;
     const end=document.getElementById('date-end').value;
     if (!start) return alert('시작일을 선택해주세요');
@@ -1479,10 +1717,15 @@
     const records=loadRecords();
     if (editingIdx !== null) {
       const sorted=records.sort((a,b)=>a.start>b.start?-1:1);
-      sorted[editingIdx]={start,end};
+      const existing=sorted[editingIdx];
+      sorted[editingIdx]={...existing,start,end};
       saveRecords(sorted);
+      await updateRecordInDB(existing.id, {start,end});
     } else {
-      records.push({start,end});
+      const newRec={start,end};
+      const saved=await saveRecordToDB(newRec);
+      if (saved) newRec.id=saved.id;
+      records.push(newRec);
       saveRecords(records);
     }
     closeModal();
@@ -1490,8 +1733,10 @@
     renderRecords();
   }
 
-  function deleteRecord(idx) {
+  async function deleteRecord(idx) {
     const records=loadRecords().sort((a,b)=>a.start>b.start?-1:1);
+    const record=records[idx];
+    if (record?.id) await deleteRecordFromDB(record.id);
     records.splice(idx,1);
     saveRecords(records);
     renderRecords();
@@ -1541,7 +1786,7 @@
     tag.addEventListener('click', () => tag.classList.toggle('selected'));
   });
 
-  function saveLog() {
+  async function saveLog() {
     if (!logTargetDate) return;
     const logs = loadLogs();
     const entry = { mood:[], symptom:[], energy:[], etc:[] };
@@ -1550,10 +1795,13 @@
         entry[cat].push(tag.dataset.val);
       });
     });
-    // 아무것도 선택 안 했으면 해당 날짜 기록 삭제
     const hasAny = Object.values(entry).some(arr => arr.length > 0);
-    if (hasAny) logs[logTargetDate] = entry;
-    else delete logs[logTargetDate];
+    if (hasAny) {
+      logs[logTargetDate] = entry;
+      await saveLogToDB(logTargetDate, entry);
+    } else {
+      delete logs[logTargetDate];
+    }
     saveLogs(logs);
     closeLogModal();
     renderLogList();
