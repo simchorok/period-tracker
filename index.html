@@ -221,8 +221,7 @@
 
     const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
     const last = sorted[sorted.length-1];
-    const today = new Date(); today.setHours(0,0,0,0);
-    const todayStr = today.toISOString().split('T')[0];
+    const _tc=new Date(); const todayStr=`${_tc.getFullYear()}-${String(_tc.getMonth()+1).padStart(2,'0')}-${String(_tc.getDate()).padStart(2,'0')}`;
     const cycle = calcAvgCycle(records);
 
     // 마지막 생리 시작일 기준 오늘이 몇일째인지
@@ -254,7 +253,7 @@
 
   function updateEmpathyCard(records) {
     const card = document.getElementById('empathy-card');
-    const todayStr = new Date().toISOString().split('T')[0];
+    const _te=new Date(); const todayStr=`${_te.getFullYear()}-${String(_te.getMonth()+1).padStart(2,'0')}-${String(_te.getDate()).padStart(2,'0')}`;
     const logs = loadLogs();
     const todayLog = logs[todayStr];
 
@@ -323,7 +322,7 @@
       for (let day = 1; day <= cycle; day++) {
         const d = new Date(startDate);
         d.setDate(d.getDate() + day - 1);
-        const ds = d.toISOString().split('T')[0];
+        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         const p = getCyclePhase(day, cycle);
         if (p !== phase) continue;
         const log = logs[ds];
@@ -364,7 +363,7 @@
 
     const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
     const last = sorted[sorted.length-1];
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = (() => { const _d=new Date(); return `${_d.getFullYear()}-${String(_d.getMonth()+1).padStart(2,'0')}-${String(_d.getDate()).padStart(2,'0')}`; })();
     const cycle = calcAvgCycle(records);
     const dayOfCycle = dateDiff(todayStr, last.start) + 1;
     if (dayOfCycle < 1 || dayOfCycle > cycle + 5) return;
@@ -1156,8 +1155,8 @@
 
   function getPeriodDates(r) {
     const arr = [];
-    for (let d = new Date(r.start); d <= new Date(r.end); d.setDate(d.getDate()+1))
-      arr.push(d.toISOString().split('T')[0]);
+    for (let d = new Date(r.start.replace(/-/g,'/')); d <= new Date(r.end.replace(/-/g,'/')); d.setDate(d.getDate()+1))
+      arr.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);
     return arr;
   }
 
@@ -1194,11 +1193,11 @@
     const pSet=new Set(),ovSet=new Set(),fSet=new Set();
     for (let i=1;i<=3;i++) {
       const ns=addDays(last.start,cycle*i), ne=addDays(ns,DEFAULT_DURATION-1);
-      for (let d=new Date(ns);d<=new Date(ne);d.setDate(d.getDate()+1)) pSet.add(d.toISOString().split('T')[0]);
+      for (let d=new Date(ns.replace(/-/g,'/'));d<=new Date(ne.replace(/-/g,'/'));d.setDate(d.getDate()+1)) pSet.add(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);
       const ov=getOvulationDate(ns); ovSet.add(ov);
       const fr=getFertileRange(ov);
-      for (let d=new Date(fr.start);d<=new Date(fr.end);d.setDate(d.getDate()+1)) {
-        const ds=d.toISOString().split('T')[0];
+      for (let d=new Date(fr.start.replace(/-/g,'/'));d<=new Date(fr.end.replace(/-/g,'/'));d.setDate(d.getDate()+1)) {
+        const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         if (!pSet.has(ds)) fSet.add(ds);
       }
     }
@@ -1211,8 +1210,8 @@
     for (let i=0;i<s.length-1;i++) {
       const ov=getOvulationDate(s[i+1].start); ovSet.add(ov);
       const fr=getFertileRange(ov);
-      for (let d=new Date(fr.start);d<=new Date(fr.end);d.setDate(d.getDate()+1))
-        fSet.add(d.toISOString().split('T')[0]);
+      for (let d=new Date(fr.start.replace(/-/g,'/'));d<=new Date(fr.end.replace(/-/g,'/'));d.setDate(d.getDate()+1))
+        fSet.add(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);
     }
     return {ovulation:ovSet,fertile:fSet};
   }
@@ -1356,8 +1355,7 @@
 
     const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
     const last = sorted[sorted.length-1];
-    const today = new Date(); today.setHours(0,0,0,0);
-    const todayStr = today.toISOString().split('T')[0];
+    const _tc=new Date(); const todayStr=`${_tc.getFullYear()}-${String(_tc.getMonth()+1).padStart(2,'0')}-${String(_tc.getDate()).padStart(2,'0')}`;
     const cycle = calcAvgCycle(records);
 
     // 마지막 생리 시작일 기준 오늘이 몇일째인지
@@ -1389,7 +1387,7 @@
 
   function updateEmpathyCard(records) {
     const card = document.getElementById('empathy-card');
-    const todayStr = new Date().toISOString().split('T')[0];
+    const _te=new Date(); const todayStr=`${_te.getFullYear()}-${String(_te.getMonth()+1).padStart(2,'0')}-${String(_te.getDate()).padStart(2,'0')}`;
     const logs = loadLogs();
     const todayLog = logs[todayStr];
 
@@ -1458,7 +1456,7 @@
       for (let day = 1; day <= cycle; day++) {
         const d = new Date(startDate);
         d.setDate(d.getDate() + day - 1);
-        const ds = d.toISOString().split('T')[0];
+        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         const p = getCyclePhase(day, cycle);
         if (p !== phase) continue;
         const log = logs[ds];
@@ -1499,7 +1497,7 @@
 
     const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
     const last = sorted[sorted.length-1];
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = (() => { const _d=new Date(); return `${_d.getFullYear()}-${String(_d.getMonth()+1).padStart(2,'0')}-${String(_d.getDate()).padStart(2,'0')}`; })();
     const cycle = calcAvgCycle(records);
     const dayOfCycle = dateDiff(todayStr, last.start) + 1;
     if (dayOfCycle < 1 || dayOfCycle > cycle + 5) return;
@@ -1593,7 +1591,7 @@
     const pred=getAllPredictedSets(records);
     const past=getPastOvulationSets(records);
     const today=new Date();
-    const todayStr=today.toISOString().split('T')[0];
+    const todayStr=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
     const wrap=document.getElementById('calendar-scroll-wrap');
     wrap.innerHTML='';
@@ -1773,7 +1771,7 @@
     document.getElementById('modal-save-btn').textContent = editingIdx !== null ? '수정' : '저장';
     document.getElementById('modal').classList.add('open');
     if (editingIdx === null && !document.getElementById('date-start').value) {
-      const today=new Date().toISOString().split('T')[0];
+      const _tl=new Date(); const today=`${_tl.getFullYear()}-${String(_tl.getMonth()+1).padStart(2,'0')}-${String(_tl.getDate()).padStart(2,'0')}`;
       document.getElementById('date-start').value=today;
       document.getElementById('date-end').value=addDays(today,DEFAULT_DURATION-1);
     }
@@ -1842,14 +1840,11 @@
 
   updateStatus();
   // 태그 이벤트 바인딩
-  document.addEventListener('DOMContentLoaded', () => {
-    initSymptomTags();
-    initSleepQualityTags();
-  });
-  // DOMContentLoaded가 이미 지난 경우
-  if (document.readyState !== 'loading') {
-    initSymptomTags();
-    initSleepQualityTags();
+  // 태그 이벤트 바인딩
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLogTagEvents);
+  } else {
+    initLogTagEvents();
   }
 
 
@@ -1873,49 +1868,9 @@
     });
   }
 
-  // 수면의 질 단일 선택
-  function initSleepQualityTags() {
-    document.querySelectorAll('#log-sleep-quality .log-tag').forEach(tag => {
-      tag.addEventListener('click', function() {
-        const wasSelected = this.classList.contains('selected');
-        document.querySelectorAll('#log-sleep-quality .log-tag').forEach(t => t.classList.remove('selected'));
-        if (!wasSelected) this.classList.add('selected');
-      });
-    });
-  }
 
-  function toggleSymptom(el) {
-    // 선택/해제 토글
-    const wasSelected = el.classList.contains('selected');
-    el.classList.toggle('selected');
-    const val = el.dataset.val;
-    const detail = document.getElementById('symptom-detail');
 
-    if (!wasSelected) {
-      // 선택됨
-      currentSymptomTag = val;
-      document.getElementById('symptom-detail-title').textContent = `${val} — 통증 정도`;
-      detail.classList.add('show');
-      document.querySelectorAll('.severity-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.val === (symptomSeverity[val] || ''));
-      });
-    } else {
-      // 해제됨
-      delete symptomSeverity[val];
-      const remaining = document.querySelectorAll('#log-symptom .log-tag.selected');
-      if (remaining.length === 0) {
-        detail.classList.remove('show');
-        currentSymptomTag = null;
-      } else {
-        const last = remaining[remaining.length - 1];
-        currentSymptomTag = last.dataset.val;
-        document.getElementById('symptom-detail-title').textContent = `${currentSymptomTag} — 통증 정도`;
-        document.querySelectorAll('.severity-btn').forEach(b => {
-          b.classList.toggle('active', b.dataset.val === (symptomSeverity[currentSymptomTag] || ''));
-        });
-      }
-    }
-  }
+
 
   function selectSeverity(btn) {
     if (!currentSymptomTag) return;
@@ -1924,9 +1879,60 @@
     symptomSeverity[currentSymptomTag] = btn.dataset.val;
   }
 
-  function initSymptomTags() {
+  function initLogTagEvents() {
+    // 신체 불편함 — 클릭 시 toggle + 통증 강도 패널 제어
     document.querySelectorAll('#log-symptom .log-tag').forEach(tag => {
-      tag.addEventListener('click', function() { toggleSymptom(this); });
+      tag.onclick = function(e) {
+        e.stopPropagation();
+        const wasSelected = this.classList.contains('selected');
+        this.classList.toggle('selected');
+        const val = this.dataset.val;
+        const detail = document.getElementById('symptom-detail');
+        if (!wasSelected) {
+          // 선택
+          currentSymptomTag = val;
+          document.getElementById('symptom-detail-title').textContent = `${val} — 통증 정도`;
+          detail.classList.add('show');
+          document.querySelectorAll('.severity-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.val === (symptomSeverity[val] || ''));
+          });
+        } else {
+          // 해제
+          delete symptomSeverity[val];
+          const remaining = document.querySelectorAll('#log-symptom .log-tag.selected');
+          if (remaining.length === 0) {
+            detail.classList.remove('show');
+            currentSymptomTag = null;
+          } else {
+            const last = remaining[remaining.length - 1];
+            currentSymptomTag = last.dataset.val;
+            document.getElementById('symptom-detail-title').textContent = `${currentSymptomTag} — 통증 정도`;
+            document.querySelectorAll('.severity-btn').forEach(b => {
+              b.classList.toggle('active', b.dataset.val === (symptomSeverity[currentSymptomTag] || ''));
+            });
+          }
+        }
+      };
+    });
+
+    // 수면의 질 — 단일 선택
+    document.querySelectorAll('#log-sleep-quality .log-tag').forEach(tag => {
+      tag.onclick = function(e) {
+        e.stopPropagation();
+        const wasSelected = this.classList.contains('selected');
+        document.querySelectorAll('#log-sleep-quality .log-tag').forEach(t => t.classList.remove('selected'));
+        if (!wasSelected) this.classList.add('selected');
+      };
+    });
+
+    // 일반 태그 (기분/에너지/기타) — 기존 방식 유지
+    ['mood','energy','etc'].forEach(cat => {
+      document.querySelectorAll(`#log-${cat} .log-tag`).forEach(tag => {
+        tag.onclick = function(e) {
+          e.stopPropagation();
+          this.classList.toggle('selected');
+        };
+      });
     });
   }
 
@@ -1972,7 +1978,7 @@
   function saveLogs(logs) { localStorage.setItem(LOG_KEY, JSON.stringify(logs)); }
 
   function openLogModal(dateStr) {
-    logTargetDate = dateStr || new Date().toISOString().split('T')[0];
+    const _tlog=new Date(); logTargetDate = dateStr || `${_tlog.getFullYear()}-${String(_tlog.getMonth()+1).padStart(2,'0')}-${String(_tlog.getDate()).padStart(2,'0')}`;
     const [y,m,d] = logTargetDate.split('-');
     document.getElementById('log-modal-title').textContent = '상태 기록';
     document.getElementById('log-modal-date').textContent = `${y}년 ${parseInt(m)}월 ${parseInt(d)}일`;
@@ -1989,6 +1995,7 @@
     resetLogExtras();
     restoreLogExtras(existing);
 
+    initLogTagEvents();
     document.getElementById('log-modal').classList.add('open');
   }
 
