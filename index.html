@@ -238,7 +238,7 @@
     const summerEnd = Math.round(cycle * 0.57);
     const ranges = { winter:[1,winterEnd], spring:[winterEnd+1,springEnd], summer:[springEnd+1,summerEnd], autumn:[summerEnd+1,cycle] };
     const [phaseStart, phaseEnd] = ranges[phase];
-    const progress = Math.min(100, Math.round(((dayOfCycle - phaseStart) / (phaseEnd - phaseStart + 1)) * 100));
+    const progress = phaseEnd === phaseStart ? 100 : Math.min(100, Math.round(((dayOfCycle - phaseStart + 1) / (phaseEnd - phaseStart + 1)) * 100));
 
     // 렌더링
     card.className = `cycle-card show ${info.cls}`;
@@ -1372,7 +1372,7 @@
     const summerEnd = Math.round(cycle * 0.57);
     const ranges = { winter:[1,winterEnd], spring:[winterEnd+1,springEnd], summer:[springEnd+1,summerEnd], autumn:[summerEnd+1,cycle] };
     const [phaseStart, phaseEnd] = ranges[phase];
-    const progress = Math.min(100, Math.round(((dayOfCycle - phaseStart) / (phaseEnd - phaseStart + 1)) * 100));
+    const progress = phaseEnd === phaseStart ? 100 : Math.min(100, Math.round(((dayOfCycle - phaseStart + 1) / (phaseEnd - phaseStart + 1)) * 100));
 
     // 렌더링
     card.className = `cycle-card show ${info.cls}`;
@@ -1840,7 +1840,7 @@
 
   updateStatus();
   // 태그 이벤트 바인딩
-  // 태그 이벤트 바인딩
+  // 이벤트 위임 초기화 — DOM 준비되면 한 번만
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initLogTagEvents);
   } else {
@@ -1879,17 +1879,42 @@
     symptomSeverity[currentSymptomTag] = btn.dataset.val;
   }
 
+  // 이벤트 위임 — 모달 내 모든 클릭을 한 곳에서 처리
   function initLogTagEvents() {
-    // 신체 불편함 — 클릭 시 toggle + 통증 강도 패널 제어
-    document.querySelectorAll('#log-symptom .log-tag').forEach(tag => {
-      tag.onclick = function(e) {
-        e.stopPropagation();
-        const wasSelected = this.classList.contains('selected');
-        this.classList.toggle('selected');
-        const val = this.dataset.val;
+    const modal = document.querySelector('.log-modal');
+    if (!modal || modal._delegated) return;
+    modal._delegated = true;
+
+    modal.addEventListener('click', function(e) {
+      const tag = e.target.closest('.log-tag');
+      const sevBtn = e.target.closest('.severity-btn');
+
+      if (sevBtn) {
+        // 통증 강도 선택
+        document.querySelectorAll('.severity-btn').forEach(b => b.classList.remove('active'));
+        sevBtn.classList.add('active');
+        if (currentSymptomTag) symptomSeverity[currentSymptomTag] = sevBtn.dataset.val;
+        return;
+      }
+
+      if (!tag) return;
+      const parentId = tag.parentElement.id;
+
+      if (parentId === 'log-sleep-quality') {
+        // 수면의 질 — 단일 선택
+        const wasSelected = tag.classList.contains('selected');
+        document.querySelectorAll('#log-sleep-quality .log-tag').forEach(t => t.classList.remove('selected'));
+        if (!wasSelected) tag.classList.add('selected');
+        return;
+      }
+
+      if (parentId === 'log-symptom') {
+        // 신체 불편함 — 다중 선택 + 통증 강도 패널
+        const wasSelected = tag.classList.contains('selected');
+        tag.classList.toggle('selected');
+        const val = tag.dataset.val;
         const detail = document.getElementById('symptom-detail');
         if (!wasSelected) {
-          // 선택
           currentSymptomTag = val;
           document.getElementById('symptom-detail-title').textContent = `${val} — 통증 정도`;
           detail.classList.add('show');
@@ -1897,42 +1922,24 @@
             b.classList.toggle('active', b.dataset.val === (symptomSeverity[val] || ''));
           });
         } else {
-          // 해제
           delete symptomSeverity[val];
           const remaining = document.querySelectorAll('#log-symptom .log-tag.selected');
           if (remaining.length === 0) {
             detail.classList.remove('show');
             currentSymptomTag = null;
           } else {
-            const last = remaining[remaining.length - 1];
-            currentSymptomTag = last.dataset.val;
+            currentSymptomTag = remaining[remaining.length - 1].dataset.val;
             document.getElementById('symptom-detail-title').textContent = `${currentSymptomTag} — 통증 정도`;
             document.querySelectorAll('.severity-btn').forEach(b => {
               b.classList.toggle('active', b.dataset.val === (symptomSeverity[currentSymptomTag] || ''));
             });
           }
         }
-      };
-    });
+        return;
+      }
 
-    // 수면의 질 — 단일 선택
-    document.querySelectorAll('#log-sleep-quality .log-tag').forEach(tag => {
-      tag.onclick = function(e) {
-        e.stopPropagation();
-        const wasSelected = this.classList.contains('selected');
-        document.querySelectorAll('#log-sleep-quality .log-tag').forEach(t => t.classList.remove('selected'));
-        if (!wasSelected) this.classList.add('selected');
-      };
-    });
-
-    // 일반 태그 (기분/에너지/기타) — 기존 방식 유지
-    ['mood','energy','etc'].forEach(cat => {
-      document.querySelectorAll(`#log-${cat} .log-tag`).forEach(tag => {
-        tag.onclick = function(e) {
-          e.stopPropagation();
-          this.classList.toggle('selected');
-        };
-      });
+      // 기분 / 에너지 / 기타 — 다중 선택 토글
+      tag.classList.toggle('selected');
     });
   }
 
@@ -1995,7 +2002,6 @@
     resetLogExtras();
     restoreLogExtras(existing);
 
-    initLogTagEvents();
     document.getElementById('log-modal').classList.add('open');
   }
 
