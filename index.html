@@ -917,7 +917,7 @@
 <script>
 
   // ── Supabase 설정 ──
-  const SUPABASE_URL = 'https://nzxtpfgjiysmkecktekw.supabase.co';
+  const SUPABASE_URL = 'https://nzxtpfgjiysmkecktekw.sb.co';
   const SUPABASE_KEY = 'sb_publishable_ad3WJqIrRSfKrpQYFjyTHA_DzktkuUA';
   const { createClient } = window.supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -975,7 +975,7 @@
   }
 
   async function loadRecordsFromDB() {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('period_records')
       .select('*')
       .order('start_date', { ascending: true });
@@ -987,7 +987,7 @@
   }
 
   async function loadLogsFromDB() {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('daily_logs')
       .select('*');
     if (error) { console.error(error); return {}; }
@@ -1002,7 +1002,7 @@
   // ── DB 저장 함수 오버라이드 ──
   async function saveRecordToDB(record) {
     if (!currentUser) return;
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('period_records')
       .insert([{ user_id: currentUser.id, start_date: record.start, end_date: record.end }])
       .select();
@@ -1012,7 +1012,7 @@
 
   async function updateRecordInDB(id, record) {
     if (!currentUser || !id) return;
-    await supabase
+    await sb
       .from('period_records')
       .update({ start_date: record.start, end_date: record.end })
       .eq('id', id);
