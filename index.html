@@ -1715,18 +1715,24 @@
     if (!end) return alert('종료일을 선택해주세요');
     if (end<start) return alert('종료일은 시작일 이후여야 해요');
     const records=loadRecords();
-    if (editingIdx !== null) {
-      const sorted=records.sort((a,b)=>a.start>b.start?-1:1);
-      const existing=sorted[editingIdx];
-      sorted[editingIdx]={...existing,start,end};
-      saveRecords(sorted);
-      await updateRecordInDB(existing.id, {start,end});
-    } else {
-      const newRec={start,end};
-      const saved=await saveRecordToDB(newRec);
-      if (saved) newRec.id=saved.id;
-      records.push(newRec);
-      saveRecords(records);
+    try {
+      if (editingIdx !== null) {
+        const sorted=records.sort((a,b)=>a.start>b.start?-1:1);
+        const existing=sorted[editingIdx];
+        sorted[editingIdx]={...existing,start,end};
+        saveRecords(sorted);
+        if (currentUser && existing.id) await updateRecordInDB(existing.id, {start,end});
+      } else {
+        const newRec={start,end};
+        if (currentUser) {
+          const saved=await saveRecordToDB(newRec);
+          if (saved) newRec.id=saved.id;
+        }
+        records.push(newRec);
+        saveRecords(records);
+      }
+    } catch(e) {
+      console.error('저장 오류:', e);
     }
     closeModal();
     updateStatus();
@@ -1796,11 +1802,15 @@
       });
     });
     const hasAny = Object.values(entry).some(arr => arr.length > 0);
-    if (hasAny) {
-      logs[logTargetDate] = entry;
-      await saveLogToDB(logTargetDate, entry);
-    } else {
-      delete logs[logTargetDate];
+    try {
+      if (hasAny) {
+        logs[logTargetDate] = entry;
+        if (currentUser) await saveLogToDB(logTargetDate, entry);
+      } else {
+        delete logs[logTargetDate];
+      }
+    } catch(e) {
+      console.error('로그 저장 오류:', e);
     }
     saveLogs(logs);
     closeLogModal();
