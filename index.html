@@ -1090,6 +1090,8 @@
   async function saveLogToDB(logDate, entry, existingId) {
     if (!currentUser) return;
     const dbEntry = {
+      user_id: currentUser.id,
+      log_date: logDate,
       mood: entry.mood,
       symptom: entry.symptom,
       energy: entry.energy,
@@ -1098,14 +1100,10 @@
       sleep_quality: entry.sleepQuality || null,
       sleep_hours: entry.sleepHours || null,
     };
-    if (existingId) {
-      await sb.from('daily_logs').update(dbEntry).eq('id', existingId);
-    } else {
-      const { data } = await sb.from('daily_logs')
-        .insert([{ user_id: currentUser.id, log_date: logDate, ...dbEntry }])
-        .select();
-      if (data && data[0]) entry._newId = data[0].id;
-    }
+    // upsert: 있으면 update, 없으면 insert 자동 처리
+    const { error } = await sb.from('daily_logs')
+      .upsert(dbEntry, { onConflict: 'user_id,log_date' });
+    if (error) console.error('DB 저장 오류:', error);
     await loadLogsFromDB();
   }
 
