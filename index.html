@@ -7,7 +7,2042 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>달의 기록</title>
+<link rel="manifest" href="manifest.json"<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a0a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>달의 기록</title>
 <link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="달의 기록">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0610;
+    --surface: #1a0d1f;
+    --surface2: #241329;
+    --accent: #c9607a;
+    --accent-soft: #e8a0b0;
+    --accent-dim: #6b2d3e;
+    --text: #f0e6ea;
+    --text-muted: #9a7f88;
+    --text-dim: #5c4a52;
+    --moon: #f5d6c8;
+    --period: #7a1f35;
+    --period-border: #c9607a;
+    --predicted: #2a1535;
+    --predicted-border: #7a4a8a;
+    --ovulation: #1a3a2a;
+    --ovulation-border: #2ecc71;
+    --fertile: #1a2e20;
+    --fertile-border: #27ae60;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 20% 10%, #2a0a1e 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, #100a20 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 0 80px;
+    min-height: 100vh;
+  }
+
+  header {
+    padding: 40px 24px 16px;
+    text-align: center;
+  }
+
+  .moon-icon { font-size: 36px; display: block; margin-bottom: 8px; filter: drop-shadow(0 0 12px rgba(245,214,200,0.4)); }
+  header h1 { font-family: 'Gowun Batang', serif; font-size: 24px; font-weight: 700; color: var(--moon); letter-spacing: 0.1em; }
+  header p { font-size: 12px; color: var(--text-muted); margin-top: 4px; letter-spacing: 0.05em; }
+
+  .dday-badge {
+    display: none;
+    margin: 0 16px 12px;
+    background: linear-gradient(135deg, #3d1020, #5a1a35);
+    border: 1px solid var(--accent);
+    border-radius: 14px;
+    padding: 12px 16px;
+    text-align: center;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .dday-badge.show { display: block; }
+  @keyframes pulse {
+    0%,100% { border-color: var(--accent); }
+    50% { border-color: var(--accent-soft); box-shadow: 0 0 12px rgba(201,96,122,0.3); }
+  }
+  .dday-badge-text { font-size: 13px; color: var(--accent-soft); font-weight: 500; }
+
+  .status-card {
+    margin: 0 16px 16px;
+    background: var(--surface);
+    border: 1px solid var(--accent-dim);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .status-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(201,96,122,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .status-label { font-size: 11px; color: var(--text-muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 6px; }
+  .status-main { font-family: 'Gowun Batang', serif; font-size: 32px; color: var(--accent-soft); line-height: 1.2; }
+  .status-sub { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+  .status-row { display: flex; justify-content: center; gap: 20px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--surface2); }
+  .stat-item { text-align: center; }
+  .stat-num { font-family: 'Gowun Batang', serif; font-size: 20px; color: var(--text); }
+  .stat-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+  .info-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 16px 16px; }
+  .info-card { background: var(--surface); border-radius: 14px; padding: 14px; border: 1px solid #2a1530; }
+  .info-card-icon { font-size: 18px; margin-bottom: 6px; display: block; }
+  .info-card-label { font-size: 10px; color: var(--text-muted); letter-spacing: 0.1em; margin-bottom: 4px; }
+  .info-card-value { font-family: 'Gowun Batang', serif; font-size: 14px; color: var(--text); line-height: 1.4; }
+  .info-card-value.green { color: #5dca8a; }
+
+  .btn-primary {
+    display: block;
+    margin: 0 16px 16px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    width: calc(100% - 32px);
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .btn-primary:active { transform: scale(0.97); opacity: 0.9; }
+
+
+  /* ── 사이클 씽킹 ── */
+  const CYCLE_PHASES = {
+    winter: {
+      name: '❄️ 겨울 · 생리기',
+      season: '❄️',
+      cls: 'winter',
+      messages: [
+        '몸이 쉬고 싶어하는 시기예요. 충분히 쉬어도 괜찮아요.',
+        '내면에 집중하는 시간이에요. 무리하지 마세요.',
+        '따뜻한 음료와 충분한 수면이 도움돼요.'
+      ]
+    },
+    spring: {
+      name: '🌱 봄 · 여포기',
+      season: '🌱',
+      cls: 'spring',
+      messages: [
+        '에너지가 서서히 올라오고 있어요. 새로운 걸 시작하기 좋아요.',
+        '몸과 마음이 가벼워지는 시기예요. 활동적으로 움직여봐요.',
+        '창의력과 집중력이 올라오는 때예요.'
+      ]
+    },
+    summer: {
+      name: '☀️ 여름 · 배란기',
+      season: '☀️',
+      cls: 'summer',
+      messages: [
+        '자신감과 에너지가 최고조예요. 중요한 일을 해보세요.',
+        '사교적이고 외향적인 에너지가 넘쳐요.',
+        '지금이 도전하기 가장 좋은 시기예요!'
+      ]
+    },
+    autumn: {
+      name: '🍂 가을 · 황체기',
+      season: '🍂',
+      cls: 'autumn',
+      messages: [
+        '몸이 서서히 내려앉는 시기예요. 무리하지 말고 나를 돌봐요.',
+        '예민해질 수 있어요. 그건 자연스러운 거예요.',
+        '마무리와 정리에 집중하기 좋은 때예요.'
+      ]
+    }
+  };
+
+  const EMPATHY_MAP = [
+    // [사이클단계, 기록태그, 메시지]
+    ['autumn', '예민해요',    '🍂 <strong>생리 전이라 예민할 수 있어요.</strong> 감정이 격해지는 건 자연스러운 거예요. 충분히 괜찮아요 💙'],
+    ['autumn', '무기력해요',  '🍂 <strong>황체기에는 에너지가 낮아져요.</strong> 오늘은 조금 쉬어가도 괜찮아요.'],
+    ['autumn', '불안해요',    '🍂 <strong>생리 전 불안감은 흔해요.</strong> 심호흡하고 나를 다독여줘요 🤍'],
+    ['autumn', '두통',        '🍂 <strong>황체기 두통은 호르몬 변화 때문이에요.</strong> 수분 섭취와 휴식이 도움돼요.'],
+    ['autumn', '복부팽만',    '🍂 <strong>생리 전 붓기는 자연스러워요.</strong> 짠 음식을 줄이면 좋아요.'],
+    ['winter', '생리통',      '❄️ <strong>생리통이 심하다면</strong> 따뜻하게 해주세요 🫖 무리한 활동은 잠시 쉬어요.'],
+    ['winter', '피로감',      '❄️ <strong>생리 중 피로는 당연해요.</strong> 철분이 풍부한 음식이 도움돼요.'],
+    ['winter', '무기력해요',  '❄️ <strong>생리기엔 에너지가 낮아요.</strong> 오늘은 쉬는 게 최선이에요. 🌙'],
+    ['spring', '활력 넘쳐요', '🌱 <strong>에너지가 넘치는 봄이에요!</strong> 하고 싶었던 걸 시작해봐요.'],
+    ['spring', '집중이 잘 돼요', '🌱 <strong>집중력이 올라오는 시기예요.</strong> 중요한 일을 지금 해봐요!'],
+    ['summer', '활력 넘쳐요', '☀️ <strong>배란기라 에너지가 최고조예요!</strong> 오늘 뭐든 잘 될 거예요 ✨'],
+    ['summer', '자신감 넘쳐요', '☀️ <strong>지금 자신감이 넘치는 건 자연스러워요.</strong> 이 에너지를 활용해봐요!'],
+    ['autumn', '수면 잘 못함', '🍂 <strong>황체기엔 수면이 얕아질 수 있어요.</strong> 취침 전 휴식 루틴을 만들어봐요.'],
+    ['winter', '수면 잘 못함', '❄️ <strong>생리 중 수면 불편은 흔해요.</strong> 따뜻한 환경을 만들어줘요.'],
+  ];
+
+  function getCyclePhase(dayOfCycle, cycleLength) {
+    const winterEnd = 5;
+    const springEnd = Math.round(cycleLength * 0.43);
+    const summerEnd = Math.round(cycleLength * 0.57);
+    if (dayOfCycle <= winterEnd) return 'winter';
+    if (dayOfCycle <= springEnd) return 'spring';
+    if (dayOfCycle <= summerEnd) return 'summer';
+    return 'autumn';
+  }
+
+  function updateCycleCard(records) {
+    const card = document.getElementById('cycle-card');
+    if (!records.length) { card.classList.remove('show'); return; }
+
+    const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
+    const last = sorted[sorted.length-1];
+    const _tc=new Date(); const todayStr=`${_tc.getFullYear()}-${String(_tc.getMonth()+1).padStart(2,'0')}-${String(_tc.getDate()).padStart(2,'0')}`;
+    const cycle = calcAvgCycle(records);
+
+    // 마지막 생리 시작일 기준 오늘이 몇일째인지
+    const dayOfCycle = dateDiff(todayStr, last.start) + 1;
+    if (dayOfCycle < 1 || dayOfCycle > cycle + 5) { card.classList.remove('show'); return; }
+
+    const phase = getCyclePhase(dayOfCycle, cycle);
+    const info = CYCLE_PHASES[phase];
+    const msg = info.messages[dayOfCycle % info.messages.length];
+
+    // 단계별 범위 계산
+    const winterEnd = 5;
+    const springEnd = Math.round(cycle * 0.43);
+    const summerEnd = Math.round(cycle * 0.57);
+    const ranges = { winter:[1,winterEnd], spring:[winterEnd+1,springEnd], summer:[springEnd+1,summerEnd], autumn:[summerEnd+1,cycle] };
+    const [phaseStart, phaseEnd] = ranges[phase];
+    const progress = phaseEnd === phaseStart ? 100 : Math.min(100, Math.round(((dayOfCycle - phaseStart + 1) / (phaseEnd - phaseStart + 1)) * 100));
+
+    // 렌더링
+    card.className = `cycle-card show ${info.cls}`;
+    document.getElementById('cycle-season').textContent = info.season;
+    document.getElementById('cycle-day-badge').textContent = `${dayOfCycle}일째`;
+    document.getElementById('cycle-phase-name').textContent = info.name;
+    document.getElementById('cycle-message').textContent = msg;
+    document.getElementById('cycle-progress-fill').style.width = progress + '%';
+    document.getElementById('cycle-progress-start').textContent = `${phaseStart}일`;
+    document.getElementById('cycle-progress-end').textContent = `${phaseEnd}일`;
+  }
+
+  function updateEmpathyCard(records) {
+    const card = document.getElementById('empathy-card');
+    const _te=new Date(); const todayStr=`${_te.getFullYear()}-${String(_te.getMonth()+1).padStart(2,'0')}-${String(_te.getDate()).padStart(2,'0')}`;
+    const logs = loadLogs();
+    const todayLog = logs[todayStr];
+
+    if (!records.length || !todayLog) { card.classList.remove('show'); return; }
+
+    const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
+    const last = sorted[sorted.length-1];
+    const cycle = calcAvgCycle(records);
+    const dayOfCycle = dateDiff(todayStr, last.start) + 1;
+    const phase = getCyclePhase(dayOfCycle, cycle);
+
+    const allTags = [...(todayLog.mood||[]), ...(todayLog.symptom||[]), ...(todayLog.energy||[]), ...(todayLog.etc||[])];
+
+    // 매칭되는 공감 메시지 찾기
+    let matched = null;
+    for (const [p, tag, msg] of EMPATHY_MAP) {
+      if (p === phase && allTags.includes(tag)) { matched = msg; break; }
+    }
+
+    if (matched) {
+      card.classList.add('show');
+      document.getElementById('empathy-text').innerHTML = matched;
+    } else {
+      card.classList.remove('show');
+    }
+  }
+
+
+  /* ── 패턴 인사이트 ── */
+  const PATTERN_MESSAGES = {
+    '예민해요':     { pre: '지난번 이 시기에도 예민함을 느꼈어요. 오늘 감정이 격해진다면, 그건 탓이 아니에요 🤍',
+                     post: '지난번에도 이 시기에 예민했어요. 당연한 감정이에요, 너무 자책하지 마요 💙' },
+    '무기력해요':   { pre: '지난번에도 이맘때 무기력했어요. 오늘 아무것도 하기 싫다면, 충분히 이유가 있어요.',
+                     post: '지난번에도 이맘때 무기력했어요. 몸이 보내는 신호예요, 오늘은 쉬어요.' },
+    '두통':         { pre: '지난번 이 시기에 두통이 있었어요. 오늘 머리가 무겁다면 수분을 충분히 챙겨봐요 💧',
+                     post: '지난번에도 이 시기에 두통이 있었네요. 호르몬 변화 때문이에요, 따뜻하게 쉬어요.' },
+    '피로감':       { pre: '지난번에도 이 시기엔 많이 피곤했어요. 오늘 일찍 쉬어도 괜찮아요.',
+                     post: '지난번에도 이 시기에 많이 피곤했어요. 오늘은 일찍 쉬어요.' },
+    '불안해요':     { pre: '지난번에도 이맘때 불안감이 올라왔어요. 오늘 마음이 불안하다면 호르몬의 영향일 수 있어요.',
+                     post: '지난번에도 이맘때 불안했어요. 감정이 롤러코스터처럼 느껴지는 건 자연스러워요 🤍' },
+    '생리통':       { pre: '지난번 생리 때도 통증이 있었어요. 따뜻하게 미리 준비해봐요 🫖',
+                     post: '지난번 생리 때도 아팠어요. 오늘도 따뜻한 걸 가까이 두어요 🫖' },
+    '복부팽만':     { pre: '지난번 이 시기에 붓기가 있었어요. 오늘 짠 음식은 조금 줄여봐요.',
+                     post: '지난번에도 이 시기에 붓기가 있었네요. 식단에 조금 신경 써봐요.' },
+    '수면 잘 못함': { pre: '지난번에도 이맘때 잠을 잘 못 잤어요. 오늘은 일찍 누워봐요 🌙',
+                     post: '지난번에도 이 시기에 잠을 잘 못 잤네요. 취침 전 루틴을 만들어봐요.' },
+    '여드름':       { pre: '지난번 이 시기에 여드름이 났었어요. 피부 관리에 조금 더 신경 써봐요.',
+                     post: '지난번에도 이 시기에 여드름이 있었어요. 호르몬 변화 때문이에요.' },
+    '유방통':       { pre: '지난번에도 이맘때 유방통이 있었어요. 오늘 불편하다면 당연한 거예요.',
+                     post: '지난번에도 이 시기에 유방통이 있었네요. 몸이 보내는 신호예요.' },
+  };
+
+  function getPatternInsight(records, phase, todayTags, hasLogToday) {
+    if (records.length < 2) return null;
+    const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
+    const cycle = calcAvgCycle(records);
+
+    // 과거 각 기록에서 같은 사이클 단계에 해당하는 날짜 범위 구하기
+    const tagCounts = {};
+    const logs = loadLogs();
+
+    sorted.forEach((r, i) => {
+      if (i === sorted.length - 1) return; // 가장 최근은 제외 (현재 진행 중)
+      // 이 생리 시작일 기준으로 각 날짜의 사이클 단계 계산
+      const startDate = new Date(r.start);
+      for (let day = 1; day <= cycle; day++) {
+        const d = new Date(startDate);
+        d.setDate(d.getDate() + day - 1);
+        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const p = getCyclePhase(day, cycle);
+        if (p !== phase) continue;
+        const log = logs[ds];
+        if (!log) continue;
+        const allTags = [...(log.mood||[]), ...(log.symptom||[]), ...(log.energy||[]), ...(log.etc||[])];
+        allTags.forEach(tag => { tagCounts[tag] = (tagCounts[tag] || 0) + 1; });
+      }
+    });
+
+    // 2회 이상 반복된 태그 중 오늘 기록된 것 또는 패턴 예고
+    const totalPastCycles = sorted.length - 1;
+    const threshold = Math.max(1, Math.floor(totalPastCycles * 0.5)); // 50% 이상 반복
+
+    if (hasLogToday && todayTags.length > 0) {
+      // 오늘 기록한 태그 중 패턴 매칭
+      for (const tag of todayTags) {
+        if (tagCounts[tag] >= threshold && PATTERN_MESSAGES[tag]) {
+          return { type: 'post', tag, msg: PATTERN_MESSAGES[tag].post, count: tagCounts[tag], total: totalPastCycles };
+        }
+      }
+    } else {
+      // 오늘 기록 없으면 예고형
+      for (const [tag, count] of Object.entries(tagCounts)) {
+        if (count >= threshold && PATTERN_MESSAGES[tag]) {
+          return { type: 'pre', tag, msg: PATTERN_MESSAGES[tag].pre, count, total: totalPastCycles };
+        }
+      }
+    }
+    return null;
+  }
+
+  function updatePatternInsight(records) {
+    // 기존 패턴 카드가 있으면 제거
+    const existing = document.getElementById('pattern-card');
+    if (existing) existing.remove();
+
+    if (records.length < 2) return;
+
+    const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
+    const last = sorted[sorted.length-1];
+    const todayStr = (() => { const _d=new Date(); return `${_d.getFullYear()}-${String(_d.getMonth()+1).padStart(2,'0')}-${String(_d.getDate()).padStart(2,'0')}`; })();
+    const cycle = calcAvgCycle(records);
+    const dayOfCycle = dateDiff(todayStr, last.start) + 1;
+    if (dayOfCycle < 1 || dayOfCycle > cycle + 5) return;
+
+    const phase = getCyclePhase(dayOfCycle, cycle);
+    const logs = loadLogs();
+    const todayLog = logs[todayStr];
+    const todayTags = todayLog ? [...(todayLog.mood||[]), ...(todayLog.symptom||[]), ...(todayLog.energy||[]), ...(todayLog.etc||[])] : [];
+    const hasLogToday = !!todayLog;
+
+    const insight = getPatternInsight(records, phase, todayTags, hasLogToday);
+    if (!insight) return;
+
+    // 패턴 카드 생성
+    const card = document.createElement('div');
+    card.id = 'pattern-card';
+    card.style.cssText = 'margin:0 16px 16px;background:var(--surface);border-radius:16px;padding:16px;border:1px solid #2a1a3a;';
+
+    const countText = `${insight.total}번 중 ${insight.count}번`;
+    card.innerHTML = `
+      <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.12em;margin-bottom:8px">📊 패턴 인사이트 · ${countText}</div>
+      <div style="font-size:13px;color:var(--text-muted);line-height:1.8">${insight.msg}</div>
+    `;
+
+    // 공감 카드 뒤에 삽입
+    const empathy = document.getElementById('empathy-card');
+    empathy.parentNode.insertBefore(card, empathy.nextSibling);
+  }
+
+  /* ── 달력: 스크롤 방식 ── */
+  .calendar-scroll-wrap {
+    overflow-y: auto;
+    padding: 0 16px;
+    height: calc(100vh - 160px);
+  }
+
+  .calendar-month-block {
+    margin-bottom: 28px;
+  }
+
+  .cal-month-title {
+    font-family: 'Gowun Batang', serif;
+    font-size: 17px;
+    color: var(--text);
+    margin-bottom: 10px;
+    padding-left: 4px;
+  }
+
+  .calendar-grid { background: var(--surface); border-radius: 16px; padding: 14px; border: 1px solid #2a1530; }
+  .day-labels { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 6px; }
+  .day-label { text-align: center; font-size: 10px; color: var(--text-dim); padding: 4px 0; }
+  .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+
+  .day-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 12px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s;
+    color: var(--text-muted);
+    border: 1px solid transparent;
+  }
+  .day-cell:hover:not(.empty) { background: var(--surface2); color: var(--text); }
+  .day-cell.empty { cursor: default; }
+  .day-cell.today { color: var(--accent-soft); font-weight: 500; }
+  .day-cell.today::after { content: ''; position: absolute; bottom: 2px; width: 3px; height: 3px; background: var(--accent); border-radius: 50%; }
+  .day-cell.period { background: var(--period); border-color: var(--period-border); color: var(--accent-soft); font-weight: 500; }
+  .day-cell.predicted { background: var(--predicted); border-color: var(--predicted-border); color: #b090c0; }
+  .day-cell.ovulation { background: var(--ovulation); border-color: var(--ovulation-border); color: #5dca8a; font-weight: 500; }
+  .day-cell.fertile { background: var(--fertile); border-color: var(--fertile-border); color: #7ec89a; }
+  .day-cell.ovulation-predicted { background: #102a1a; border-color: #27ae60; border-style: dashed; color: #5dca8a; }
+  .day-cell.fertile-predicted { background: #0e2018; border-color: #1e8449; border-style: dashed; color: #7ec89a; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 12px; padding: 0 4px; margin-bottom: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--text-muted); }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid; flex-shrink: 0; }
+  .legend-dot.period { background: var(--period); border-color: var(--period-border); }
+  .legend-dot.predicted { background: var(--predicted); border-color: var(--predicted-border); }
+  .legend-dot.ovulation { background: var(--ovulation); border-color: var(--ovulation-border); }
+  .legend-dot.fertile { background: var(--fertile); border-color: var(--fertile-border); }
+
+  /* ── 기록 ── */
+  .records-section { margin: 0 16px; }
+  .section-title { font-size: 12px; color: var(--text-muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px; padding-left: 4px; }
+  .record-item { background: var(--surface); border-radius: 12px; padding: 14px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #2a1530; }
+  .record-date { font-family: 'Gowun Batang', serif; font-size: 15px; color: var(--text); }
+  .record-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .record-delete { background: none; border: none; color: var(--text-dim); font-size: 18px; cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: color 0.2s; }
+  .record-delete:hover { color: var(--accent); }
+  .record-edit { background: none; border: none; color: var(--text-dim); font-size: 16px; cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: color 0.2s; }
+  .record-edit:hover { color: var(--accent-soft); }
+  .empty-state { text-align: center; padding: 32px 16px; color: var(--text-dim); font-size: 13px; line-height: 1.8; }
+
+  /* ── 그래프 ── */
+  .graph-section { margin: 0 16px; }
+
+  .graph-card { background: var(--surface); border-radius: 16px; padding: 20px 16px 16px; border: 1px solid #2a1530; margin-bottom: 16px; }
+  .graph-card-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4px; }
+  .graph-card-title { font-size: 11px; color: var(--text-muted); letter-spacing: 0.12em; }
+  .graph-card-avg { font-family: 'Gowun Batang', serif; font-size: 22px; color: var(--accent-soft); }
+  .graph-card-avg-label { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+
+  /* 라인 차트 SVG */
+  .chart-wrap { width: 100%; margin-top: 16px; position: relative; }
+  .chart-wrap svg { width: 100%; overflow: visible; }
+
+  /* 통계 요약 */
+  .stat-row { display: flex; gap: 8px; margin-top: 12px; }
+  .stat-pill { flex: 1; background: var(--surface2); border-radius: 10px; padding: 10px; text-align: center; }
+  .stat-pill-val { font-family: 'Gowun Batang', serif; font-size: 18px; color: var(--text); }
+  .stat-pill-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+  /* ── 네비 ── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(14,6,16,0.92);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid #2a1530;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding: 10px 0 20px;
+    z-index: 100;
+  }
+  .nav-item { background: none; border: none; color: var(--text-dim); font-size: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 10px; border-radius: 12px; transition: color 0.2s; font-family: 'Noto Sans KR', sans-serif; }
+  .nav-item.active { color: var(--accent-soft); }
+  .nav-icon { font-size: 20px; }
+
+  /* ── 모달 ── */
+  .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: flex-end; justify-content: center; }
+  .modal-backdrop.open { display: flex; }
+  .modal { background: var(--surface); border-radius: 24px 24px 0 0; padding: 24px 24px 40px; width: 100%; max-width: 420px; border-top: 1px solid var(--accent-dim); animation: slideUp 0.3s ease; }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-title { font-family: 'Gowun Batang', serif; font-size: 20px; color: var(--text); margin-bottom: 20px; text-align: center; }
+  .modal label { display: block; font-size: 12px; color: var(--text-muted); letter-spacing: 0.1em; margin-bottom: 8px; }
+  .modal input[type="date"] { width: 100%; background: var(--bg); border: 1px solid var(--accent-dim); border-radius: 12px; padding: 14px 16px; color: var(--text); font-family: 'Noto Sans KR', sans-serif; font-size: 15px; margin-bottom: 16px; outline: none; color-scheme: dark; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 4px; }
+  .modal-actions button { flex: 1; padding: 14px; border-radius: 12px; font-family: 'Noto Sans KR', sans-serif; font-size: 14px; cursor: pointer; transition: all 0.2s; border: none; }
+  .btn-cancel { background: var(--surface2); color: var(--text-muted); }
+  .btn-save { background: var(--accent); color: white; font-weight: 500; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── 상태 기록 모달 ── */
+  .log-modal-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:200; align-items:flex-end; justify-content:center; }
+  .log-modal-backdrop.open { display:flex; }
+  .log-modal { background:var(--surface); border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; max-width:420px; border-top:1px solid var(--accent-dim); animation:slideUp 0.3s ease; max-height:88vh; overflow-y:auto; }
+  .log-modal-date { font-size:13px; color:var(--text-muted); text-align:center; margin-bottom:20px; }
+  .log-section { margin-bottom:20px; }
+  .log-section-title { font-size:11px; color:var(--text-muted); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:10px; }
+  .log-tags { display:flex; flex-wrap:wrap; gap:8px; }
+  .log-tag { background:var(--surface2); border:1px solid var(--text-dim); border-radius:20px; padding:7px 13px; font-size:13px; cursor:pointer; transition:all 0.15s; color:var(--text-muted); white-space:nowrap; }
+  .log-tag.selected { background:var(--accent-dim); border-color:var(--accent); color:var(--accent-soft); }
+  .log-tag.selected.green { background:#1a3a2a; border-color:#2ecc71; color:#5dca8a; }
+  .log-tag.selected.purple { background:#2a1545; border-color:#9b59b6; color:#c39be0; }
+  .log-tag.selected.amber { background:#2a1f0a; border-color:#e67e22; color:#f0a055; }
+  .log-modal-actions { display:flex; gap:10px; margin-top:8px; }
+  .log-modal-actions button { flex:1; padding:14px; border-radius:12px; font-family:'Noto Sans KR',sans-serif; font-size:14px; cursor:pointer; border:none; }
+
+  /* 기록 탭 날짜별 로그 */
+  .log-date-header { display:flex; justify-content:space-between; align-items:center; padding:12px 4px 8px; }
+  .log-date-label { font-family:'Gowun Batang',serif; font-size:15px; color:var(--text); }
+  .log-edit-btn { background:none; border:none; color:var(--text-dim); font-size:13px; cursor:pointer; padding:4px 8px; border-radius:8px; }
+  .log-edit-btn:hover { color:var(--accent-soft); }
+  .log-tag-display { display:flex; flex-wrap:wrap; gap:6px; padding-bottom:12px; border-bottom:1px solid #2a1530; margin-bottom:4px; }
+  .log-tag-chip { background:var(--surface2); border-radius:16px; padding:4px 10px; font-size:12px; color:var(--text-muted); }
+
+  /* 홈 - 오늘 상태 버튼 */
+  .btn-log { display:block; margin:0 16px 16px; background:transparent; color:var(--accent-soft); border:1px solid var(--accent-dim); border-radius:14px; padding:14px; font-family:'Noto Sans KR',sans-serif; font-size:14px; cursor:pointer; width:calc(100% - 32px); transition:all 0.2s; }
+  .btn-log:active { background:var(--surface); }
+
+  /* 달력 점 표시 */
+  .day-cell.has-log::before { content:''; position:absolute; top:3px; right:3px; width:4px; height:4px; background:#9b59b6; border-radius:50%; }
+
+  /* ── 사이클 씽킹 카드 ── */
+  .cycle-card {
+    display: none;
+    margin: 0 16px 16px;
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid;
+  }
+  .cycle-card.show { display: block; }
+  .cycle-card.spring { background: #0e1f12; border-color: #2ecc71; }
+  .cycle-card.summer { background: #1f1a08; border-color: #f39c12; }
+  .cycle-card.autumn { background: #1a1008; border-color: #e67e22; }
+  .cycle-card.winter { background: #0e1020; border-color: #5b8af0; }
+
+  .cycle-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .cycle-season { font-size: 22px; }
+  .cycle-day-badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 500; }
+  .spring .cycle-day-badge { background: #1a3a2a; color: #5dca8a; }
+  .summer .cycle-day-badge { background: #2e2008; color: #f5c061; }
+  .autumn .cycle-day-badge { background: #2a1808; color: #f0a055; }
+  .winter .cycle-day-badge { background: #151a30; color: #90aaee; }
+
+  .cycle-phase-name { font-family: 'Gowun Batang', serif; font-size: 18px; margin-bottom: 6px; }
+  .spring .cycle-phase-name { color: #5dca8a; }
+  .summer .cycle-phase-name { color: #f5c061; }
+  .autumn .cycle-phase-name { color: #f0a055; }
+  .winter .cycle-phase-name { color: #90aaee; }
+
+  .cycle-message { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+
+  /* 사이클 프로그레스 바 */
+  .cycle-progress { margin-top: 14px; }
+  .cycle-progress-bar { height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+  .cycle-progress-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+  .spring .cycle-progress-fill { background: #2ecc71; }
+  .summer .cycle-progress-fill { background: #f39c12; }
+  .autumn .cycle-progress-fill { background: #e67e22; }
+  .winter .cycle-progress-fill { background: #5b8af0; }
+  .cycle-progress-labels { display: flex; justify-content: space-between; margin-top: 6px; }
+  .cycle-progress-label { font-size: 9px; color: var(--text-dim); }
+
+  /* 공감 메시지 카드 */
+  .empathy-card {
+    display: none;
+    margin: 0 16px 16px;
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid #2a1530;
+  }
+  .empathy-card.show { display: block; }
+  .empathy-text { font-size: 13px; color: var(--text-muted); line-height: 1.8; }
+  .empathy-text strong { color: var(--text); font-weight: 500; }
+
+  /* ── 로그인 화면 ── */
+  .login-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 40px 24px;
+  }
+  .login-screen.show { display: flex; }
+  .login-logo { font-size: 56px; margin-bottom: 16px; filter: drop-shadow(0 0 20px rgba(245,214,200,0.4)); }
+  .login-title { font-family: 'Gowun Batang', serif; font-size: 28px; color: var(--moon); letter-spacing: 0.1em; margin-bottom: 8px; }
+  .login-sub { font-size: 13px; color: var(--text-muted); text-align: center; line-height: 1.7; margin-bottom: 40px; }
+  .btn-google {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    color: #3c4043;
+    border: none;
+    border-radius: 14px;
+    padding: 16px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+    transition: all 0.2s;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  .btn-google:active { transform: scale(0.97); }
+  .btn-google-icon { font-size: 20px; }
+  .login-privacy { font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 20px; line-height: 1.6; }
+
+  /* 유저 정보 */
+  .user-info {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    margin: 0 16px 12px;
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid #2a1530;
+  }
+  .user-info.show { display: flex; }
+  .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--accent-soft); overflow: hidden; }
+  .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .user-name { font-size: 12px; color: var(--text-muted); flex: 1; }
+  .btn-logout { background: none; border: none; color: var(--text-dim); font-size: 11px; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+  .btn-logout:hover { color: var(--accent); }
+
+  /* 로딩 */
+  .loading-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 600;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .loading-screen.show { display: flex; }
+  .loading-moon { font-size: 40px; animation: spin 2s linear infinite; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .loading-text { font-size: 13px; color: var(--text-muted); }
+
+  /* ── 생리 강도 별점 ── */
+  .star-row { display:flex; gap:8px; }
+  .star-btn {
+    font-size:24px; background:none; border:none; cursor:pointer;
+    transition:transform 0.1s; padding:2px; line-height:1;
+    filter: grayscale(1) opacity(0.4);
+  }
+  .star-btn.active { filter: none; transform:scale(1.1); }
+
+
+
+  /* ── 수면 ── */
+  .sleep-row { display:flex; flex-direction:column; gap:12px; }
+  .sleep-label { font-size:11px; color:var(--text-muted); margin-bottom:4px; }
+  .sleep-hours-input {
+    background:var(--bg); border:1px solid var(--accent-dim);
+    border-radius:10px; padding:10px 14px; color:var(--text);
+    font-size:15px; width:100%; font-family:'Noto Sans KR',sans-serif;
+    outline:none;
+  }
+</style>
+</head>
+<body>
+
+<!-- 로딩 화면 -->
+<div class="loading-screen show" id="loading-screen">
+  <div class="loading-moon">🌙</div>
+  <div class="loading-text">불러오는 중...</div>
+</div>
+
+<!-- 로그인 화면 -->
+<div class="login-screen" id="login-screen">
+  <div class="login-logo">🌙</div>
+  <div class="login-title">달의 기록</div>
+  <div class="login-sub">나의 생리주기를 기록하고<br>몸과 감정의 패턴을 이해해요</div>
+  <button class="btn-google" onclick="signInWithGoogle()">
+    <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+    </svg>
+    Google로 시작하기
+  </button>
+  <div class="login-privacy">로그인하면 데이터가 안전하게 저장돼요.<br>개인정보는 본인만 볼 수 있어요.</div>
+</div>
+
+<div class="app">
+  <header>
+    <span class="moon-icon">🌙</span>
+    <h1>달의 기록</h1>
+    <p>나의 생리주기 트래커</p>
+  </header>
+
+
+  <!-- 유저 정보 -->
+  <div class="user-info" id="user-info">
+    <div class="user-avatar" id="user-avatar">👤</div>
+    <div class="user-name" id="user-name">로딩 중...</div>
+    <button class="btn-logout" onclick="signOut()">로그아웃</button>
+  </div>
+
+  <!-- 홈 -->
+  <div class="tab-content active" id="tab-home">
+    <!-- 사이클 씽킹 카드 -->
+    <div class="cycle-card" id="cycle-card">
+      <div class="cycle-card-top">
+        <span class="cycle-season" id="cycle-season"></span>
+        <span class="cycle-day-badge" id="cycle-day-badge"></span>
+      </div>
+      <div class="cycle-phase-name" id="cycle-phase-name"></div>
+      <div class="cycle-message" id="cycle-message"></div>
+      <div class="cycle-progress">
+        <div class="cycle-progress-bar"><div class="cycle-progress-fill" id="cycle-progress-fill"></div></div>
+        <div class="cycle-progress-labels">
+          <span class="cycle-progress-label" id="cycle-progress-start"></span>
+          <span class="cycle-progress-label" id="cycle-progress-end"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 공감 메시지 -->
+    <div class="empathy-card" id="empathy-card">
+      <div class="empathy-text" id="empathy-text"></div>
+    </div>
+
+    <div class="dday-badge" id="dday-badge">
+      <div class="dday-badge-text" id="dday-badge-text"></div>
+    </div>
+
+    <div class="status-card">
+      <div class="status-label">다음 생리 시작일</div>
+      <div class="status-main" id="status-main">—</div>
+      <div class="status-sub" id="status-sub">기록을 시작해보세요</div>
+      <div class="status-row">
+        <div class="stat-item"><div class="stat-num" id="stat-cycle">—</div><div class="stat-label">평균 주기</div></div>
+        <div class="stat-item"><div class="stat-num" id="stat-count">0</div><div class="stat-label">기록 횟수</div></div>
+        <div class="stat-item"><div class="stat-num" id="stat-last">—</div><div class="stat-label">마지막 기록</div></div>
+      </div>
+    </div>
+
+    <div class="info-cards" id="info-cards" style="display:none">
+      <div class="info-card">
+        <span class="info-card-icon">🌸</span>
+        <div class="info-card-label">배란 예상일</div>
+        <div class="info-card-value green" id="next-ovulation">—</div>
+      </div>
+      <div class="info-card">
+        <span class="info-card-icon">💚</span>
+        <div class="info-card-label">가임기</div>
+        <div class="info-card-value green" id="next-fertile">—</div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="openModal()">🩸 생리 기간 기록하기</button>
+    <button class="btn-log" onclick="openLogModal()">✍️ 오늘의 상태 기록하기</button>
+  </div>
+
+  <!-- 달력: 스크롤 방식 -->
+  <div class="tab-content" id="tab-calendar">
+    <div style="padding: 0 16px 12px;">
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot period"></div> 생리</div>
+        <div class="legend-item"><div class="legend-dot predicted"></div> 예상 생리</div>
+        <div class="legend-item"><div class="legend-dot ovulation"></div> 배란일</div>
+        <div class="legend-item"><div class="legend-dot fertile"></div> 가임기</div>
+      </div>
+    </div>
+    <div class="calendar-scroll-wrap" id="calendar-scroll-wrap">
+      <!-- JS로 렌더링 -->
+    </div>
+  </div>
+
+  <!-- 기록 -->
+  <div class="tab-content" id="tab-records">
+    <div class="records-section">
+      <div style="display:flex;gap:0;margin:0 0 16px;background:var(--surface);border-radius:12px;padding:4px;">
+        <button id="rec-tab-period" onclick="switchRecTab('period')" style="flex:1;padding:8px;border:none;border-radius:9px;font-family:'Noto Sans KR',sans-serif;font-size:13px;cursor:pointer;background:var(--accent);color:white;transition:all 0.2s;">🩸 생리 기록</button>
+        <button id="rec-tab-log" onclick="switchRecTab('log')" style="flex:1;padding:8px;border:none;border-radius:9px;font-family:'Noto Sans KR',sans-serif;font-size:13px;cursor:pointer;background:transparent;color:var(--text-muted);transition:all 0.2s;">✍️ 상태 기록</button>
+      </div>
+      <div id="records-period-list"><div id="records-list"></div></div>
+      <div id="records-log-list" style="display:none"><div id="log-list"></div></div>
+    </div>
+  </div>
+
+  <!-- 그래프 -->
+  <div class="tab-content" id="tab-graph">
+    <div class="graph-section">
+      <div class="section-title">주기 히스토리</div>
+      <div class="graph-card" id="cycle-graph-card">
+        <div class="graph-card-header">
+          <div>
+            <div class="graph-card-title">생리 주기</div>
+            <div class="graph-card-avg-label">평균</div>
+          </div>
+          <div class="graph-card-avg" id="avg-cycle-num">—</div>
+        </div>
+        <div class="chart-wrap"><svg id="cycle-chart" height="80"></svg></div>
+        <div class="stat-row" id="cycle-stat-row"></div>
+      </div>
+
+      <div class="graph-card">
+        <div class="graph-card-header">
+          <div>
+            <div class="graph-card-title">생리 기간</div>
+            <div class="graph-card-avg-label">평균</div>
+          </div>
+          <div class="graph-card-avg" id="avg-dur-num">—</div>
+        </div>
+        <div class="chart-wrap"><svg id="dur-chart" height="80"></svg></div>
+        <div class="stat-row" id="dur-stat-row"></div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-home" onclick="switchTab('home')"><span class="nav-icon">🌙</span><span>홈</span></button>
+    <button class="nav-item" id="nav-calendar" onclick="switchTab('calendar')"><span class="nav-icon">📅</span><span>달력</span></button>
+    <button class="nav-item" id="nav-records" onclick="switchTab('records')"><span class="nav-icon">📋</span><span>기록</span></button>
+    <button class="nav-item" id="nav-graph" onclick="switchTab('graph')"><span class="nav-icon">📊</span><span>그래프</span></button>
+  </nav>
+</div>
+
+<!-- 상태 기록 모달 -->
+<div class="log-modal-backdrop" id="log-modal" onclick="closeLogModalOutside(event)">
+  <div class="log-modal">
+    <div class="modal-title" id="log-modal-title">오늘의 상태</div>
+    <div class="log-modal-date" id="log-modal-date"></div>
+
+    <!-- 기분 -->
+    <div class="log-section">
+      <div class="log-section-title">😊 기분</div>
+      <div class="log-tags" id="log-mood">
+        <span class="log-tag" data-val="행복해요">😊 행복해요</span>
+        <span class="log-tag" data-val="평온해요">😌 평온해요</span>
+        <span class="log-tag" data-val="자신감 넘쳐요">💪 자신감 넘쳐요</span>
+        <span class="log-tag" data-val="집중이 잘 돼요">🎯 집중이 잘 돼요</span>
+        <span class="log-tag" data-val="예민해요">😤 예민해요</span>
+        <span class="log-tag" data-val="감정이 오락가락해요">🎢 감정이 오락가락해요</span>
+        <span class="log-tag" data-val="불안해요">😰 불안해요</span>
+        <span class="log-tag" data-val="무기력해요">😔 무기력해요</span>
+        <span class="log-tag" data-val="슬퍼요">😢 슬퍼요</span>
+      </div>
+    </div>
+
+    <!-- 생리 강도 -->
+    <div class="log-section">
+      <div class="log-section-title">🩸 생리 강도</div>
+      <div class="star-row" id="period-intensity">
+        <button class="star-btn" data-val="1" onclick="selectStar(1)">🩸</button>
+        <button class="star-btn" data-val="2" onclick="selectStar(2)">🩸</button>
+        <button class="star-btn" data-val="3" onclick="selectStar(3)">🩸</button>
+        <button class="star-btn" data-val="4" onclick="selectStar(4)">🩸</button>
+        <button class="star-btn" data-val="5" onclick="selectStar(5)">🩸</button>
+      </div>
+    </div>
+
+    <!-- 신체 불편함 -->
+    <div class="log-section">
+      <div class="log-section-title">🤕 신체 불편함</div>
+      <div class="log-tags" id="log-symptom">
+        <span class="log-tag" data-val="생리통(복통)">🩸 생리통(복통)</span>
+        <span class="log-tag" data-val="두통">🤕 두통</span>
+        <span class="log-tag" data-val="복부팽만/소화불량">🫃 복부팽만/소화불량</span>
+        <span class="log-tag" data-val="허리통증">🔥 허리통증</span>
+        <span class="log-tag" data-val="유방통">💢 유방통</span>
+        <span class="log-tag" data-val="두드러기/여드름">😖 두드러기/여드름</span>
+        <span class="log-tag" data-val="메스꺼움">🤢 메스꺼움</span>
+        <span class="log-tag" data-val="기력이 없어요">😮‍💨 기력이 없어요</span>
+        <span class="log-tag" data-val="온 몸이 쑤셔요">😩 온 몸이 쑤셔요</span>
+      </div>
+
+    </div>
+
+    <!-- 수면 -->
+    <div class="log-section">
+      <div class="log-section-title">😴 수면</div>
+      <div class="sleep-row">
+        <div>
+          <div class="sleep-label">수면의 질</div>
+          <div class="log-tags" id="log-sleep-quality">
+            <span class="log-tag" data-val="푹 잤어요">😴 푹 잤어요</span>
+            <span class="log-tag" data-val="피곤해요">🥱 피곤해요</span>
+          </div>
+        </div>
+        <div>
+          <div class="sleep-label">수면 시간 (시간)</div>
+          <input type="number" id="sleep-hours" class="sleep-hours-input"
+            min="0" max="24" step="0.5" placeholder="예: 7.5">
+        </div>
+      </div>
+    </div>
+
+    <!-- 에너지 -->
+    <div class="log-section">
+      <div class="log-section-title">⚡ 에너지</div>
+      <div class="log-tags" id="log-energy">
+        <span class="log-tag" data-val="활력 넘쳐요">⚡ 활력 넘쳐요</span>
+        <span class="log-tag" data-val="보통이에요">🌤 보통이에요</span>
+        <span class="log-tag" data-val="좀 처져요">🌧 좀 처져요</span>
+        <span class="log-tag" data-val="완전 방전">🪫 완전 방전</span>
+      </div>
+    </div>
+
+    <!-- 기타 -->
+    <div class="log-section">
+      <div class="log-section-title">📝 기타</div>
+      <div class="log-tags" id="log-etc">
+        <span class="log-tag" data-val="성관계">💕 성관계</span>
+        <span class="log-tag" data-val="피임">✅ 피임</span>
+        <span class="log-tag" data-val="술 마심">🍷 술 마심</span>
+        <span class="log-tag" data-val="운동함">🏃 운동함</span>
+      </div>
+    </div>
+
+    <div class="log-modal-actions">
+      <button class="btn-cancel" onclick="closeLogModal()">취소</button>
+      <button class="btn-save" onclick="saveLog()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 모달 -->
+<div class="modal-backdrop" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">생리 기간 기록</div>
+    <label>시작일</label>
+    <input type="date" id="date-start">
+    <label>종료일 <span style="color:var(--text-dim);font-size:11px">(기본 +5일, 수정 가능)</span></label>
+    <input type="date" id="date-end">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">취소</button>
+      <button class="btn-save" id="modal-save-btn" onclick="saveRecord()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+
+  // ── Supabase 설정 ──
+  const SUPABASE_URL = 'https://nzxtpfgjiysmkecktekw.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_ad3WJqIrRSfKrpQYFjyTHA_DzktkuUA';
+  const { createClient } = window.supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let currentUser = null;
+
+  // ── 인증 ──
+  async function signInWithGoogle() {
+    await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: 'https://simchorok.github.io/period-tracker/' }
+    });
+  }
+
+  async function signOut() {
+    await sb.auth.signOut();
+    currentUser = null;
+    showLoginScreen();
+  }
+
+  function showLoginScreen() {
+    document.getElementById('loading-screen').classList.remove('show');
+    document.getElementById('login-screen').classList.add('show');
+  }
+
+  function showApp(user) {
+    currentUser = user;
+    document.getElementById('loading-screen').classList.remove('show');
+    document.getElementById('login-screen').classList.remove('show');
+
+    // 유저 정보 표시
+    const userInfo = document.getElementById('user-info');
+    userInfo.classList.add('show');
+    document.getElementById('user-name').textContent = user.email || '사용자';
+    const avatar = document.getElementById('user-avatar');
+    if (user.user_metadata?.avatar_url) {
+      avatar.innerHTML = `<img src="${user.user_metadata.avatar_url}" alt="프로필">`;
+    } else {
+      avatar.textContent = (user.email || '?')[0].toUpperCase();
+    }
+
+    // 데이터 로드
+    loadAllData();
+  }
+
+  // ── Supabase DB 연동 ──
+  async function loadAllData() {
+    if (!currentUser) return;
+    const [records, logs] = await Promise.all([
+      loadRecordsFromDB(),
+      loadLogsFromDB()
+    ]);
+    updateStatus();
+    renderCalendar();
+  }
+
+  async function loadRecordsFromDB() {
+    const { data, error } = await sb
+      .from('period_records')
+      .select('*')
+      .order('start_date', { ascending: true });
+    if (error) { console.error(error); return []; }
+    // DB → localStorage 형식으로 변환해서 캐시
+    const records = (data || []).map(r => ({
+      start: r.start_date ? r.start_date.slice(0, 10) : r.start_date,
+      end: r.end_date ? r.end_date.slice(0, 10) : r.end_date,
+      id: r.id
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    return records;
+  }
+
+  async function loadLogsFromDB() {
+    const { data, error } = await sb
+      .from('daily_logs')
+      .select('*');
+    if (error) { console.error(error); return {}; }
+    const logs = {};
+    (data || []).forEach(r => {
+      const logDate = r.log_date ? r.log_date.slice(0, 10) : r.log_date;
+      logs[logDate] = { mood: r.mood||[], symptom: r.symptom||[], energy: r.energy||[], etc: r.etc||[],
+        periodIntensity: r.period_intensity, sleepQuality: r.sleep_quality,
+        sleepHours: r.sleep_hours, symptomSeverity: r.symptom_severity, id: r.id };
+    });
+    localStorage.setItem(LOG_KEY, JSON.stringify(logs));
+    return logs;
+  }
+
+  // ── DB 저장 함수 오버라이드 ──
+  async function saveRecordToDB(record) {
+    if (!currentUser) return;
+    const { data, error } = await sb
+      .from('period_records')
+      .insert([{ user_id: currentUser.id, start_date: record.start, end_date: record.end }])
+      .select();
+    if (error) { console.error(error); return null; }
+    return data[0];
+  }
+
+  async function updateRecordInDB(id, record) {
+    if (!currentUser || !id) return;
+    await sb
+      .from('period_records')
+      .update({ start_date: record.start, end_date: record.end })
+      .eq('id', id);
+  }
+
+  async function deleteRecordFromDB(id) {
+    if (!currentUser || !id) return;
+    await sb.from('period_records').delete().eq('id', id);
+  }
+
+  async function saveLogToDB(logDate, entry) {
+    if (!currentUser) return;
+    const logs = loadLogs();
+    const existing = logs[logDate];
+    const dbEntry = {
+      mood: entry.mood,
+      symptom: entry.symptom,
+      energy: entry.energy,
+      etc: entry.etc,
+      period_intensity: entry.periodIntensity || null,
+      sleep_quality: entry.sleepQuality || null,
+      sleep_hours: entry.sleepHours || null,
+    };
+    if (existing && existing.id) {
+      await sb.from('daily_logs').update(dbEntry).eq('id', existing.id);
+    } else {
+      await sb.from('daily_logs').insert([{ user_id: currentUser.id, log_date: logDate, ...dbEntry }]);
+    }
+    await loadLogsFromDB();
+  }
+
+  // ── 인증 상태 감지 ──
+  sb.auth.onAuthStateChange((event, session) => {
+    if (session?.user) {
+      showApp(session.user);
+    } else {
+      showLoginScreen();
+    }
+  });
+
+  const STORAGE_KEY = 'period_records_v2';
+  const DEFAULT_CYCLE = 28;
+  const DEFAULT_DURATION = 5;
+
+  function loadRecords() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
+  }
+  function saveRecords(r) { localStorage.setItem(STORAGE_KEY, JSON.stringify(r)); }
+
+  function addDays(ds, n) {
+    const [y,m,d] = ds.split('-').map(Number);
+    const date = new Date(y, m-1, d+n);
+    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+  }
+  function dateDiff(a, b) { return Math.round((new Date(a) - new Date(b)) / 86400000); }
+
+  function getPeriodDates(r) {
+    const arr = [];
+    for (let d = new Date(r.start.replace(/-/g,'/')); d <= new Date(r.end.replace(/-/g,'/')); d.setDate(d.getDate()+1))
+      arr.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);
+    return arr;
+  }
+
+  function calcAvgCycle(records) {
+    if (records.length < 2) return DEFAULT_CYCLE;
+    const s = [...records].sort((a,b)=>a.start>b.start?1:-1);
+    let tot=0, cnt=0;
+    for (let i=1;i<s.length;i++) {
+      const d=dateDiff(s[i].start,s[i-1].start);
+      if (d>10&&d<60){tot+=d;cnt++;}
+    }
+    return cnt>0?Math.round(tot/cnt):DEFAULT_CYCLE;
+  }
+
+  function getOvulationDate(nextStart) { return addDays(nextStart,-14); }
+  function getFertileRange(ov) { return {start:addDays(ov,-5),end:addDays(ov,1)}; }
+
+  function getNextPredictions(records) {
+    if (!records.length) return null;
+    const s=[...records].sort((a,b)=>a.start>b.start?1:-1);
+    const last=s[s.length-1];
+    const cycle=calcAvgCycle(records);
+    const nextStart=addDays(last.start,cycle);
+    const nextEnd=addDays(nextStart,DEFAULT_DURATION-1);
+    const ov=getOvulationDate(nextStart);
+    return {nextStart,nextEnd,ovulation:ov,fertile:getFertileRange(ov)};
+  }
+
+  function getAllPredictedSets(records) {
+    if (!records.length) return {period:new Set(),ovulation:new Set(),fertile:new Set()};
+    const s=[...records].sort((a,b)=>a.start>b.start?1:-1);
+    const last=s[s.length-1];
+    const cycle=calcAvgCycle(records);
+    const pSet=new Set(),ovSet=new Set(),fSet=new Set();
+    for (let i=1;i<=3;i++) {
+      const ns=addDays(last.start,cycle*i), ne=addDays(ns,DEFAULT_DURATION-1);
+      for (let d=new Date(ns.replace(/-/g,'/'));d<=new Date(ne.replace(/-/g,'/'));d.setDate(d.getDate()+1)) pSet.add(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);
+      const ov=getOvulationDate(ns); ovSet.add(ov);
+      const fr=getFertileRange(ov);
+      for (let d=new Date(fr.start.replace(/-/g,'/'));d<=new Date(fr.end.replace(/-/g,'/'));d.setDate(d.getDate()+1)) {
+        const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        if (!pSet.has(ds)) fSet.add(ds);
+      }
+    }
+    return {period:pSet,ovulation:ovSet,fertile:fSet};
+  }
+
+  function getPastOvulationSets(records) {
+    const ovSet=new Set(),fSet=new Set();
+    const s=[...records].sort((a,b)=>a.start>b.start?1:-1);
+    for (let i=0;i<s.length-1;i++) {
+      const ov=getOvulationDate(s[i+1].start); ovSet.add(ov);
+      const fr=getFertileRange(ov);
+      for (let d=new Date(fr.start.replace(/-/g,'/'));d<=new Date(fr.end.replace(/-/g,'/'));d.setDate(d.getDate()+1))
+        fSet.add(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);
+    }
+    return {ovulation:ovSet,fertile:fSet};
+  }
+
+  function fmtDate(ds) {
+    const [,m,d]=ds.split('-');
+    return `${parseInt(m)}월 ${parseInt(d)}일`;
+  }
+
+  /* ── 홈 상태 업데이트 ── */
+  function updateStatus() {
+    const records=loadRecords();
+    document.getElementById('stat-count').textContent=records.length;
+
+    if (!records.length) {
+      document.getElementById('status-main').textContent='—';
+      document.getElementById('status-sub').textContent='기록을 시작해보세요';
+      document.getElementById('stat-cycle').textContent='—';
+      document.getElementById('stat-last').textContent='—';
+      document.getElementById('info-cards').style.display='none';
+      document.getElementById('dday-badge').classList.remove('show');
+      return;
+    }
+
+    const sorted=[...records].sort((a,b)=>a.start>b.start?1:-1);
+    const last=sorted[sorted.length-1];
+    const [,lm,ld]=last.start.split('-');
+    document.getElementById('stat-last').textContent=`${parseInt(lm)}/${parseInt(ld)}`;
+    const cycle=calcAvgCycle(records);
+    document.getElementById('stat-cycle').textContent=`${cycle}일`;
+
+    const pred=getNextPredictions(records);
+    const today=new Date();
+    const todayStr=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+    const diff=dateDiff(pred.nextStart,todayStr);
+
+    // 다음 생리 시작일 표시
+    if (diff<0) {
+      document.getElementById('status-main').textContent=fmtDate(pred.nextStart);
+      document.getElementById('status-sub').textContent='예상 날짜가 지났어요';
+    } else if (diff===0) {
+      document.getElementById('status-main').textContent='오늘';
+      document.getElementById('status-sub').textContent='예상 생리 시작일이에요';
+    } else {
+      document.getElementById('status-main').textContent=fmtDate(pred.nextStart);
+      document.getElementById('status-sub').textContent='';
+    }
+
+    // D-day 뱃지
+    const badge=document.getElementById('dday-badge');
+    if (diff>=0&&diff<=3) {
+      badge.classList.add('show');
+      document.getElementById('dday-badge-text').textContent=
+        diff===0?'🩸 오늘이 예상 생리 시작일이에요':`🩸 생리 예정일까지 D-${diff}`;
+    } else { badge.classList.remove('show'); }
+
+    document.getElementById('info-cards').style.display='grid';
+    document.getElementById('next-ovulation').textContent=fmtDate(pred.ovulation);
+    document.getElementById('next-fertile').textContent=`${fmtDate(pred.fertile.start)} ~ ${fmtDate(pred.fertile.end)}`;
+    updateCycleCard(records);
+    updateEmpathyCard(records);
+    updatePatternInsight(records);
+  }
+
+
+  /* ── 사이클 씽킹 ── */
+  const CYCLE_PHASES = {
+    winter: {
+      name: '❄️ 겨울 · 생리기',
+      season: '❄️',
+      cls: 'winter',
+      messages: [
+        '몸이 쉬고 싶어하는 시기예요. 충분히 쉬어도 괜찮아요.',
+        '내면에 집중하는 시간이에요. 무리하지 마세요.',
+        '따뜻한 음료와 충분한 수면이 도움돼요.'
+      ]
+    },
+    spring: {
+      name: '🌱 봄 · 여포기',
+      season: '🌱',
+      cls: 'spring',
+      messages: [
+        '에너지가 서서히 올라오고 있어요. 새로운 걸 시작하기 좋아요.',
+        '몸과 마음이 가벼워지는 시기예요. 활동적으로 움직여봐요.',
+        '창의력과 집중력이 올라오는 때예요.'
+      ]
+    },
+    summer: {
+      name: '☀️ 여름 · 배란기',
+      season: '☀️',
+      cls: 'summer',
+      messages: [
+        '자신감과 에너지가 최고조예요. 중요한 일을 해보세요.',
+        '사교적이고 외향적인 에너지가 넘쳐요.',
+        '지금이 도전하기 가장 좋은 시기예요!'
+      ]
+    },
+    autumn: {
+      name: '🍂 가을 · 황체기',
+      season: '🍂',
+      cls: 'autumn',
+      messages: [
+        '몸이 서서히 내려앉는 시기예요. 무리하지 말고 나를 돌봐요.',
+        '예민해질 수 있어요. 그건 자연스러운 거예요.',
+        '마무리와 정리에 집중하기 좋은 때예요.'
+      ]
+    }
+  };
+
+  const EMPATHY_MAP = [
+    // [사이클단계, 기록태그, 메시지]
+    ['autumn', '예민해요',    '🍂 <strong>생리 전이라 예민할 수 있어요.</strong> 감정이 격해지는 건 자연스러운 거예요. 충분히 괜찮아요 💙'],
+    ['autumn', '무기력해요',  '🍂 <strong>황체기에는 에너지가 낮아져요.</strong> 오늘은 조금 쉬어가도 괜찮아요.'],
+    ['autumn', '불안해요',    '🍂 <strong>생리 전 불안감은 흔해요.</strong> 심호흡하고 나를 다독여줘요 🤍'],
+    ['autumn', '두통',        '🍂 <strong>황체기 두통은 호르몬 변화 때문이에요.</strong> 수분 섭취와 휴식이 도움돼요.'],
+    ['autumn', '복부팽만',    '🍂 <strong>생리 전 붓기는 자연스러워요.</strong> 짠 음식을 줄이면 좋아요.'],
+    ['winter', '생리통',      '❄️ <strong>생리통이 심하다면</strong> 따뜻하게 해주세요 🫖 무리한 활동은 잠시 쉬어요.'],
+    ['winter', '피로감',      '❄️ <strong>생리 중 피로는 당연해요.</strong> 철분이 풍부한 음식이 도움돼요.'],
+    ['winter', '무기력해요',  '❄️ <strong>생리기엔 에너지가 낮아요.</strong> 오늘은 쉬는 게 최선이에요. 🌙'],
+    ['spring', '활력 넘쳐요', '🌱 <strong>에너지가 넘치는 봄이에요!</strong> 하고 싶었던 걸 시작해봐요.'],
+    ['spring', '집중이 잘 돼요', '🌱 <strong>집중력이 올라오는 시기예요.</strong> 중요한 일을 지금 해봐요!'],
+    ['summer', '활력 넘쳐요', '☀️ <strong>배란기라 에너지가 최고조예요!</strong> 오늘 뭐든 잘 될 거예요 ✨'],
+    ['summer', '자신감 넘쳐요', '☀️ <strong>지금 자신감이 넘치는 건 자연스러워요.</strong> 이 에너지를 활용해봐요!'],
+    ['autumn', '수면 잘 못함', '🍂 <strong>황체기엔 수면이 얕아질 수 있어요.</strong> 취침 전 휴식 루틴을 만들어봐요.'],
+    ['winter', '수면 잘 못함', '❄️ <strong>생리 중 수면 불편은 흔해요.</strong> 따뜻한 환경을 만들어줘요.'],
+  ];
+
+  function getCyclePhase(dayOfCycle, cycleLength) {
+    const winterEnd = 5;
+    const springEnd = Math.round(cycleLength * 0.43);
+    const summerEnd = Math.round(cycleLength * 0.57);
+    if (dayOfCycle <= winterEnd) return 'winter';
+    if (dayOfCycle <= springEnd) return 'spring';
+    if (dayOfCycle <= summerEnd) return 'summer';
+    return 'autumn';
+  }
+
+  function updateCycleCard(records) {
+    const card = document.getElementById('cycle-card');
+    if (!records.length) { card.classList.remove('show'); return; }
+
+    const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
+    const last = sorted[sorted.length-1];
+    const _tc=new Date(); const todayStr=`${_tc.getFullYear()}-${String(_tc.getMonth()+1).padStart(2,'0')}-${String(_tc.getDate()).padStart(2,'0')}`;
+    const cycle = calcAvgCycle(records);
+
+    // 마지막 생리 시작일 기준 오늘이 몇일째인지
+    const dayOfCycle = dateDiff(todayStr, last.start) + 1;
+    if (dayOfCycle < 1 || dayOfCycle > cycle + 5) { card.classList.remove('show'); return; }
+
+    const phase = getCyclePhase(dayOfCycle, cycle);
+    const info = CYCLE_PHASES[phase];
+    const msg = info.messages[dayOfCycle % info.messages.length];
+
+    // 단계별 범위 계산
+    const winterEnd = 5;
+    const springEnd = Math.round(cycle * 0.43);
+    const summerEnd = Math.round(cycle * 0.57);
+    const ranges = { winter:[1,winterEnd], spring:[winterEnd+1,springEnd], summer:[springEnd+1,summerEnd], autumn:[summerEnd+1,cycle] };
+    const [phaseStart, phaseEnd] = ranges[phase];
+    const progress = phaseEnd === phaseStart ? 100 : Math.min(100, Math.round(((dayOfCycle - phaseStart + 1) / (phaseEnd - phaseStart + 1)) * 100));
+
+    // 렌더링
+    card.className = `cycle-card show ${info.cls}`;
+    document.getElementById('cycle-season').textContent = info.season;
+    document.getElementById('cycle-day-badge').textContent = `${dayOfCycle}일째`;
+    document.getElementById('cycle-phase-name').textContent = info.name;
+    document.getElementById('cycle-message').textContent = msg;
+    document.getElementById('cycle-progress-fill').style.width = progress + '%';
+    document.getElementById('cycle-progress-start').textContent = `${phaseStart}일`;
+    document.getElementById('cycle-progress-end').textContent = `${phaseEnd}일`;
+  }
+
+  function updateEmpathyCard(records) {
+    const card = document.getElementById('empathy-card');
+    const _te=new Date(); const todayStr=`${_te.getFullYear()}-${String(_te.getMonth()+1).padStart(2,'0')}-${String(_te.getDate()).padStart(2,'0')}`;
+    const logs = loadLogs();
+    const todayLog = logs[todayStr];
+
+    if (!records.length || !todayLog) { card.classList.remove('show'); return; }
+
+    const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
+    const last = sorted[sorted.length-1];
+    const cycle = calcAvgCycle(records);
+    const dayOfCycle = dateDiff(todayStr, last.start) + 1;
+    const phase = getCyclePhase(dayOfCycle, cycle);
+
+    const allTags = [...(todayLog.mood||[]), ...(todayLog.symptom||[]), ...(todayLog.energy||[]), ...(todayLog.etc||[])];
+
+    // 매칭되는 공감 메시지 찾기
+    let matched = null;
+    for (const [p, tag, msg] of EMPATHY_MAP) {
+      if (p === phase && allTags.includes(tag)) { matched = msg; break; }
+    }
+
+    if (matched) {
+      card.classList.add('show');
+      document.getElementById('empathy-text').innerHTML = matched;
+    } else {
+      card.classList.remove('show');
+    }
+  }
+
+
+  /* ── 패턴 인사이트 ── */
+  const PATTERN_MESSAGES = {
+    '예민해요':     { pre: '지난번 이 시기에도 예민함을 느꼈어요. 오늘 감정이 격해진다면, 그건 탓이 아니에요 🤍',
+                     post: '지난번에도 이 시기에 예민했어요. 당연한 감정이에요, 너무 자책하지 마요 💙' },
+    '무기력해요':   { pre: '지난번에도 이맘때 무기력했어요. 오늘 아무것도 하기 싫다면, 충분히 이유가 있어요.',
+                     post: '지난번에도 이맘때 무기력했어요. 몸이 보내는 신호예요, 오늘은 쉬어요.' },
+    '두통':         { pre: '지난번 이 시기에 두통이 있었어요. 오늘 머리가 무겁다면 수분을 충분히 챙겨봐요 💧',
+                     post: '지난번에도 이 시기에 두통이 있었네요. 호르몬 변화 때문이에요, 따뜻하게 쉬어요.' },
+    '피로감':       { pre: '지난번에도 이 시기엔 많이 피곤했어요. 오늘 일찍 쉬어도 괜찮아요.',
+                     post: '지난번에도 이 시기에 많이 피곤했어요. 오늘은 일찍 쉬어요.' },
+    '불안해요':     { pre: '지난번에도 이맘때 불안감이 올라왔어요. 오늘 마음이 불안하다면 호르몬의 영향일 수 있어요.',
+                     post: '지난번에도 이맘때 불안했어요. 감정이 롤러코스터처럼 느껴지는 건 자연스러워요 🤍' },
+    '생리통':       { pre: '지난번 생리 때도 통증이 있었어요. 따뜻하게 미리 준비해봐요 🫖',
+                     post: '지난번 생리 때도 아팠어요. 오늘도 따뜻한 걸 가까이 두어요 🫖' },
+    '복부팽만':     { pre: '지난번 이 시기에 붓기가 있었어요. 오늘 짠 음식은 조금 줄여봐요.',
+                     post: '지난번에도 이 시기에 붓기가 있었네요. 식단에 조금 신경 써봐요.' },
+    '수면 잘 못함': { pre: '지난번에도 이맘때 잠을 잘 못 잤어요. 오늘은 일찍 누워봐요 🌙',
+                     post: '지난번에도 이 시기에 잠을 잘 못 잤네요. 취침 전 루틴을 만들어봐요.' },
+    '여드름':       { pre: '지난번 이 시기에 여드름이 났었어요. 피부 관리에 조금 더 신경 써봐요.',
+                     post: '지난번에도 이 시기에 여드름이 있었어요. 호르몬 변화 때문이에요.' },
+    '유방통':       { pre: '지난번에도 이맘때 유방통이 있었어요. 오늘 불편하다면 당연한 거예요.',
+                     post: '지난번에도 이 시기에 유방통이 있었네요. 몸이 보내는 신호예요.' },
+  };
+
+  function getPatternInsight(records, phase, todayTags, hasLogToday) {
+    if (records.length < 2) return null;
+    const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
+    const cycle = calcAvgCycle(records);
+
+    // 과거 각 기록에서 같은 사이클 단계에 해당하는 날짜 범위 구하기
+    const tagCounts = {};
+    const logs = loadLogs();
+
+    sorted.forEach((r, i) => {
+      if (i === sorted.length - 1) return; // 가장 최근은 제외 (현재 진행 중)
+      // 이 생리 시작일 기준으로 각 날짜의 사이클 단계 계산
+      const startDate = new Date(r.start);
+      for (let day = 1; day <= cycle; day++) {
+        const d = new Date(startDate);
+        d.setDate(d.getDate() + day - 1);
+        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const p = getCyclePhase(day, cycle);
+        if (p !== phase) continue;
+        const log = logs[ds];
+        if (!log) continue;
+        const allTags = [...(log.mood||[]), ...(log.symptom||[]), ...(log.energy||[]), ...(log.etc||[])];
+        allTags.forEach(tag => { tagCounts[tag] = (tagCounts[tag] || 0) + 1; });
+      }
+    });
+
+    // 2회 이상 반복된 태그 중 오늘 기록된 것 또는 패턴 예고
+    const totalPastCycles = sorted.length - 1;
+    const threshold = Math.max(1, Math.floor(totalPastCycles * 0.5)); // 50% 이상 반복
+
+    if (hasLogToday && todayTags.length > 0) {
+      // 오늘 기록한 태그 중 패턴 매칭
+      for (const tag of todayTags) {
+        if (tagCounts[tag] >= threshold && PATTERN_MESSAGES[tag]) {
+          return { type: 'post', tag, msg: PATTERN_MESSAGES[tag].post, count: tagCounts[tag], total: totalPastCycles };
+        }
+      }
+    } else {
+      // 오늘 기록 없으면 예고형
+      for (const [tag, count] of Object.entries(tagCounts)) {
+        if (count >= threshold && PATTERN_MESSAGES[tag]) {
+          return { type: 'pre', tag, msg: PATTERN_MESSAGES[tag].pre, count, total: totalPastCycles };
+        }
+      }
+    }
+    return null;
+  }
+
+  function updatePatternInsight(records) {
+    // 기존 패턴 카드가 있으면 제거
+    const existing = document.getElementById('pattern-card');
+    if (existing) existing.remove();
+
+    if (records.length < 2) return;
+
+    const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
+    const last = sorted[sorted.length-1];
+    const todayStr = (() => { const _d=new Date(); return `${_d.getFullYear()}-${String(_d.getMonth()+1).padStart(2,'0')}-${String(_d.getDate()).padStart(2,'0')}`; })();
+    const cycle = calcAvgCycle(records);
+    const dayOfCycle = dateDiff(todayStr, last.start) + 1;
+    if (dayOfCycle < 1 || dayOfCycle > cycle + 5) return;
+
+    const phase = getCyclePhase(dayOfCycle, cycle);
+    const logs = loadLogs();
+    const todayLog = logs[todayStr];
+    const todayTags = todayLog ? [...(todayLog.mood||[]), ...(todayLog.symptom||[]), ...(todayLog.energy||[]), ...(todayLog.etc||[])] : [];
+    const hasLogToday = !!todayLog;
+
+    const insight = getPatternInsight(records, phase, todayTags, hasLogToday);
+    if (!insight) return;
+
+    // 패턴 카드 생성
+    const card = document.createElement('div');
+    card.id = 'pattern-card';
+    card.style.cssText = 'margin:0 16px 16px;background:var(--surface);border-radius:16px;padding:16px;border:1px solid #2a1a3a;';
+
+    const countText = `${insight.total}번 중 ${insight.count}번`;
+    card.innerHTML = `
+      <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.12em;margin-bottom:8px">📊 패턴 인사이트 · ${countText}</div>
+      <div style="font-size:13px;color:var(--text-muted);line-height:1.8">${insight.msg}</div>
+    `;
+
+    // 공감 카드 뒤에 삽입
+    const empathy = document.getElementById('empathy-card');
+    empathy.parentNode.insertBefore(card, empathy.nextSibling);
+  }
+
+  /* ── 달력: 스크롤 방식 ── */
+  function renderCalendarMonth(year, month, periodSet, pred, past, todayFull) {
+    const block = document.createElement('div');
+    block.className = 'calendar-month-block';
+
+    const title = document.createElement('div');
+    title.className = 'cal-month-title';
+    title.textContent = `${year}년 ${month+1}월`;
+    block.appendChild(title);
+
+    const grid = document.createElement('div');
+    grid.className = 'calendar-grid';
+
+    const labels = document.createElement('div');
+    labels.className = 'day-labels';
+    ['일','월','화','수','목','금','토'].forEach(l=>{
+      const el=document.createElement('div'); el.className='day-label'; el.textContent=l; labels.appendChild(el);
+    });
+    grid.appendChild(labels);
+
+    const daysGrid = document.createElement('div');
+    daysGrid.className = 'days-grid';
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month+1, 0).getDate();
+
+    for (let i=0;i<firstDay;i++) {
+      const e=document.createElement('div'); e.className='day-cell empty'; daysGrid.appendChild(e);
+    }
+
+    for (let d=1;d<=daysInMonth;d++) {
+      const cell=document.createElement('div');
+      const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      let cls='day-cell';
+      if (periodSet.has(ds)) cls+=' period';
+      else if (past.ovulation.has(ds)) cls+=' ovulation';
+      else if (past.fertile.has(ds)) cls+=' fertile';
+      else if (pred.period.has(ds)) cls+=' predicted';
+      else if (pred.ovulation.has(ds)) cls+=' ovulation-predicted';
+      else if (pred.fertile.has(ds)) cls+=' fertile-predicted';
+
+      const [ty,tm,td]=todayFull.split('-');
+      if (parseInt(ty)===year&&parseInt(tm)-1===month&&parseInt(td)===d) cls+=' today';
+
+      cell.className=cls; cell.textContent=d;
+      cell.onclick=()=>{
+        document.getElementById('date-start').value=ds;
+        document.getElementById('date-end').value=addDays(ds,DEFAULT_DURATION-1);
+        openModal();
+      };
+      daysGrid.appendChild(cell);
+    }
+    grid.appendChild(daysGrid);
+    block.appendChild(grid);
+    return block;
+  }
+
+  function renderCalendar() {
+    const records=loadRecords();
+    const periodSet=new Set();
+    records.forEach(r=>getPeriodDates(r).forEach(d=>periodSet.add(d)));
+    const pred=getAllPredictedSets(records);
+    const past=getPastOvulationSets(records);
+    const today=new Date();
+    const todayStr=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+    const wrap=document.getElementById('calendar-scroll-wrap');
+    wrap.innerHTML='';
+
+    // 현재 달 기준 -2 ~ +4 (총 7개월)
+    for (let offset=-2;offset<=4;offset++) {
+      let y=today.getFullYear(), m=today.getMonth()+offset;
+      while (m<0){m+=12;y--;} while (m>11){m-=12;y++;}
+      const block=renderCalendarMonth(y,m,periodSet,pred,past,todayStr);
+      wrap.appendChild(block);
+      // 이번달 블록에 id 마킹해서 스크롤 기준점
+      if (offset===0) block.id='cal-today-block';
+    }
+
+    // 이번달로 스크롤
+    setTimeout(()=>{
+      const target=document.getElementById('cal-today-block');
+      if (target) target.scrollIntoView({behavior:'smooth',block:'start'});
+    },100);
+  }
+
+  /* ── 기록 ── */
+  function renderRecords() {
+    const records=loadRecords().sort((a,b)=>a.start>b.start?-1:1);
+    const list=document.getElementById('records-list');
+    if (!records.length) {
+      list.innerHTML='<div class="empty-state">아직 기록이 없어요.<br>홈에서 생리 시작일을 기록해보세요 🌙</div>';
+      return;
+    }
+    list.innerHTML=records.map((r,i)=>{
+      const [sy,sm,sd]=r.start.split('-');
+      const [,em,ed]=r.end.split('-');
+      const dur=dateDiff(r.end,r.start)+1;
+      return `<div class="record-item">
+        <div>
+          <div class="record-date">${parseInt(sm)}월 ${parseInt(sd)}일 ~ ${parseInt(em)}월 ${parseInt(ed)}일</div>
+          <div class="record-meta">${sy}년 · ${dur}일간</div>
+        </div>
+        <div style="display:flex;gap:4px">
+          <button class="record-edit" onclick="editRecord(${i})">✎</button>
+          <button class="record-delete" onclick="deleteRecord(${i})">×</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ── 그래프: SVG 라인 차트 ── */
+  function drawLineChart(svgId, values, avgVal, colorStroke) {
+    const svg = document.getElementById(svgId);
+    svg.innerHTML = '';
+    const W = svg.parentElement.offsetWidth || 300;
+    const H = 80;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+    if (values.length < 2) {
+      const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+      text.setAttribute('x', W/2); text.setAttribute('y', H/2);
+      text.setAttribute('text-anchor','middle'); text.setAttribute('fill','#5c4a52');
+      text.setAttribute('font-size','12'); text.textContent='기록이 2개 이상 필요해요';
+      svg.appendChild(text); return;
+    }
+
+    const pad = {l:16,r:16,t:8,b:20};
+    const minV = Math.min(...values)-2, maxV = Math.max(...values)+2;
+    const range = maxV-minV || 1;
+    const xStep = (W-pad.l-pad.r)/(values.length-1);
+
+    const toX = i => pad.l + i*xStep;
+    const toY = v => pad.t + (1-(v-minV)/range)*(H-pad.t-pad.b);
+
+    // 평균선
+    const avgY = toY(avgVal);
+    const avgLine = document.createElementNS('http://www.w3.org/2000/svg','line');
+    avgLine.setAttribute('x1',pad.l); avgLine.setAttribute('x2',W-pad.r);
+    avgLine.setAttribute('y1',avgY); avgLine.setAttribute('y2',avgY);
+    avgLine.setAttribute('stroke','#3a2a40'); avgLine.setAttribute('stroke-width','1');
+    avgLine.setAttribute('stroke-dasharray','4 3');
+    svg.appendChild(avgLine);
+
+    // 라인
+    let d = values.map((v,i)=>`${i===0?'M':'L'}${toX(i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ');
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',d); path.setAttribute('fill','none');
+    path.setAttribute('stroke',colorStroke); path.setAttribute('stroke-width','1.5');
+    path.setAttribute('stroke-linecap','round'); path.setAttribute('stroke-linejoin','round');
+    svg.appendChild(path);
+
+    // 점 + 라벨
+    values.forEach((v,i)=>{
+      const cx=toX(i), cy=toY(v);
+      const isLast=(i===values.length-1);
+
+      const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      circle.setAttribute('cx',cx); circle.setAttribute('cy',cy); circle.setAttribute('r', isLast?4:3);
+      circle.setAttribute('fill', isLast?colorStroke:'#1a0d1f');
+      circle.setAttribute('stroke',colorStroke); circle.setAttribute('stroke-width','1.5');
+      svg.appendChild(circle);
+
+      const label = document.createElementNS('http://www.w3.org/2000/svg','text');
+      label.setAttribute('x',cx); label.setAttribute('y',H-4);
+      label.setAttribute('text-anchor','middle'); label.setAttribute('fill','#5c4a52');
+      label.setAttribute('font-size','9'); label.textContent=`${i+1}회`;
+      svg.appendChild(label);
+
+      // 값 라벨 (마지막이거나 특이값만)
+      if (isLast || v===Math.max(...values) || v===Math.min(...values)) {
+        const vLabel = document.createElementNS('http://www.w3.org/2000/svg','text');
+        vLabel.setAttribute('x',cx); vLabel.setAttribute('y',cy-6);
+        vLabel.setAttribute('text-anchor','middle');
+        vLabel.setAttribute('fill', isLast?colorStroke:'#9a7f88');
+        vLabel.setAttribute('font-size','10'); vLabel.setAttribute('font-weight',isLast?'500':'400');
+        vLabel.textContent=v;
+        svg.appendChild(vLabel);
+      }
+    });
+  }
+
+  function renderGraph() {
+    const records = loadRecords().sort((a,b)=>a.start>b.start?1:-1);
+
+    // 주기
+    const cycles=[];
+    for (let i=1;i<records.length;i++) {
+      const d=dateDiff(records[i].start,records[i-1].start);
+      if (d>10&&d<60) cycles.push(d);
+    }
+    if (cycles.length>=1) {
+      const avg=Math.round(cycles.reduce((s,v)=>s+v,0)/cycles.length);
+      const mn=Math.min(...cycles), mx=Math.max(...cycles);
+      document.getElementById('avg-cycle-num').textContent=`${avg}일`;
+      drawLineChart('cycle-chart',cycles,avg,'#c9607a');
+      document.getElementById('cycle-stat-row').innerHTML=`
+        <div class="stat-pill"><div class="stat-pill-val">${mn}일</div><div class="stat-pill-label">최단 주기</div></div>
+        <div class="stat-pill"><div class="stat-pill-val">${mx}일</div><div class="stat-pill-label">최장 주기</div></div>
+        <div class="stat-pill"><div class="stat-pill-val">${cycles.length}회</div><div class="stat-pill-label">측정 횟수</div></div>`;
+    } else {
+      document.getElementById('avg-cycle-num').textContent='—';
+      drawLineChart('cycle-chart',[],0,'#c9607a');
+      document.getElementById('cycle-stat-row').innerHTML='';
+    }
+
+    // 기간
+    const durs=records.map(r=>dateDiff(r.end,r.start)+1);
+    if (durs.length>=1) {
+      const avg=Math.round(durs.reduce((s,v)=>s+v,0)/durs.length);
+      const mn=Math.min(...durs), mx=Math.max(...durs);
+      document.getElementById('avg-dur-num').textContent=`${avg}일`;
+      drawLineChart('dur-chart',durs,avg,'#5dca8a');
+      document.getElementById('dur-stat-row').innerHTML=`
+        <div class="stat-pill"><div class="stat-pill-val">${mn}일</div><div class="stat-pill-label">최단 기간</div></div>
+        <div class="stat-pill"><div class="stat-pill-val">${mx}일</div><div class="stat-pill-label">최장 기간</div></div>
+        <div class="stat-pill"><div class="stat-pill-val">${durs.length}회</div><div class="stat-pill-label">기록 횟수</div></div>`;
+    } else {
+      document.getElementById('avg-dur-num').textContent='—';
+      drawLineChart('dur-chart',[],0,'#5dca8a');
+      document.getElementById('dur-stat-row').innerHTML='';
+    }
+  }
+
+  /* ── 탭 전환 ── */
+  function switchTab(tab) {
+    ['home','calendar','records','graph'].forEach(t=>{
+      document.getElementById(`tab-${t}`).classList.toggle('active',t===tab);
+      document.getElementById(`nav-${t}`).classList.toggle('active',t===tab);
+    });
+    if (tab==='calendar') renderCalendar();
+    if (tab==='records') renderRecords();
+    if (tab==='graph') renderGraph();
+  }
+
+  /* ── 모달 ── */
+  let editingIdx = null;
+
+  function openModal(editIdx) {
+    editingIdx = (editIdx !== undefined) ? editIdx : null;
+    document.getElementById('modal-title').textContent = editingIdx !== null ? '기록 수정' : '생리 기간 기록';
+    document.getElementById('modal-save-btn').textContent = editingIdx !== null ? '수정' : '저장';
+    document.getElementById('modal').classList.add('open');
+    if (editingIdx === null && !document.getElementById('date-start').value) {
+      const _tl=new Date(); const today=`${_tl.getFullYear()}-${String(_tl.getMonth()+1).padStart(2,'0')}-${String(_tl.getDate()).padStart(2,'0')}`;
+      document.getElementById('date-start').value=today;
+      document.getElementById('date-end').value=addDays(today,DEFAULT_DURATION-1);
+    }
+  }
+
+  function editRecord(idx) {
+    const records=loadRecords().sort((a,b)=>a.start>b.start?-1:1);
+    const r=records[idx];
+    document.getElementById('date-start').value=r.start;
+    document.getElementById('date-end').value=r.end;
+    openModal(idx);
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.getElementById('date-start').value='';
+    document.getElementById('date-end').value='';
+    editingIdx=null;
+  }
+  function closeModalOutside(e) { if (e.target===document.getElementById('modal')) closeModal(); }
+
+  document.getElementById('date-start').addEventListener('change',function(){
+    if (this.value && editingIdx===null) document.getElementById('date-end').value=addDays(this.value,DEFAULT_DURATION-1);
+  });
+
+  async function saveRecord() {
+    const start=document.getElementById('date-start').value;
+    const end=document.getElementById('date-end').value;
+    if (!start) return alert('시작일을 선택해주세요');
+    if (!end) return alert('종료일을 선택해주세요');
+    if (end<start) return alert('종료일은 시작일 이후여야 해요');
+    const records=loadRecords();
+    try {
+      if (editingIdx !== null) {
+        const sorted=records.sort((a,b)=>a.start>b.start?-1:1);
+        const existing=sorted[editingIdx];
+        sorted[editingIdx]={...existing,start,end};
+        saveRecords(sorted);
+        if (currentUser && existing.id) await updateRecordInDB(existing.id, {start,end});
+      } else {
+        const newRec={start,end};
+        if (currentUser) {
+          const saved=await saveRecordToDB(newRec);
+          if (saved) newRec.id=saved.id;
+        }
+        records.push(newRec);
+        saveRecords(records);
+      }
+    } catch(e) {
+      console.error('저장 오류:', e);
+    }
+    closeModal();
+    updateStatus();
+    renderRecords();
+  }
+
+  async function deleteRecord(idx) {
+    const records=loadRecords().sort((a,b)=>a.start>b.start?-1:1);
+    const record=records[idx];
+    if (record?.id) await deleteRecordFromDB(record.id);
+    records.splice(idx,1);
+    saveRecords(records);
+    renderRecords();
+    updateStatus();
+  }
+
+  updateStatus();
+  // 태그 이벤트 바인딩
+  // 이벤트 위임 초기화 — DOM 준비되면 한 번만
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLogTagEvents);
+  } else {
+    initLogTagEvents();
+  }
+
+
+  /* ── 생리 강도 별점 ── */
+  let periodIntensity = 0;
+  let sleepQuality = 0;
+  let currentSymptomTag = null;
+  let symptomSeverity = {};
+
+  function selectStar(val) {
+    periodIntensity = val;
+    document.querySelectorAll('#period-intensity .star-btn').forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.dataset.val) <= val);
+    });
+  }
+
+  function selectSleepStar(val) {
+    sleepQuality = val;
+    document.querySelectorAll('#sleep-quality .star-btn').forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.dataset.val) <= val);
+    });
+  }
+
+
+
+
+
+
+
+  // 이벤트 위임 — 모달 내 모든 클릭을 한 곳에서 처리
+  function initLogTagEvents() {
+    const modal = document.querySelector('.log-modal');
+    if (!modal) return;
+    // 기존 이벤트 제거 후 재등록
+    modal.removeEventListener('click', modal._handler);
+    modal._handler = function(e) {
+      const tag = e.target.closest('.log-tag');
+      if (!tag) return;
+      const parentId = tag.parentElement.id;
+      if (parentId === 'log-sleep-quality') {
+        // 수면의 질 — 단일 선택
+        const wasSelected = tag.classList.contains('selected');
+        document.querySelectorAll('#log-sleep-quality .log-tag').forEach(t => t.classList.remove('selected'));
+        if (!wasSelected) tag.classList.add('selected');
+      } else {
+        // 기분 / 신체 불편함 / 에너지 / 기타 — 모두 동일하게 체크/해제
+        tag.classList.toggle('selected');
+      }
+    };
+    modal.addEventListener('click', modal._handler);
+  }
+
+  function resetLogExtras() {
+    periodIntensity = 0;
+    sleepQuality = 0;
+    document.querySelectorAll('#period-intensity .star-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#sleep-quality .star-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#log-sleep-quality .log-tag').forEach(b => b.classList.remove('selected'));
+    document.getElementById('sleep-hours').value = '';
+  }
+
+  function restoreLogExtras(existing) {
+    if (existing.periodIntensity) {
+      periodIntensity = existing.periodIntensity;
+      selectStar(periodIntensity);
+    }
+    if (existing.sleepQuality) {
+      document.querySelectorAll('#log-sleep-quality .log-tag').forEach(t => {
+        t.classList.toggle('selected', t.dataset.val === existing.sleepQuality);
+      });
+    }
+    if (existing.sleepHours) {
+      document.getElementById('sleep-hours').value = existing.sleepHours;
+    }
+    if (existing.symptomSeverity) {
+      symptomSeverity = existing.symptomSeverity;
+    }
+  }
+
+  /* ── 상태 기록 ── */
+  const LOG_KEY = 'period_logs_v1';
+  let logTargetDate = null;
+
+  function loadLogs() {
+    try { return JSON.parse(localStorage.getItem(LOG_KEY)) || {}; }
+    catch { return {}; }
+  }
+  function saveLogs(logs) { localStorage.setItem(LOG_KEY, JSON.stringify(logs)); }
+
+  function openLogModal(dateStr) {
+    const _tlog=new Date(); logTargetDate = dateStr || `${_tlog.getFullYear()}-${String(_tlog.getMonth()+1).padStart(2,'0')}-${String(_tlog.getDate()).padStart(2,'0')}`;
+    const [y,m,d] = logTargetDate.split('-');
+    document.getElementById('log-modal-title').textContent = '상태 기록';
+    document.getElementById('log-modal-date').textContent = `${y}년 ${parseInt(m)}월 ${parseInt(d)}일`;
+
+    // 기존 기록 불러와서 선택 상태 복원
+    const logs = loadLogs();
+    const existing = logs[logTargetDate] || { mood:[], symptom:[], energy:[], etc:[] };
+    ['mood','symptom','energy','etc'].forEach(cat => {
+      document.querySelectorAll(`#log-${cat} .log-tag`).forEach(tag => {
+        const isSelected = existing[cat] && existing[cat].includes(tag.dataset.val);
+        tag.classList.toggle('selected', isSelected);
+      });
+    });
+    resetLogExtras();
+    restoreLogExtras(existing);
+
+    document.getElementById('log-modal').classList.add('open');
+  }
+
+  function closeLogModal() {
+    document.getElementById('log-modal').classList.remove('open');
+    logTargetDate = null;
+  }
+  function closeLogModalOutside(e) {
+    if (e.target === document.getElementById('log-modal')) closeLogModal();
+  }
+
+  // 태그 토글
+  document.querySelectorAll('.log-tag').forEach(tag => {
+    tag.addEventListener('click', () => tag.classList.toggle('selected'));
+  });
+
+  async function saveLog() {
+    if (!logTargetDate) return;
+    const logs = loadLogs();
+    const entry = { mood:[], symptom:[], energy:[], etc:[] };
+    ['mood','symptom','energy','etc'].forEach(cat => {
+      document.querySelectorAll(`#log-${cat} .log-tag.selected`).forEach(tag => {
+        entry[cat].push(tag.dataset.val);
+      });
+    });
+    // 추가 데이터
+    entry.periodIntensity = periodIntensity || null;
+    const sleepQualityTag = document.querySelector('#log-sleep-quality .log-tag.selected');
+    entry.sleepQuality = sleepQualityTag ? sleepQualityTag.dataset.val : null;
+    entry.sleepHours = parseFloat(document.getElementById('sleep-hours').value) || null;
+
+    const hasAny = entry.mood.length > 0 || entry.symptom.length > 0 || entry.energy.length > 0 ||
+      entry.etc.length > 0 || entry.periodIntensity || entry.sleepQuality || entry.sleepHours;
+    try {
+      if (hasAny) {
+        logs[logTargetDate] = entry;
+        if (currentUser) await saveLogToDB(logTargetDate, entry);
+      } else {
+        delete logs[logTargetDate];
+      }
+    } catch(e) {
+      console.error('로그 저장 오류:', e);
+    }
+    saveLogs(logs);
+    closeLogModal();
+    renderLogList();
+    const recs = loadRecords();
+    updateEmpathyCard(recs);
+    updatePatternInsight(recs);
+  }
+
+  /* 기록 탭 서브탭 */
+  function switchRecTab(tab) {
+    const isPeriod = tab === 'period';
+    document.getElementById('records-period-list').style.display = isPeriod ? 'block' : 'none';
+    document.getElementById('records-log-list').style.display = isPeriod ? 'none' : 'block';
+    document.getElementById('rec-tab-period').style.background = isPeriod ? 'var(--accent)' : 'transparent';
+    document.getElementById('rec-tab-period').style.color = isPeriod ? 'white' : 'var(--text-muted)';
+    document.getElementById('rec-tab-log').style.background = isPeriod ? 'transparent' : 'var(--accent)';
+    document.getElementById('rec-tab-log').style.color = isPeriod ? 'var(--text-muted)' : 'white';
+    if (!isPeriod) renderLogList();
+  }
+
+  /* 상태 기록 목록 렌더링 */
+  function renderLogList() {
+    const logs = loadLogs();
+    const list = document.getElementById('log-list');
+    const dates = Object.keys(logs).sort().reverse();
+    if (!dates.length) {
+      list.innerHTML = '<div class="empty-state">아직 상태 기록이 없어요.<br>홈에서 오늘의 상태를 기록해보세요 ✍️</div>';
+      return;
+    }
+    const CAT_LABEL = { mood:'기분', symptom:'증상', energy:'에너지', etc:'기타' };
+    list.innerHTML = dates.map(ds => {
+      const [y,m,d] = ds.split('-');
+      const entry = logs[ds];
+      const allTags = [...entry.mood, ...entry.symptom, ...entry.energy, ...entry.etc];
+      return `<div>
+        <div class="log-date-header">
+          <div class="log-date-label">${parseInt(m)}월 ${parseInt(d)}일 <span style="font-size:12px;color:var(--text-muted)">${y}</span></div>
+          <button class="log-edit-btn" onclick="openLogModal('${ds}')">수정</button>
+        </div>
+        <div class="log-tag-display">
+          ${allTags.map(t => `<span class="log-tag-chip">${t}</span>`).join('')}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+
+  // PWA Service Worker 등록
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/period-tracker/sw.js')
+        .catch(() => {});
+    });
+  }
+
+</script>
+</body>
+</html>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="달의 기록">
 <link rel="apple-touch-icon" href="icon-192.png">
