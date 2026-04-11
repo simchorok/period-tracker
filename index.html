@@ -1944,10 +1944,7 @@
     if (e.target === document.getElementById('log-modal')) closeLogModal();
   }
 
-  // 태그 토글
-  document.querySelectorAll('.log-tag').forEach(tag => {
-    tag.addEventListener('click', () => tag.classList.toggle('selected'));
-  });
+
 
   async function saveLog() {
     if (!logTargetDate) return;
