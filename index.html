@@ -1087,10 +1087,8 @@
     await sb.from('period_records').delete().eq('id', id);
   }
 
-  async function saveLogToDB(logDate, entry) {
+  async function saveLogToDB(logDate, entry, existingId) {
     if (!currentUser) return;
-    const logs = loadLogs();
-    const existing = logs[logDate];
     const dbEntry = {
       mood: entry.mood,
       symptom: entry.symptom,
@@ -1100,10 +1098,13 @@
       sleep_quality: entry.sleepQuality || null,
       sleep_hours: entry.sleepHours || null,
     };
-    if (existing && existing.id) {
-      await sb.from('daily_logs').update(dbEntry).eq('id', existing.id);
+    if (existingId) {
+      await sb.from('daily_logs').update(dbEntry).eq('id', existingId);
     } else {
-      await sb.from('daily_logs').insert([{ user_id: currentUser.id, log_date: logDate, ...dbEntry }]);
+      const { data } = await sb.from('daily_logs')
+        .insert([{ user_id: currentUser.id, log_date: logDate, ...dbEntry }])
+        .select();
+      if (data && data[0]) entry._newId = data[0].id;
     }
     await loadLogsFromDB();
   }
@@ -1965,8 +1966,10 @@
       entry.etc.length > 0 || entry.periodIntensity || entry.sleepQuality || entry.sleepHours;
     try {
       if (hasAny) {
+        // 저장 전에 기존 id 먼저 확인 (logs 덮어쓰기 전에!)
+        const existingId = logs[logTargetDate] ? logs[logTargetDate].id : null;
         logs[logTargetDate] = entry;
-        if (currentUser) await saveLogToDB(logTargetDate, entry);
+        if (currentUser) await saveLogToDB(logTargetDate, entry, existingId);
       } else {
         delete logs[logTargetDate];
       }
