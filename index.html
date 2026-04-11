@@ -673,6 +673,41 @@
   .loading-moon { font-size: 40px; animation: spin 2s linear infinite; }
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   .loading-text { font-size: 13px; color: var(--text-muted); }
+
+  /* ── 생리 강도 별점 ── */
+  .star-row { display:flex; gap:8px; }
+  .star-btn {
+    font-size:24px; background:none; border:none; cursor:pointer;
+    transition:transform 0.1s; padding:2px; line-height:1;
+    filter: grayscale(1) opacity(0.4);
+  }
+  .star-btn.active { filter: none; transform:scale(1.1); }
+
+  /* ── 신체 불편함 강도 ── */
+  .symptom-detail {
+    display:none; margin-top:8px; padding:10px 12px;
+    background:var(--surface2); border-radius:10px;
+    gap:8px; flex-wrap:wrap;
+  }
+  .symptom-detail.show { display:flex; }
+  .symptom-detail-title { font-size:11px; color:var(--text-muted); width:100%; margin-bottom:2px; }
+  .severity-btn {
+    background:var(--surface); border:1px solid var(--text-dim);
+    border-radius:20px; padding:6px 14px; font-size:12px;
+    color:var(--text-muted); cursor:pointer; font-family:'Noto Sans KR',sans-serif;
+    transition:all 0.15s;
+  }
+  .severity-btn.active { background:var(--accent-dim); border-color:var(--accent); color:var(--accent-soft); }
+
+  /* ── 수면 ── */
+  .sleep-row { display:flex; flex-direction:column; gap:12px; }
+  .sleep-label { font-size:11px; color:var(--text-muted); margin-bottom:4px; }
+  .sleep-hours-input {
+    background:var(--bg); border:1px solid var(--accent-dim);
+    border-radius:10px; padding:10px 14px; color:var(--text);
+    font-size:15px; width:100%; font-family:'Noto Sans KR',sans-serif;
+    outline:none;
+  }
 </style>
 </head>
 <body>
@@ -856,20 +891,62 @@
       </div>
     </div>
 
+    <!-- 생리 강도 -->
     <div class="log-section">
-      <div class="log-section-title">🤕 증상</div>
-      <div class="log-tags" id="log-symptom">
-        <span class="log-tag" data-val="생리통">🩸 생리통</span>
-        <span class="log-tag" data-val="두통">🤕 두통</span>
-        <span class="log-tag" data-val="복부팽만">🫃 복부팽만</span>
-        <span class="log-tag" data-val="피로감">😴 피로감</span>
-        <span class="log-tag" data-val="여드름">😖 여드름</span>
-        <span class="log-tag" data-val="유방통">💢 유방통</span>
-        <span class="log-tag" data-val="허리통증">🔥 허리통증</span>
-        <span class="log-tag" data-val="메스꺼움">🤢 메스꺼움</span>
+      <div class="log-section-title">🩸 생리 강도</div>
+      <div class="star-row" id="period-intensity">
+        <button class="star-btn" data-val="1" onclick="selectStar(1)">🩸</button>
+        <button class="star-btn" data-val="2" onclick="selectStar(2)">🩸</button>
+        <button class="star-btn" data-val="3" onclick="selectStar(3)">🩸</button>
+        <button class="star-btn" data-val="4" onclick="selectStar(4)">🩸</button>
+        <button class="star-btn" data-val="5" onclick="selectStar(5)">🩸</button>
       </div>
     </div>
 
+    <!-- 신체 불편함 -->
+    <div class="log-section">
+      <div class="log-section-title">🤕 신체 불편함</div>
+      <div class="log-tags" id="log-symptom">
+        <span class="log-tag" data-val="생리통" onclick="toggleSymptom(this)">🩸 생리통</span>
+        <span class="log-tag" data-val="두통" onclick="toggleSymptom(this)">🤕 두통</span>
+        <span class="log-tag" data-val="복부팽만" onclick="toggleSymptom(this)">🫃 복부팽만</span>
+        <span class="log-tag" data-val="허리통증" onclick="toggleSymptom(this)">🔥 허리통증</span>
+        <span class="log-tag" data-val="소화불량" onclick="toggleSymptom(this)">🫠 소화불량</span>
+        <span class="log-tag" data-val="유방통" onclick="toggleSymptom(this)">💢 유방통</span>
+        <span class="log-tag" data-val="두드러기/여드름" onclick="toggleSymptom(this)">😖 두드러기/여드름</span>
+        <span class="log-tag" data-val="메스꺼움" onclick="toggleSymptom(this)">🤢 메스꺼움</span>
+      </div>
+      <!-- 통증 강도 선택 (태그 선택 시 표시) -->
+      <div class="symptom-detail" id="symptom-detail">
+        <div class="symptom-detail-title" id="symptom-detail-title">통증 정도를 선택해주세요</div>
+        <button class="severity-btn" data-val="불편한 정도" onclick="selectSeverity(this)">😣 불편한 정도</button>
+        <button class="severity-btn" data-val="많이 힘들어요" onclick="selectSeverity(this)">😖 많이 힘들어요</button>
+      </div>
+    </div>
+
+    <!-- 수면 -->
+    <div class="log-section">
+      <div class="log-section-title">😴 수면</div>
+      <div class="sleep-row">
+        <div>
+          <div class="sleep-label">수면의 질</div>
+          <div class="star-row" id="sleep-quality">
+            <button class="star-btn" data-val="1" onclick="selectSleepStar(1)">⭐</button>
+            <button class="star-btn" data-val="2" onclick="selectSleepStar(2)">⭐</button>
+            <button class="star-btn" data-val="3" onclick="selectSleepStar(3)">⭐</button>
+            <button class="star-btn" data-val="4" onclick="selectSleepStar(4)">⭐</button>
+            <button class="star-btn" data-val="5" onclick="selectSleepStar(5)">⭐</button>
+          </div>
+        </div>
+        <div>
+          <div class="sleep-label">수면 시간 (시간)</div>
+          <input type="number" id="sleep-hours" class="sleep-hours-input"
+            min="0" max="24" step="0.5" placeholder="예: 7.5">
+        </div>
+      </div>
+    </div>
+
+    <!-- 에너지 -->
     <div class="log-section">
       <div class="log-section-title">⚡ 에너지</div>
       <div class="log-tags" id="log-energy">
@@ -880,6 +957,7 @@
       </div>
     </div>
 
+    <!-- 기타 -->
     <div class="log-section">
       <div class="log-section-title">📝 기타</div>
       <div class="log-tags" id="log-etc">
@@ -887,7 +965,6 @@
         <span class="log-tag" data-val="피임">✅ 피임</span>
         <span class="log-tag" data-val="술 마심">🍷 술 마심</span>
         <span class="log-tag" data-val="운동함">🏃 운동함</span>
-        <span class="log-tag" data-val="수면 잘 못함">😵 수면 잘 못함</span>
       </div>
     </div>
 
@@ -1027,13 +1104,20 @@
     if (!currentUser) return;
     const logs = loadLogs();
     const existing = logs[logDate];
+    const dbEntry = {
+      mood: entry.mood,
+      symptom: entry.symptom,
+      energy: entry.energy,
+      etc: entry.etc,
+      period_intensity: entry.periodIntensity || null,
+      sleep_quality: entry.sleepQuality || null,
+      sleep_hours: entry.sleepHours || null,
+      symptom_severity: entry.symptomSeverity || null,
+    };
     if (existing && existing.id) {
-      await sb.from('daily_logs')
-        .update({ mood: entry.mood, symptom: entry.symptom, energy: entry.energy, etc: entry.etc })
-        .eq('id', existing.id);
+      await sb.from('daily_logs').update(dbEntry).eq('id', existing.id);
     } else {
-      await sb.from('daily_logs')
-        .insert([{ user_id: currentUser.id, log_date: logDate, ...entry }]);
+      await sb.from('daily_logs').insert([{ user_id: currentUser.id, log_date: logDate, ...dbEntry }]);
     }
     await loadLogsFromDB();
   }
@@ -1751,6 +1835,94 @@
 
   updateStatus();
 
+
+  /* ── 생리 강도 별점 ── */
+  let periodIntensity = 0;
+  let sleepQuality = 0;
+  let currentSymptomTag = null;
+  let symptomSeverity = {};
+
+  function selectStar(val) {
+    periodIntensity = val;
+    document.querySelectorAll('#period-intensity .star-btn').forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.dataset.val) <= val);
+    });
+  }
+
+  function selectSleepStar(val) {
+    sleepQuality = val;
+    document.querySelectorAll('#sleep-quality .star-btn').forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.dataset.val) <= val);
+    });
+  }
+
+  function toggleSymptom(el) {
+    el.classList.toggle('selected');
+    const val = el.dataset.val;
+    const detail = document.getElementById('symptom-detail');
+    const selected = document.querySelectorAll('#log-symptom .log-tag.selected');
+
+    if (el.classList.contains('selected')) {
+      currentSymptomTag = val;
+      document.getElementById('symptom-detail-title').textContent = `${val} — 통증 정도`;
+      detail.classList.add('show');
+      // 이전 선택 초기화
+      document.querySelectorAll('.severity-btn').forEach(b => b.classList.remove('active'));
+      if (symptomSeverity[val]) {
+        document.querySelectorAll('.severity-btn').forEach(b => {
+          if (b.dataset.val === symptomSeverity[val]) b.classList.add('active');
+        });
+      }
+    } else {
+      delete symptomSeverity[val];
+      if (selected.length === 0) {
+        detail.classList.remove('show');
+        currentSymptomTag = null;
+      } else {
+        // 마지막 선택된 태그로 전환
+        const last = selected[selected.length-1];
+        currentSymptomTag = last.dataset.val;
+        document.getElementById('symptom-detail-title').textContent = `${currentSymptomTag} — 통증 정도`;
+      }
+    }
+  }
+
+  function selectSeverity(btn) {
+    if (!currentSymptomTag) return;
+    document.querySelectorAll('.severity-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    symptomSeverity[currentSymptomTag] = btn.dataset.val;
+  }
+
+  function resetLogExtras() {
+    periodIntensity = 0;
+    sleepQuality = 0;
+    currentSymptomTag = null;
+    symptomSeverity = {};
+    document.querySelectorAll('#period-intensity .star-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#sleep-quality .star-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.severity-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('symptom-detail').classList.remove('show');
+    document.getElementById('sleep-hours').value = '';
+  }
+
+  function restoreLogExtras(existing) {
+    if (existing.periodIntensity) {
+      periodIntensity = existing.periodIntensity;
+      selectStar(periodIntensity);
+    }
+    if (existing.sleepQuality) {
+      sleepQuality = existing.sleepQuality;
+      selectSleepStar(sleepQuality);
+    }
+    if (existing.sleepHours) {
+      document.getElementById('sleep-hours').value = existing.sleepHours;
+    }
+    if (existing.symptomSeverity) {
+      symptomSeverity = existing.symptomSeverity;
+    }
+  }
+
   /* ── 상태 기록 ── */
   const LOG_KEY = 'period_logs_v1';
   let logTargetDate = null;
@@ -1772,9 +1944,12 @@
     const existing = logs[logTargetDate] || { mood:[], symptom:[], energy:[], etc:[] };
     ['mood','symptom','energy','etc'].forEach(cat => {
       document.querySelectorAll(`#log-${cat} .log-tag`).forEach(tag => {
-        tag.classList.toggle('selected', existing[cat].includes(tag.dataset.val));
+        const isSelected = existing[cat] && existing[cat].includes(tag.dataset.val);
+        tag.classList.toggle('selected', isSelected);
       });
     });
+    resetLogExtras();
+    restoreLogExtras(existing);
 
     document.getElementById('log-modal').classList.add('open');
   }
@@ -1801,7 +1976,13 @@
         entry[cat].push(tag.dataset.val);
       });
     });
-    const hasAny = Object.values(entry).some(arr => arr.length > 0);
+    // 추가 데이터
+    entry.periodIntensity = periodIntensity || null;
+    entry.sleepQuality = sleepQuality || null;
+    entry.sleepHours = parseFloat(document.getElementById('sleep-hours').value) || null;
+    entry.symptomSeverity = Object.keys(symptomSeverity).length > 0 ? {...symptomSeverity} : null;
+    const hasAny = entry.mood.length > 0 || entry.symptom.length > 0 || entry.energy.length > 0 ||
+      entry.etc.length > 0 || entry.periodIntensity || entry.sleepQuality || entry.sleepHours;
     try {
       if (hasAny) {
         logs[logTargetDate] = entry;
