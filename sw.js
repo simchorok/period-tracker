@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dal-ui-girok-v3';
+const CACHE_NAME = 'dal-ui-girok-v4';
 const ASSETS = [
   '/period-tracker/',
   '/period-tracker/index.html',
@@ -22,6 +22,11 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  // GET 요청만 캐시 처리 — PATCH/POST/PUT은 그냥 통과
+  if (e.request.method !== 'GET') return;
+  // Supabase API 요청은 캐시하지 않음
+  if (e.request.url.includes('supabase.co')) return;
+
   e.respondWith(
     fetch(e.request)
       .then(res => {
