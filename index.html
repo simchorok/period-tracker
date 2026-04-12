@@ -1003,34 +1003,24 @@
           <div class="mypage-stat-val" id="mypage-avg-dur">—</div>
           <div class="mypage-stat-label">평균 생리 기간</div>
         </div>
-        <div class="mypage-stat-card">
+        <div class="mypage-stat-card" style="position:relative;">
           <span class="mypage-stat-icon">📋</span>
           <div class="mypage-stat-val" id="mypage-total-records">—</div>
           <div class="mypage-stat-label">생리 기록 횟수</div>
+          <button onclick="openRecordDetail('period')" style="position:absolute;top:8px;right:8px;background:var(--accent-dim);border:none;border-radius:12px;padding:3px 8px;font-size:10px;color:var(--accent-soft);cursor:pointer;font-family:'Noto Sans KR',sans-serif;">전체보기</button>
         </div>
-        <div class="mypage-stat-card">
+        <div class="mypage-stat-card" style="position:relative;">
           <span class="mypage-stat-icon">✍️</span>
           <div class="mypage-stat-val" id="mypage-total-logs">—</div>
           <div class="mypage-stat-label">상태 기록 횟수</div>
-        </div>
-      </div>
-
-      <!-- 기록 바로가기 -->
-      <div class="mypage-menu" style="margin-bottom:16px">
-        <div class="mypage-menu-item" onclick="openRecordDetail('period')">
-          <div class="mypage-menu-left"><span class="mypage-menu-icon">🩸</span> 생리 기록</div>
-          <span style="font-size:12px;color:var(--accent-soft);background:var(--accent-dim);padding:4px 10px;border-radius:20px;">상세보기</span>
-        </div>
-        <div class="mypage-menu-item" onclick="openRecordDetail('log')">
-          <div class="mypage-menu-left"><span class="mypage-menu-icon">✍️</span> 상태 기록</div>
-          <span style="font-size:12px;color:var(--accent-soft);background:var(--accent-dim);padding:4px 10px;border-radius:20px;">상세보기</span>
+          <button onclick="openRecordDetail('log')" style="position:absolute;top:8px;right:8px;background:var(--accent-dim);border:none;border-radius:12px;padding:3px 8px;font-size:10px;color:var(--accent-soft);cursor:pointer;font-family:'Noto Sans KR',sans-serif;">전체보기</button>
         </div>
       </div>
 
       <!-- 하단 버튼 -->
-      <div style="display:flex;gap:8px;justify-content:center;padding-bottom:16px;">
-        <button onclick="signOut()" style="background:none;border:1px solid var(--text-dim);border-radius:8px;padding:8px 20px;color:var(--text-muted);font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">로그아웃</button>
-        <button onclick="deleteAccount()" style="background:none;border:1px solid #6b2020;border-radius:8px;padding:8px 20px;color:#c06060;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">탈퇴하기</button>
+      <div style="display:flex;gap:6px;justify-content:center;padding-bottom:16px;">
+        <button onclick="signOut()" style="background:none;border:1px solid var(--text-dim);border-radius:6px;padding:5px 14px;color:var(--text-dim);font-size:11px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">로그아웃</button>
+        <button onclick="deleteAccount()" style="background:none;border:1px solid #4a1a1a;border-radius:6px;padding:5px 14px;color:#9a5050;font-size:11px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">탈퇴하기</button>
       </div>
 
     </div>
@@ -1070,7 +1060,7 @@
     <button class="nav-item active" id="nav-home" onclick="switchTab('home')"><span class="nav-icon">🌙</span><span>홈</span></button>
     <button class="nav-item" id="nav-calendar" onclick="switchTab('calendar')"><span class="nav-icon">📅</span><span>달력</span></button>
     <button class="nav-item" id="nav-graph" onclick="switchTab('graph')"><span class="nav-icon">📊</span><span>그래프</span></button>
-    <button class="nav-item" id="nav-mypage" onclick="switchTab('mypage')"><span class="nav-icon">👤</span><span>마이</span></button>
+    <button class="nav-item" id="nav-mypage" onclick="switchTab('mypage')"><span class="nav-icon">👤</span><span>Mypage</span></button>
   </nav>
 </div>
 
