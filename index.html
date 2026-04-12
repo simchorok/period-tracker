@@ -2512,20 +2512,30 @@
   /* ── 월간 사이클 리포트 ── */
 
   function checkReportBanner() {
-    const records = loadRecords();
-    if (records.length < 1) return;
-    const sorted = [...records].sort((a,b) => a.start > b.start ? -1 : 1);
-    const last = sorted[0];
     const _t = new Date();
     const todayStr = `${_t.getFullYear()}-${String(_t.getMonth()+1).padStart(2,'0')}-${String(_t.getDate()).padStart(2,'0')}`;
-    // 생리 종료 다음날인지 확인
-    const dayAfterEnd = addDays(last.end, 1);
-    // 이미 봤는지 확인
-    const seenKey = `report_seen_${last.end}`;
-    if (todayStr === dayAfterEnd && !localStorage.getItem(seenKey)) {
-      document.getElementById('report-banner').classList.add('show');
-      const [,m] = last.start.split('-');
-      document.getElementById('report-banner-title').textContent = `${parseInt(m)}월 사이클 리포트가 도착했어요`;
+    const records = loadRecords();
+
+    if (records.length >= 1) {
+      // CASE1: 생리 기록 있음 → 종료일 다음날부터 확인 전까지 계속 노출
+      const sorted = [...records].sort((a,b) => a.start > b.start ? -1 : 1);
+      const last = sorted[0];
+      const dayAfterEnd = addDays(last.end, 1);
+      const seenKey = `report_seen_${last.end}`;
+      if (todayStr >= dayAfterEnd && !localStorage.getItem(seenKey)) {
+        const [y, m] = last.start.split('-');
+        document.getElementById('report-banner').classList.add('show');
+        document.getElementById('report-banner-title').textContent = `${y}년 ${parseInt(m)}월 사이클 리포트가 도착했어요`;
+        return;
+      }
+    } else {
+      // CASE2: 생리 기록 없음 → 매월 1일부터 확인 전까지 노출
+      const isFirstOfMonth = todayStr.slice(-2) === '01';
+      const monthKey = `report_seen_noPeriod_${todayStr.slice(0,7)}`;
+      if (todayStr >= `${todayStr.slice(0,7)}-01` && !localStorage.getItem(monthKey)) {
+        document.getElementById('report-banner').classList.add('show');
+        document.getElementById('report-banner-title').textContent = `${parseInt(todayStr.slice(5,7))}월 사이클 리포트가 도착했어요`;
+      }
     }
   }
 
@@ -2546,7 +2556,14 @@
 
     document.getElementById('report-backdrop').classList.add('open');
     // 배너 숨기기 + seen 저장
-    localStorage.setItem(`report_seen_${lastRecord.end}`, '1');
+    const records2 = loadRecords();
+    if (records2.length >= 1) {
+      localStorage.setItem(`report_seen_${lastRecord.end}`, '1');
+    } else {
+      const _tn = new Date();
+      const monthKey = `report_seen_noPeriod_${_tn.getFullYear()}-${String(_tn.getMonth()+1).padStart(2,'0')}`;
+      localStorage.setItem(monthKey, '1');
+    }
     document.getElementById('report-banner').classList.remove('show');
   }
 
@@ -2633,6 +2650,7 @@
       });
     }
 
+    const totalPhaseTags = Object.values(phaseTags).reduce((s,a)=>s+a.length,0);
     document.getElementById('report-phases').innerHTML = phases.map(p => {
       const info = phaseInfo[p];
       const tags = phaseTags[p].slice(0, 4);
@@ -2645,7 +2663,9 @@
             : `<div class="report-phase-empty">기록된 데이터가 없어요</div>`}
         </div>
       </div>`;
-    }).join('');
+    }).join('') + (totalPhaseTags === 0
+      ? `<div style="margin-top:12px;font-size:12px;color:#bbb;text-align:center;line-height:1.7">상태 기록을 입력하면 해당 데이터를 분석해서 더 많은 인사이트를 드릴 수 있어요 ✍️</div>`
+      : '');
   }
 
   function renderReportEnergyChart(lastRecord) {
@@ -2673,11 +2693,11 @@
 
     const validPoints = points.filter(p => p !== null);
     if (validPoints.length < 2) {
-      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
-      t.setAttribute('x', W/2); t.setAttribute('y', H/2);
-      t.setAttribute('text-anchor','middle'); t.setAttribute('fill','#ccc');
-      t.setAttribute('font-size','12'); t.textContent = '기록이 더 쌓이면 보여드릴게요';
-      svg.appendChild(t); return;
+      const fo = document.createElementNS('http://www.w3.org/2000/svg','foreignObject');
+      fo.setAttribute('x','0'); fo.setAttribute('y','0');
+      fo.setAttribute('width', W); fo.setAttribute('height', H);
+      fo.innerHTML = `<div xmlns="http://www.w3.org/2000/svg" style="display:flex;align-items:center;justify-content:center;height:${H}px;font-size:12px;color:#bbb;text-align:center;line-height:1.7;padding:0 8px">${GUIDE}</div>`;
+      svg.appendChild(fo); return;
     }
 
     const pad = {l:8,r:8,t:8,b:20};
@@ -2733,10 +2753,8 @@
   function renderReportPatterns(records, lastRecord) {
     const el = document.getElementById('report-patterns');
     if (records.length < 2) {
-      el.innerHTML = `<div class="report-locked">
-        <div class="report-locked-icon">🔒</div>
-        <div class="report-locked-text">2사이클이 쌓이면<br>반복 패턴을 분석해드릴게요</div>
-      </div>`; return;
+      el.innerHTML = `<div style="text-align:center;padding:12px 0;font-size:12px;color:#bbb;line-height:1.7">${GUIDE}<br><br>또한 2사이클이 쌓이면 반복 패턴을 분석해드릴게요 🔍</div>`;
+      return;
     }
 
     const logs = loadLogs();
@@ -2774,7 +2792,7 @@
     });
 
     if (!patterns.length) {
-      el.innerHTML = '<div class="report-locked-text" style="text-align:center;padding:12px 0;color:#bbb">아직 반복 패턴이 발견되지 않았어요</div>';
+      el.innerHTML = '<div style="text-align:center;padding:12px 0;font-size:12px;color:#bbb;line-height:1.7">상태 기록을 입력하면 해당 데이터를 분석해서 더 많은 인사이트를 드릴 수 있어요 ✍️</div>';
       return;
     }
 
@@ -2789,10 +2807,8 @@
   function renderReportForecast(records, lastRecord) {
     const el = document.getElementById('report-forecast');
     if (records.length < 2) {
-      el.innerHTML = `<div class="report-locked">
-        <div class="report-locked-icon">🔮</div>
-        <div class="report-locked-text">2사이클이 쌓이면<br>다음 사이클 예고를 보내드릴게요</div>
-      </div>`; return;
+      el.innerHTML = `<div style="text-align:center;padding:12px 0;font-size:12px;color:#bbb;line-height:1.7">${GUIDE}<br><br>또한 2사이클이 쌓이면 다음 사이클 예고를 보내드릴게요 🔮</div>`;
+      return;
     }
 
     const logs = loadLogs();
@@ -2826,7 +2842,7 @@
     });
 
     if (!forecasts.length) {
-      el.innerHTML = '<div style="text-align:center;padding:12px 0;color:#bbb;font-size:13px">다음 사이클 예고 데이터가 부족해요</div>';
+      el.innerHTML = '<div style="text-align:center;padding:12px 0;font-size:12px;color:#bbb;line-height:1.7">상태 기록을 입력하면 해당 데이터를 분석해서 더 많은 인사이트를 드릴 수 있어요 ✍️</div>';
       return;
     }
 
@@ -2915,7 +2931,12 @@
     const content = document.getElementById('report-list-content');
     const _t = new Date();
     const todayStr = `${_t.getFullYear()}-${String(_t.getMonth()+1).padStart(2,'0')}-${String(_t.getDate()).padStart(2,'0')}`;
-    const sentReports = records.filter(r => addDays(r.end, 1) <= todayStr);
+    // CASE1: 생리 기록 있음 → 종료일 다음날 이후
+    // CASE2: 생리 기록 없음 → 이번달 1일 이후
+    let sentReports = [];
+    if (records.length >= 1) {
+      sentReports = records.filter(r => addDays(r.end, 1) <= todayStr);
+    }
 
     if (!sentReports.length) {
       content.innerHTML = `
@@ -2924,12 +2945,27 @@
           <div class="report-empty-text">아직 발송된 월간 사이클 리포트가 없어요.<br><br>리포트는 입력한 생리 기록 및 상태 기록을<br>분석하여 생리가 끝난 다음 날 발송해드려요!</div>
         </div>`;
     } else {
-      content.innerHTML = sentReports.map((r, i) => {
+      // CASE4: 같은 달에 2개 이상이면 1차, 2차 표기
+      const monthCount = {};
+      const titledReports = sentReports.map(r => {
+        const key = r.start.slice(0,7);
+        monthCount[key] = (monthCount[key] || 0) + 1;
+        return { ...r, nth: monthCount[key] };
+      });
+      // nth 재계산 (역순이므로 같은달 내 순서 보정)
+      const monthTotal = {};
+      sentReports.forEach(r => {
+        const key = r.start.slice(0,7);
+        monthTotal[key] = (monthTotal[key] || 0) + 1;
+      });
+      content.innerHTML = titledReports.map((r, i) => {
         const [y, m] = r.start.split('-');
         const dur = dateDiff(r.end, r.start) + 1;
+        const key = r.start.slice(0,7);
+        const nth = monthTotal[key] > 1 ? ` ${r.nth}차` : '';
         return `<div class="report-list-item" onclick="openReportByRecord(${i})">
           <div class="report-list-item-left">
-            <div class="report-list-item-title">${y}년 ${parseInt(m)}월 사이클 리포트</div>
+            <div class="report-list-item-title">${y}년 ${parseInt(m)}월${nth} 사이클 리포트</div>
             <div class="report-list-item-sub">${r.start.slice(5).replace('-','/')} ~ ${r.end.slice(5).replace('-','/')} · ${dur}일간</div>
           </div>
           <div class="report-list-item-arrow">›</div>
