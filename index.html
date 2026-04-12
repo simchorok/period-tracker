@@ -948,6 +948,26 @@
   }
   .report-banner-label { font-size: 10px; color: rgba(255,255,255,0.75); letter-spacing: 0.12em; margin-bottom: 4px; }
   .report-banner-title { font-family: 'Gowun Batang', serif; font-size: 15px; color: white; }
+
+  .report-list-item {
+    background: white; border-radius: 14px; padding: 16px;
+    margin-bottom: 10px; cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: flex; align-items: center; justify-content: space-between;
+    transition: transform 0.15s;
+  }
+  .report-list-item:active { transform: scale(0.98); }
+  .report-list-item-left {}
+  .report-list-item-title { font-family: 'Gowun Batang', serif; font-size: 16px; color: #1a1a1a; margin-bottom: 4px; }
+  .report-list-item-sub { font-size: 12px; color: #999; }
+  .report-list-item-arrow { font-size: 18px; color: #c9607a; }
+  .report-empty-state {
+    text-align: center; padding: 32px 16px;
+    background: white; border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .report-empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .report-empty-text { font-size: 13px; color: #999; line-height: 1.8; }
 </style>
 </head>
 <body>
@@ -1115,7 +1135,7 @@
 
       <!-- 월간 리포트 -->
       <div class="mypage-menu" style="margin-bottom:16px">
-        <div class="mypage-menu-item" onclick="openReport()">
+        <div class="mypage-menu-item" onclick="openReportList()">
           <div class="mypage-menu-left"><span class="mypage-menu-icon">📊</span> 월간 사이클 리포트</div>
           <span style="font-size:12px;color:var(--accent-soft);background:var(--accent-dim);padding:4px 10px;border-radius:20px;">보기</span>
         </div>
@@ -1313,6 +1333,20 @@
       <div class="report-card" id="report-forecast"></div>
     </div>
 
+  </div>
+</div>
+
+
+<!-- 리포트 목록 바텀시트 -->
+<div class="report-backdrop" id="report-list-backdrop" onclick="closeReportListOutside(event)">
+  <div class="report-sheet" id="report-list-sheet">
+    <div class="report-header">
+      <div class="report-header-label">📊 MONTHLY CYCLE REPORT</div>
+      <div class="report-header-title">월간 사이클 리포트</div>
+      <div class="report-header-sub">생리가 끝난 다음 날 발송돼요</div>
+      <button class="report-close-btn" onclick="closeReportList()">✕</button>
+    </div>
+    <div style="padding:20px;" id="report-list-content"></div>
   </div>
 </div>
 
@@ -2873,6 +2907,67 @@
     currentUser = null;
     localStorage.clear();
     showLoginScreen();
+  }
+
+
+  function openReportList() {
+    const records = loadRecords().sort((a,b) => a.start > b.start ? -1 : 1);
+    const content = document.getElementById('report-list-content');
+    const _t = new Date();
+    const todayStr = `${_t.getFullYear()}-${String(_t.getMonth()+1).padStart(2,'0')}-${String(_t.getDate()).padStart(2,'0')}`;
+    const sentReports = records.filter(r => addDays(r.end, 1) <= todayStr);
+
+    if (!sentReports.length) {
+      content.innerHTML = `
+        <div class="report-empty-state">
+          <div class="report-empty-icon">🌙</div>
+          <div class="report-empty-text">아직 발송된 월간 사이클 리포트가 없어요.<br><br>리포트는 입력한 생리 기록 및 상태 기록을<br>분석하여 생리가 끝난 다음 날 발송해드려요!</div>
+        </div>`;
+    } else {
+      content.innerHTML = sentReports.map((r, i) => {
+        const [y, m] = r.start.split('-');
+        const dur = dateDiff(r.end, r.start) + 1;
+        return `<div class="report-list-item" onclick="openReportByRecord(${i})">
+          <div class="report-list-item-left">
+            <div class="report-list-item-title">${y}년 ${parseInt(m)}월 사이클 리포트</div>
+            <div class="report-list-item-sub">${r.start.slice(5).replace('-','/')} ~ ${r.end.slice(5).replace('-','/')} · ${dur}일간</div>
+          </div>
+          <div class="report-list-item-arrow">›</div>
+        </div>`;
+      }).join('');
+    }
+    document.getElementById('report-list-backdrop').classList.add('open');
+  }
+
+  function closeReportList() {
+    document.getElementById('report-list-backdrop').classList.remove('open');
+  }
+
+  function closeReportListOutside(e) {
+    if (e.target === document.getElementById('report-list-backdrop')) closeReportList();
+  }
+
+  function openReportByRecord(idx) {
+    const records = loadRecords().sort((a,b) => a.start > b.start ? -1 : 1);
+    const _t = new Date();
+    const todayStr = `${_t.getFullYear()}-${String(_t.getMonth()+1).padStart(2,'0')}-${String(_t.getDate()).padStart(2,'0')}`;
+    const sentReports = records.filter(r => addDays(r.end, 1) <= todayStr);
+    const target = sentReports[idx];
+    if (!target) return;
+    closeReportList();
+    const [y, m] = target.start.split('-');
+    document.getElementById('report-title').textContent = `${y}년 ${parseInt(m)}월 사이클 리포트`;
+    document.getElementById('report-sub').textContent =
+      `${target.start.slice(5).replace('-','/')} ~ ${target.end.slice(5).replace('-','/')}`;
+    const reorderedRecords = [target, ...records.filter(r => r.start !== target.start)];
+    renderReportSummary(reorderedRecords);
+    renderReportPhases(reorderedRecords, target);
+    renderReportEnergyChart(target);
+    renderReportPatterns(reorderedRecords, target);
+    renderReportForecast(reorderedRecords, target);
+    setTimeout(() => {
+      document.getElementById('report-backdrop').classList.add('open');
+    }, 300);
   }
 
   // PWA Service Worker 등록
