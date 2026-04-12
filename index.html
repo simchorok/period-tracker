@@ -858,6 +858,96 @@
   /* 하위 기록 섹션 */
   .mypage-sub-section { display: none; padding: 0 16px 16px; }
   .mypage-sub-section.show { display: block; }
+
+  /* ── 월간 사이클 리포트 ── */
+  .report-backdrop {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); z-index: 400;
+    align-items: flex-end; justify-content: center;
+  }
+  .report-backdrop.open { display: flex; }
+  .report-sheet {
+    background: #FAF8F5; border-radius: 24px 24px 0 0;
+    width: 100%; max-width: 420px; max-height: 92vh;
+    overflow-y: auto; padding: 0 0 40px;
+    animation: slideUp 0.3s ease;
+  }
+
+  /* 리포트 헤더 */
+  .report-header {
+    background: linear-gradient(135deg, #c9607a, #a04060);
+    padding: 28px 24px 24px; color: white; position: relative;
+  }
+  .report-header-label { font-size: 11px; opacity: 0.8; letter-spacing: 0.15em; margin-bottom: 6px; }
+  .report-header-title { font-family: 'Gowun Batang', serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .report-header-sub { font-size: 12px; opacity: 0.75; }
+  .report-close-btn {
+    position: absolute; top: 16px; right: 16px;
+    background: rgba(255,255,255,0.2); border: none; border-radius: 50%;
+    width: 32px; height: 32px; color: white; font-size: 16px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* 리포트 섹션 공통 */
+  .report-section { padding: 20px 20px 0; }
+  .report-section-title {
+    font-size: 11px; color: #9a7f88; letter-spacing: 0.15em;
+    text-transform: uppercase; margin-bottom: 12px; font-weight: 500;
+  }
+  .report-card {
+    background: white; border-radius: 16px; padding: 16px;
+    margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  /* 요약 카드 */
+  .report-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .report-summary-item { background: white; border-radius: 12px; padding: 14px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .report-summary-val { font-family: 'Gowun Batang', serif; font-size: 24px; color: #1a1a1a; }
+  .report-summary-label { font-size: 10px; color: #888; margin-top: 3px; }
+  .report-summary-change { font-size: 11px; margin-top: 4px; }
+  .report-summary-change.up { color: #e05070; }
+  .report-summary-change.down { color: #5dca8a; }
+  .report-summary-change.same { color: #aaa; }
+
+  /* 사이클 단계별 패턴 */
+  .report-phase-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 12px; }
+  .report-phase-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+  .report-phase-info { flex: 1; }
+  .report-phase-name { font-size: 13px; font-weight: 500; color: #1a1a1a; margin-bottom: 5px; }
+  .report-phase-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .report-phase-tag { font-size: 11px; padding: 3px 9px; border-radius: 12px; background: #f0e8eb; color: #a04060; }
+  .report-phase-empty { font-size: 12px; color: #bbb; }
+
+  /* 에너지 흐름 그래프 */
+  .report-energy-chart { width: 100%; margin-top: 4px; }
+
+  /* 반복 패턴 */
+  .report-pattern-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+  .report-pattern-dot { width: 8px; height: 8px; border-radius: 50%; background: #c9607a; flex-shrink: 0; margin-top: 5px; }
+  .report-pattern-text { font-size: 13px; color: #333; line-height: 1.6; }
+  .report-locked { text-align: center; padding: 16px 0 4px; }
+  .report-locked-icon { font-size: 28px; margin-bottom: 8px; }
+  .report-locked-text { font-size: 13px; color: #aaa; line-height: 1.7; }
+
+  /* 다음 달 예고 */
+  .report-forecast-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
+  .report-forecast-badge { font-size: 10px; padding: 3px 8px; border-radius: 10px; background: #fde8ee; color: #c9607a; flex-shrink: 0; white-space: nowrap; margin-top: 2px; }
+  .report-forecast-text { font-size: 13px; color: #333; line-height: 1.6; }
+
+  /* 홈 배너 */
+  .report-banner {
+    display: none; margin: 0 16px 16px;
+    background: linear-gradient(135deg, #c9607a, #a04060);
+    border-radius: 16px; padding: 14px 16px;
+    cursor: pointer; position: relative; overflow: hidden;
+  }
+  .report-banner.show { display: block; }
+  .report-banner::after {
+    content: '›'; position: absolute; right: 16px; top: 50%;
+    transform: translateY(-50%); font-size: 20px; color: rgba(255,255,255,0.7);
+  }
+  .report-banner-label { font-size: 10px; color: rgba(255,255,255,0.75); letter-spacing: 0.12em; margin-bottom: 4px; }
+  .report-banner-title { font-family: 'Gowun Batang', serif; font-size: 15px; color: white; }
 </style>
 </head>
 <body>
@@ -902,6 +992,12 @@
 
   <!-- 홈 -->
   <div class="tab-content active" id="tab-home">
+    <!-- 월간 리포트 배너 -->
+    <div class="report-banner" id="report-banner" onclick="openReport()">
+      <div class="report-banner-label">📊 월간 사이클 리포트</div>
+      <div class="report-banner-title" id="report-banner-title">지난 사이클 리포트가 도착했어요</div>
+    </div>
+
     <!-- 사이클 씽킹 카드 -->
     <div class="cycle-card" id="cycle-card">
       <div class="cycle-card-top">
@@ -1163,6 +1259,54 @@
   </div>
 </div>
 
+
+
+<!-- 월간 사이클 리포트 -->
+<div class="report-backdrop" id="report-backdrop" onclick="closeReportOutside(event)">
+  <div class="report-sheet" id="report-sheet">
+
+    <!-- 헤더 -->
+    <div class="report-header">
+      <div class="report-header-label">📊 MONTHLY CYCLE REPORT</div>
+      <div class="report-header-title" id="report-title">사이클 리포트</div>
+      <div class="report-header-sub" id="report-sub"></div>
+      <button class="report-close-btn" onclick="closeReport()">✕</button>
+    </div>
+
+    <!-- 이번 사이클 요약 -->
+    <div class="report-section">
+      <div class="report-section-title">이번 사이클 요약</div>
+      <div class="report-summary-grid" id="report-summary"></div>
+    </div>
+
+    <!-- 사이클 단계별 패턴 -->
+    <div class="report-section">
+      <div class="report-section-title">사이클 단계별 패턴</div>
+      <div class="report-card" id="report-phases"></div>
+    </div>
+
+    <!-- 에너지 흐름 -->
+    <div class="report-section">
+      <div class="report-section-title">에너지 흐름</div>
+      <div class="report-card">
+        <svg id="report-energy-chart" class="report-energy-chart" height="80"></svg>
+      </div>
+    </div>
+
+    <!-- 반복 패턴 -->
+    <div class="report-section">
+      <div class="report-section-title">반복 패턴 하이라이트</div>
+      <div class="report-card" id="report-patterns"></div>
+    </div>
+
+    <!-- 다음 사이클 예고 -->
+    <div class="report-section">
+      <div class="report-section-title">다음 사이클 예고</div>
+      <div class="report-card" id="report-forecast"></div>
+    </div>
+
+  </div>
+</div>
 
 <!-- 기록 상세 모달 -->
 <div class="modal-backdrop" id="record-detail-modal" onclick="closeRecordDetail(event)" style="z-index:300;">
@@ -1470,6 +1614,7 @@
     updateCycleCard(records);
     updateEmpathyCard(records);
     updatePatternInsight(records);
+    checkReportBanner();
   }
 
 
@@ -2321,6 +2466,337 @@
 
 
 
+
+  /* ── 월간 사이클 리포트 ── */
+
+  function checkReportBanner() {
+    const records = loadRecords();
+    if (records.length < 1) return;
+    const sorted = [...records].sort((a,b) => a.start > b.start ? -1 : 1);
+    const last = sorted[0];
+    const _t = new Date();
+    const todayStr = `${_t.getFullYear()}-${String(_t.getMonth()+1).padStart(2,'0')}-${String(_t.getDate()).padStart(2,'0')}`;
+    // 생리 종료 다음날인지 확인
+    const dayAfterEnd = addDays(last.end, 1);
+    // 이미 봤는지 확인
+    const seenKey = `report_seen_${last.end}`;
+    if (todayStr === dayAfterEnd && !localStorage.getItem(seenKey)) {
+      document.getElementById('report-banner').classList.add('show');
+      const [,m] = last.start.split('-');
+      document.getElementById('report-banner-title').textContent = `${parseInt(m)}월 사이클 리포트가 도착했어요`;
+    }
+  }
+
+  function openReport() {
+    const records = loadRecords().sort((a,b) => a.start > b.start ? -1 : 1);
+    if (!records.length) return;
+    const lastRecord = records[0];
+    const [y, m] = lastRecord.start.split('-');
+    document.getElementById('report-title').textContent = `${y}년 ${parseInt(m)}월 사이클 리포트`;
+    document.getElementById('report-sub').textContent =
+      `${lastRecord.start.slice(5).replace('-','/')} ~ ${lastRecord.end.slice(5).replace('-','/')}`;
+
+    renderReportSummary(records);
+    renderReportPhases(records, lastRecord);
+    renderReportEnergyChart(lastRecord);
+    renderReportPatterns(records, lastRecord);
+    renderReportForecast(records, lastRecord);
+
+    document.getElementById('report-backdrop').classList.add('open');
+    // 배너 숨기기 + seen 저장
+    localStorage.setItem(`report_seen_${lastRecord.end}`, '1');
+    document.getElementById('report-banner').classList.remove('show');
+  }
+
+  function closeReport() {
+    document.getElementById('report-backdrop').classList.remove('open');
+  }
+  function closeReportOutside(e) {
+    if (e.target === document.getElementById('report-backdrop')) closeReport();
+  }
+
+  function renderReportSummary(records) {
+    const last = records[0];
+    const prev = records[1] || null;
+    const dur = dateDiff(last.end, last.start) + 1;
+    const cycle = records.length >= 2 ? dateDiff(last.start, records[1].start) : null;
+    const prevDur = prev ? dateDiff(prev.end, prev.start) + 1 : null;
+    const prevCycle = records.length >= 3 ? dateDiff(records[1].start, records[2].start) : null;
+
+    const durChange = prevDur ? dur - prevDur : null;
+    const cycleChange = (cycle && prevCycle) ? cycle - prevCycle : null;
+
+    const logs = loadLogs();
+    // 이번 사이클 로그 수
+    let logCount = 0;
+    for (let d = new Date(last.start.replace(/-/g,'/')); d <= new Date(last.end.replace(/-/g,'/')); d.setDate(d.getDate()+1)) {
+      const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      if (logs[ds]) logCount++;
+    }
+
+    const changeHtml = (val) => {
+      if (val === null) return '';
+      if (val > 0) return `<div class="report-summary-change up">▲ ${val}일</div>`;
+      if (val < 0) return `<div class="report-summary-change down">▼ ${Math.abs(val)}일</div>`;
+      return `<div class="report-summary-change same">변화없음</div>`;
+    };
+
+    document.getElementById('report-summary').innerHTML = `
+      <div class="report-summary-item">
+        <div class="report-summary-val">${dur}일</div>
+        <div class="report-summary-label">생리 기간</div>
+        ${changeHtml(durChange)}
+      </div>
+      <div class="report-summary-item">
+        <div class="report-summary-val">${cycle ? cycle+'일' : '—'}</div>
+        <div class="report-summary-label">이번 주기</div>
+        ${changeHtml(cycleChange)}
+      </div>
+      <div class="report-summary-item">
+        <div class="report-summary-val">${logCount}일</div>
+        <div class="report-summary-label">상태 기록일수</div>
+        <div class="report-summary-change same">이번 사이클</div>
+      </div>
+      <div class="report-summary-item">
+        <div class="report-summary-val">${records.length}회</div>
+        <div class="report-summary-label">누적 기록</div>
+        <div class="report-summary-change same">전체</div>
+      </div>
+    `;
+  }
+
+  function renderReportPhases(records, lastRecord) {
+    const logs = loadLogs();
+    const cycle = calcAvgCycle(records);
+    const phases = ['winter','spring','summer','autumn'];
+    const phaseInfo = {
+      winter: { icon: '❄️', name: '겨울 · 생리기' },
+      spring: { icon: '🌱', name: '봄 · 여포기' },
+      summer: { icon: '☀️', name: '여름 · 배란기' },
+      autumn: { icon: '🍂', name: '가을 · 황체기' },
+    };
+    const phaseTags = { winter:[], spring:[], summer:[], autumn:[] };
+
+    const start = new Date(lastRecord.start.replace(/-/g,'/'));
+    for (let day = 1; day <= cycle; day++) {
+      const d = new Date(start);
+      d.setDate(d.getDate() + day - 1);
+      const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const phase = getCyclePhase(day, cycle);
+      const log = logs[ds];
+      if (!log) continue;
+      const tags = [...(log.mood||[]), ...(log.symptom||[]), ...(log.energy||[])];
+      tags.forEach(t => {
+        if (!phaseTags[phase].includes(t)) phaseTags[phase].push(t);
+      });
+    }
+
+    document.getElementById('report-phases').innerHTML = phases.map(p => {
+      const info = phaseInfo[p];
+      const tags = phaseTags[p].slice(0, 4);
+      return `<div class="report-phase-row">
+        <div class="report-phase-icon">${info.icon}</div>
+        <div class="report-phase-info">
+          <div class="report-phase-name">${info.name}</div>
+          ${tags.length
+            ? `<div class="report-phase-tags">${tags.map(t=>`<span class="report-phase-tag">${t}</span>`).join('')}</div>`
+            : `<div class="report-phase-empty">기록된 데이터가 없어요</div>`}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderReportEnergyChart(lastRecord) {
+    const logs = loadLogs();
+    const energyMap = { '활력 넘쳐요':4, '보통이에요':3, '좀 처져요':2, '완전 방전':1 };
+    const points = [];
+    const start = new Date(lastRecord.start.replace(/-/g,'/'));
+    const end = new Date(lastRecord.end.replace(/-/g,'/'));
+    // 사이클 전체 (시작 ~ 다음 생리 전)
+    const dur = dateDiff(lastRecord.end, lastRecord.start) + 1;
+    for (let day = 0; day < Math.min(dur, 40); day++) {
+      const d = new Date(start);
+      d.setDate(d.getDate() + day);
+      const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const log = logs[ds];
+      const energy = log?.energy?.[0];
+      points.push(energy ? (energyMap[energy] || 2.5) : null);
+    }
+
+    const svg = document.getElementById('report-energy-chart');
+    svg.innerHTML = '';
+    const W = 340; const H = 80;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.style.width = '100%';
+
+    const validPoints = points.filter(p => p !== null);
+    if (validPoints.length < 2) {
+      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x', W/2); t.setAttribute('y', H/2);
+      t.setAttribute('text-anchor','middle'); t.setAttribute('fill','#ccc');
+      t.setAttribute('font-size','12'); t.textContent = '기록이 더 쌓이면 보여드릴게요';
+      svg.appendChild(t); return;
+    }
+
+    const pad = {l:8,r:8,t:8,b:20};
+    const xStep = (W-pad.l-pad.r) / (points.length-1);
+    const toX = i => pad.l + i * xStep;
+    const toY = v => pad.t + (1-(v-1)/3) * (H-pad.t-pad.b);
+
+    // 단계별 배경
+    const winterEnd = 6;
+    const bgColors = ['#e8edf8','#e8f4ee','#fef8e8','#fdf0e8'];
+    const phases2 = [
+      {start:0, end:Math.min(winterEnd, points.length), color:'#e8edf820'},
+    ];
+
+    // 라인 그리기 (null 건너뜀)
+    let pathD = '';
+    let started = false;
+    points.forEach((p, i) => {
+      if (p === null) { started = false; return; }
+      const x = toX(i).toFixed(1), y = toY(p).toFixed(1);
+      pathD += started ? ` L${x},${y}` : `M${x},${y}`;
+      started = true;
+    });
+
+    if (pathD) {
+      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d', pathD); path.setAttribute('fill','none');
+      path.setAttribute('stroke','#c9607a'); path.setAttribute('stroke-width','2');
+      path.setAttribute('stroke-linecap','round'); path.setAttribute('stroke-linejoin','round');
+      svg.appendChild(path);
+    }
+
+    // 점
+    points.forEach((p, i) => {
+      if (p === null) return;
+      const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      circle.setAttribute('cx', toX(i)); circle.setAttribute('cy', toY(p));
+      circle.setAttribute('r', '3'); circle.setAttribute('fill','#c9607a');
+      svg.appendChild(circle);
+    });
+
+    // 라벨
+    ['1','활력','보통','처짐','방전'].forEach((l,i) => {});
+    const labels = ['방전','처짐','보통','활력'];
+    labels.forEach((l,i) => {
+      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x', 2); t.setAttribute('y', toY(i+1)+4);
+      t.setAttribute('fill','#bbb'); t.setAttribute('font-size','8');
+      t.textContent = l; svg.appendChild(t);
+    });
+  }
+
+  function renderReportPatterns(records, lastRecord) {
+    const el = document.getElementById('report-patterns');
+    if (records.length < 2) {
+      el.innerHTML = `<div class="report-locked">
+        <div class="report-locked-icon">🔒</div>
+        <div class="report-locked-text">2사이클이 쌓이면<br>반복 패턴을 분석해드릴게요</div>
+      </div>`; return;
+    }
+
+    const logs = loadLogs();
+    const cycle = calcAvgCycle(records);
+    const phaseTagCounts = { winter:{}, spring:{}, summer:{}, autumn:{} };
+
+    // 과거 사이클들에서 단계별 태그 카운트
+    records.slice(1).forEach(r => {
+      const start = new Date(r.start.replace(/-/g,'/'));
+      for (let day = 1; day <= cycle; day++) {
+        const d = new Date(start);
+        d.setDate(d.getDate() + day - 1);
+        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const phase = getCyclePhase(day, cycle);
+        const log = logs[ds];
+        if (!log) continue;
+        const tags = [...(log.mood||[]), ...(log.symptom||[])];
+        tags.forEach(t => {
+          phaseTagCounts[phase][t] = (phaseTagCounts[phase][t] || 0) + 1;
+        });
+      }
+    });
+
+    const totalPast = records.length - 1;
+    const threshold = Math.max(1, Math.floor(totalPast * 0.5));
+    const phaseNames = { winter:'겨울(생리기)', spring:'봄(여포기)', summer:'여름(배란기)', autumn:'가을(황체기)' };
+    const patterns = [];
+
+    Object.entries(phaseTagCounts).forEach(([phase, tagCounts]) => {
+      Object.entries(tagCounts).forEach(([tag, count]) => {
+        if (count >= threshold) {
+          patterns.push({ phase, tag, count, total: totalPast });
+        }
+      });
+    });
+
+    if (!patterns.length) {
+      el.innerHTML = '<div class="report-locked-text" style="text-align:center;padding:12px 0;color:#bbb">아직 반복 패턴이 발견되지 않았어요</div>';
+      return;
+    }
+
+    el.innerHTML = patterns.slice(0, 4).map(p =>
+      `<div class="report-pattern-item">
+        <div class="report-pattern-dot"></div>
+        <div class="report-pattern-text">${phaseNames[p.phase]}에 <strong>${p.tag}</strong>이(가) ${p.total}번 중 ${p.count}번 나타났어요</div>
+      </div>`
+    ).join('');
+  }
+
+  function renderReportForecast(records, lastRecord) {
+    const el = document.getElementById('report-forecast');
+    if (records.length < 2) {
+      el.innerHTML = `<div class="report-locked">
+        <div class="report-locked-icon">🔮</div>
+        <div class="report-locked-text">2사이클이 쌓이면<br>다음 사이클 예고를 보내드릴게요</div>
+      </div>`; return;
+    }
+
+    const logs = loadLogs();
+    const cycle = calcAvgCycle(records);
+    const phaseTagCounts = { winter:{}, spring:{}, summer:{}, autumn:{} };
+
+    records.slice(1).forEach(r => {
+      const start = new Date(r.start.replace(/-/g,'/'));
+      for (let day = 1; day <= cycle; day++) {
+        const d = new Date(start);
+        d.setDate(d.getDate() + day - 1);
+        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const phase = getCyclePhase(day, cycle);
+        const log = logs[ds];
+        if (!log) continue;
+        const tags = [...(log.mood||[]), ...(log.symptom||[])];
+        tags.forEach(t => { phaseTagCounts[phase][t] = (phaseTagCounts[phase][t] || 0) + 1; });
+      }
+    });
+
+    const totalPast = records.length - 1;
+    const threshold = Math.max(1, Math.floor(totalPast * 0.5));
+    const phaseEmoji = { winter:'❄️', spring:'🌱', summer:'☀️', autumn:'🍂' };
+    const phaseNames = { winter:'생리기', spring:'여포기', summer:'배란기', autumn:'황체기' };
+    const forecasts = [];
+
+    Object.entries(phaseTagCounts).forEach(([phase, tagCounts]) => {
+      Object.entries(tagCounts).forEach(([tag, count]) => {
+        if (count >= threshold) forecasts.push({ phase, tag });
+      });
+    });
+
+    if (!forecasts.length) {
+      el.innerHTML = '<div style="text-align:center;padding:12px 0;color:#bbb;font-size:13px">다음 사이클 예고 데이터가 부족해요</div>';
+      return;
+    }
+
+    el.innerHTML = forecasts.slice(0, 3).map(f =>
+      `<div class="report-forecast-item">
+        <div class="report-forecast-badge">${phaseEmoji[f.phase]} ${phaseNames[f.phase]}</div>
+        <div class="report-forecast-text"><strong>${f.tag}</strong>이(가) 나타날 수 있어요. 미리 대비해봐요 💙</div>
+      </div>`
+    ).join('');
+  }
+
+
   function openRecordDetail(type) {
     const modal = document.getElementById('record-detail-modal');
     const title = document.getElementById('record-detail-title');
@@ -2380,7 +2856,7 @@
   }
 
   async function deleteAccount() {
-    if (!confirm('정말 탈퇴하시겠어요? 지금까지 기록했던 모든 데이터가 삭제되고 복구할 수 없어요.')) return;
+    if (!confirm('정말 탈퇴하시겠어요? 모든 데이터가 삭제되고 복구할 수 없어요.')) return;
     if (!currentUser) return;
     await sb.from('daily_logs').delete().eq('user_id', currentUser.id);
     await sb.from('period_records').delete().eq('user_id', currentUser.id);
