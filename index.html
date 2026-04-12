@@ -2320,6 +2320,77 @@
   }
 
 
+
+  function openRecordDetail(type) {
+    const modal = document.getElementById('record-detail-modal');
+    const title = document.getElementById('record-detail-title');
+    const content = document.getElementById('record-detail-content');
+
+    if (type === 'period') {
+      title.textContent = '🩸 생리 기록';
+      const records = loadRecords().sort((a,b) => a.start > b.start ? -1 : 1);
+      if (!records.length) {
+        content.innerHTML = '<div class="empty-state">아직 생리 기록이 없어요 🌙</div>';
+      } else {
+        content.innerHTML = records.map((r,i) => {
+          const [sy,sm,sd] = r.start.split('-');
+          const [,em,ed] = r.end.split('-');
+          const dur = dateDiff(r.end, r.start) + 1;
+          return `<div class="record-item">
+            <div>
+              <div class="record-date">${parseInt(sm)}월 ${parseInt(sd)}일 ~ ${parseInt(em)}월 ${parseInt(ed)}일</div>
+              <div class="record-meta">${sy}년 · ${dur}일간</div>
+            </div>
+            <div style="display:flex;gap:4px">
+              <button class="record-edit" onclick="editRecord(${i});document.getElementById('record-detail-modal').classList.remove('open')">✎</button>
+              <button class="record-delete" onclick="deleteRecord(${i});openRecordDetail('period')">×</button>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    } else {
+      title.textContent = '✍️ 상태 기록';
+      const logs = loadLogs();
+      const dates = Object.keys(logs).sort().reverse();
+      if (!dates.length) {
+        content.innerHTML = '<div class="empty-state">아직 상태 기록이 없어요 ✍️</div>';
+      } else {
+        content.innerHTML = dates.map(ds => {
+          const [y,m,d] = ds.split('-');
+          const entry = logs[ds];
+          const allTags = [...(entry.mood||[]), ...(entry.symptom||[]), ...(entry.energy||[]), ...(entry.etc||[])];
+          return `<div>
+            <div class="log-date-header">
+              <div class="log-date-label">${parseInt(m)}월 ${parseInt(d)}일 <span style="font-size:12px;color:var(--text-muted)">${y}</span></div>
+              <button class="log-edit-btn" onclick="openLogModal('${ds}')">수정</button>
+            </div>
+            <div class="log-tag-display">
+              ${allTags.map(t => `<span class="log-tag-chip">${t}</span>`).join('')}
+            </div>
+          </div>`;
+        }).join('');
+      }
+    }
+    modal.classList.add('open');
+  }
+
+  function closeRecordDetail(e) {
+    if (e.target === document.getElementById('record-detail-modal'))
+      document.getElementById('record-detail-modal').classList.remove('open');
+  }
+
+  async function deleteAccount() {
+    if (!confirm('정말 탈퇴하시겠어요? 모든 데이터가 삭제되고 복구할 수 없어요.')) return;
+    if (!currentUser) return;
+    await sb.from('daily_logs').delete().eq('user_id', currentUser.id);
+    await sb.from('period_records').delete().eq('user_id', currentUser.id);
+    await sb.from('user_profiles').delete().eq('id', currentUser.id);
+    await sb.auth.signOut();
+    currentUser = null;
+    localStorage.clear();
+    showLoginScreen();
+  }
+
   // PWA Service Worker 등록
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
