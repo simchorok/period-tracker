@@ -1181,7 +1181,7 @@
     <div class="modal-title" id="modal-title">생리 기간 기록</div>
     <label>시작일</label>
     <input type="date" id="date-start">
-    <label>종료일 <span style="color:var(--text-dim);font-size:11px">(기본 +5일, 수정 가능)</span></label>
+    <label>종료일 <span style="color:var(--text-dim);font-size:11px">(기본 +6일, 수정 가능)</span></label>
     <input type="date" id="date-end">
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">취소</button>
@@ -1334,7 +1334,7 @@
 
   const STORAGE_KEY = 'period_records_v2';
   const DEFAULT_CYCLE = 28;
-  const DEFAULT_DURATION = 5;
+  const DEFAULT_DURATION = 6;
 
   function loadRecords() {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
@@ -2362,7 +2362,7 @@
           return `<div>
             <div class="log-date-header">
               <div class="log-date-label">${parseInt(m)}월 ${parseInt(d)}일 <span style="font-size:12px;color:var(--text-muted)">${y}</span></div>
-              <button class="log-edit-btn" onclick="openLogModal('${ds}')">수정</button>
+              <button class="log-edit-btn" onclick="document.getElementById('record-detail-modal').classList.remove('open');setTimeout(()=>openLogModal('${ds}'),200)">수정</button>
             </div>
             <div class="log-tag-display">
               ${allTags.map(t => `<span class="log-tag-chip">${t}</span>`).join('')}
@@ -2380,7 +2380,7 @@
   }
 
   async function deleteAccount() {
-    if (!confirm('정말 탈퇴하시겠어요? 모든 데이터가 삭제되고 복구할 수 없어요.')) return;
+    if (!confirm('정말 탈퇴하시겠어요? 지금까지 기록했던 모든 데이터가 삭제되고 복구할 수 없어요.')) return;
     if (!currentUser) return;
     await sb.from('daily_logs').delete().eq('user_id', currentUser.id);
     await sb.from('period_records').delete().eq('user_id', currentUser.id);
