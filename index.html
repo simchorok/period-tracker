@@ -206,9 +206,11 @@
   ];
 
   function getCyclePhase(dayOfCycle, cycleLength) {
-    const winterEnd = 5;
-    const springEnd = Math.round(cycleLength * 0.43);
-    const summerEnd = Math.round(cycleLength * 0.57);
+    // 사용자 평균 주기 기반으로 각 단계 계산
+    // 겨울(생리기): 약 13%, 봄(여포기): 약 35%, 여름(배란기): 약 15%, 가을(황체기): 약 37%
+    const winterEnd = 6;
+    const springEnd = Math.round(cycleLength * 0.48);
+    const summerEnd = Math.round(cycleLength * 0.63);
     if (dayOfCycle <= winterEnd) return 'winter';
     if (dayOfCycle <= springEnd) return 'spring';
     if (dayOfCycle <= summerEnd) return 'summer';
@@ -232,10 +234,10 @@
     const info = CYCLE_PHASES[phase];
     const msg = info.messages[dayOfCycle % info.messages.length];
 
-    // 단계별 범위 계산
-    const winterEnd = 5;
-    const springEnd = Math.round(cycle * 0.43);
-    const summerEnd = Math.round(cycle * 0.57);
+    // 단계별 범위 계산 (사용자 평균 주기 기반)
+    const winterEnd = 6;
+    const springEnd = Math.round(cycle * 0.48);
+    const summerEnd = Math.round(cycle * 0.63);
     const ranges = { winter:[1,winterEnd], spring:[winterEnd+1,springEnd], summer:[springEnd+1,summerEnd], autumn:[summerEnd+1,cycle] };
     const [phaseStart, phaseEnd] = ranges[phase];
     const progress = phaseEnd === phaseStart ? 100 : Math.min(100, Math.round(((dayOfCycle - phaseStart + 1) / (phaseEnd - phaseStart + 1)) * 100));
@@ -985,7 +987,11 @@
   async function signInWithGoogle() {
     await sb.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: 'https://simchorok.github.io/period-tracker/' }
+      options: {
+        redirectTo: 'https://simchorok.github.io/period-tracker/',
+        skipBrowserRedirect: false,
+        queryParams: { prompt: 'select_account' }
+      }
     });
   }
 
@@ -1320,9 +1326,11 @@
   ];
 
   function getCyclePhase(dayOfCycle, cycleLength) {
-    const winterEnd = 5;
-    const springEnd = Math.round(cycleLength * 0.43);
-    const summerEnd = Math.round(cycleLength * 0.57);
+    // 사용자 평균 주기 기반으로 각 단계 계산
+    // 겨울(생리기): 약 13%, 봄(여포기): 약 35%, 여름(배란기): 약 15%, 가을(황체기): 약 37%
+    const winterEnd = 6;
+    const springEnd = Math.round(cycleLength * 0.48);
+    const summerEnd = Math.round(cycleLength * 0.63);
     if (dayOfCycle <= winterEnd) return 'winter';
     if (dayOfCycle <= springEnd) return 'spring';
     if (dayOfCycle <= summerEnd) return 'summer';
@@ -1346,10 +1354,10 @@
     const info = CYCLE_PHASES[phase];
     const msg = info.messages[dayOfCycle % info.messages.length];
 
-    // 단계별 범위 계산
-    const winterEnd = 5;
-    const springEnd = Math.round(cycle * 0.43);
-    const summerEnd = Math.round(cycle * 0.57);
+    // 단계별 범위 계산 (사용자 평균 주기 기반)
+    const winterEnd = 6;
+    const springEnd = Math.round(cycle * 0.48);
+    const summerEnd = Math.round(cycle * 0.63);
     const ranges = { winter:[1,winterEnd], spring:[winterEnd+1,springEnd], summer:[springEnd+1,summerEnd], autumn:[summerEnd+1,cycle] };
     const [phaseStart, phaseEnd] = ranges[phase];
     const progress = phaseEnd === phaseStart ? 100 : Math.min(100, Math.round(((dayOfCycle - phaseStart + 1) / (phaseEnd - phaseStart + 1)) * 100));
