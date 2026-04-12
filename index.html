@@ -1015,25 +1015,22 @@
         </div>
       </div>
 
-      <!-- 메뉴 -->
-      <div class="mypage-menu">
-        <div class="mypage-menu-item" onclick="toggleMypageSection('period-records')">
+      <!-- 기록 바로가기 -->
+      <div class="mypage-menu" style="margin-bottom:16px">
+        <div class="mypage-menu-item" onclick="openRecordDetail('period')">
           <div class="mypage-menu-left"><span class="mypage-menu-icon">🩸</span> 생리 기록</div>
-          <span class="mypage-menu-arrow" id="arrow-period-records">›</span>
+          <span style="font-size:12px;color:var(--accent-soft);background:var(--accent-dim);padding:4px 10px;border-radius:20px;">상세보기</span>
         </div>
-        <div class="mypage-sub-section" id="mypage-period-records">
-          <div id="records-list"></div>
-        </div>
-        <div class="mypage-menu-item" onclick="toggleMypageSection('log-records')">
+        <div class="mypage-menu-item" onclick="openRecordDetail('log')">
           <div class="mypage-menu-left"><span class="mypage-menu-icon">✍️</span> 상태 기록</div>
-          <span class="mypage-menu-arrow" id="arrow-log-records">›</span>
+          <span style="font-size:12px;color:var(--accent-soft);background:var(--accent-dim);padding:4px 10px;border-radius:20px;">상세보기</span>
         </div>
-        <div class="mypage-sub-section" id="mypage-log-records">
-          <div id="log-list"></div>
-        </div>
-        <div class="mypage-menu-item danger" onclick="signOut()">
-          <div class="mypage-menu-left"><span class="mypage-menu-icon">🚪</span> 로그아웃</div>
-        </div>
+      </div>
+
+      <!-- 하단 버튼 -->
+      <div style="display:flex;gap:8px;justify-content:center;padding-bottom:16px;">
+        <button onclick="signOut()" style="background:none;border:1px solid var(--text-dim);border-radius:8px;padding:8px 20px;color:var(--text-muted);font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">로그아웃</button>
+        <button onclick="deleteAccount()" style="background:none;border:1px solid #6b2020;border-radius:8px;padding:8px 20px;color:#c06060;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">탈퇴하기</button>
       </div>
 
     </div>
@@ -1072,8 +1069,8 @@
   <nav class="bottom-nav">
     <button class="nav-item active" id="nav-home" onclick="switchTab('home')"><span class="nav-icon">🌙</span><span>홈</span></button>
     <button class="nav-item" id="nav-calendar" onclick="switchTab('calendar')"><span class="nav-icon">📅</span><span>달력</span></button>
-    <button class="nav-item" id="nav-mypage" onclick="switchTab('mypage')"><span class="nav-icon">👤</span><span>마이</span></button>
     <button class="nav-item" id="nav-graph" onclick="switchTab('graph')"><span class="nav-icon">📊</span><span>그래프</span></button>
+    <button class="nav-item" id="nav-mypage" onclick="switchTab('mypage')"><span class="nav-icon">👤</span><span>마이</span></button>
   </nav>
 </div>
 
@@ -1176,6 +1173,18 @@
   </div>
 </div>
 
+
+<!-- 기록 상세 모달 -->
+<div class="modal-backdrop" id="record-detail-modal" onclick="closeRecordDetail(event)" style="z-index:300;">
+  <div class="modal" style="max-height:80vh;overflow-y:auto;border-radius:24px 24px 0 0;padding:24px 20px 40px;">
+    <div class="modal-title" id="record-detail-title">기록 상세</div>
+    <div id="record-detail-content"></div>
+    <div style="margin-top:16px;">
+      <button onclick="document.getElementById('record-detail-modal').classList.remove('open')" style="width:100%;padding:14px;background:var(--surface2);border:none;border-radius:12px;color:var(--text-muted);font-family:'Noto Sans KR',sans-serif;font-size:14px;cursor:pointer;">닫기</button>
+    </div>
+  </div>
+</div>
+
 <!-- 모달 -->
 <div class="modal-backdrop" id="modal" onclick="closeModalOutside(event)">
   <div class="modal">
@@ -1230,16 +1239,7 @@
     document.getElementById('loading-screen').classList.remove('show');
     document.getElementById('login-screen').classList.remove('show');
 
-    // 유저 정보 표시
-    const userInfo = document.getElementById('user-info');
-    userInfo.classList.add('show');
-    document.getElementById('user-name').textContent = user.email || '사용자';
-    const avatar = document.getElementById('user-avatar');
-    if (user.user_metadata?.avatar_url) {
-      avatar.innerHTML = `<img src="${user.user_metadata.avatar_url}" alt="프로필">`;
-    } else {
-      avatar.textContent = (user.email || '?')[0].toUpperCase();
-    }
+
 
     // 데이터 로드
     loadAllData();
