@@ -395,6 +395,86 @@
     empathy.parentNode.insertBefore(card, empathy.nextSibling);
   }
 
+
+  /* ── 마이페이지 ── */
+  let userNickname = '';
+
+  async function loadNickname() {
+    if (!currentUser) return;
+    const { data } = await sb.from('user_profiles').select('nickname').eq('id', currentUser.id).single();
+    if (data?.nickname) {
+      userNickname = data.nickname;
+      updateNicknameUI();
+    }
+  }
+
+  function updateNicknameUI() {
+    const el = document.getElementById('mypage-nickname');
+    if (el) el.textContent = userNickname || '닉네임 설정';
+    // 홈 헤더에도 반영
+    const homeGreet = document.getElementById('home-greet');
+    if (homeGreet && userNickname) homeGreet.textContent = `${userNickname}님의 달의 기록`;
+  }
+
+  function toggleNicknameEdit() {
+    const row = document.getElementById('nickname-input-row');
+    const input = document.getElementById('nickname-input');
+    const isShow = row.classList.toggle('show');
+    if (isShow) {
+      input.value = userNickname || '';
+      input.focus();
+    }
+  }
+
+  async function saveNickname() {
+    const val = document.getElementById('nickname-input').value.trim();
+    if (!val) return alert('닉네임을 입력해주세요');
+    if (!currentUser) return;
+    await sb.from('user_profiles').upsert({ id: currentUser.id, nickname: val });
+    userNickname = val;
+    updateNicknameUI();
+    document.getElementById('nickname-input-row').classList.remove('show');
+  }
+
+  function toggleMypageSection(id) {
+    const section = document.getElementById(`mypage-${id}`);
+    const arrow = document.getElementById(`arrow-${id}`);
+    const isShow = section.classList.toggle('show');
+    arrow.textContent = isShow ? '∨' : '›';
+    if (isShow) {
+      if (id === 'period-records') renderRecords();
+      if (id === 'log-records') renderLogList();
+    }
+  }
+
+  function renderMypage() {
+    if (!currentUser) return;
+    // 아바타
+    const avatar = document.getElementById('mypage-avatar');
+    if (currentUser.user_metadata?.avatar_url) {
+      avatar.innerHTML = `<img src="${currentUser.user_metadata.avatar_url}" alt="프로필">`;
+    } else {
+      avatar.textContent = (currentUser.email || '?')[0].toUpperCase();
+    }
+    document.getElementById('mypage-email').textContent = currentUser.email || '';
+
+    // 닉네임
+    updateNicknameUI();
+
+    // 통계
+    const records = loadRecords();
+    const logs = loadLogs();
+    const cycle = calcAvgCycle(records);
+    const avgDur = records.length
+      ? Math.round(records.reduce((s,r) => s + dateDiff(r.end,r.start)+1, 0) / records.length)
+      : 0;
+
+    document.getElementById('mypage-avg-cycle').textContent = records.length >= 2 ? `${cycle}일` : '—';
+    document.getElementById('mypage-avg-dur').textContent = records.length ? `${avgDur}일` : '—';
+    document.getElementById('mypage-total-records').textContent = `${records.length}회`;
+    document.getElementById('mypage-total-logs').textContent = `${Object.keys(logs).length}일`;
+  }
+
   /* ── 달력: 스크롤 방식 ── */
   .calendar-scroll-wrap {
     overflow-y: auto;
@@ -695,6 +775,89 @@
     font-size:15px; width:100%; font-family:'Noto Sans KR',sans-serif;
     outline:none;
   }
+
+  /* ── 마이페이지 ── */
+  .mypage-section { margin: 0 16px; }
+
+  .profile-card {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid var(--accent-dim);
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .profile-avatar-lg {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--accent-dim);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; color: var(--accent-soft);
+    overflow: hidden; flex-shrink: 0;
+    border: 2px solid var(--accent-dim);
+  }
+  .profile-avatar-lg img { width: 100%; height: 100%; object-fit: cover; }
+  .profile-name-row { display: flex; align-items: center; gap: 8px; }
+  .profile-nickname {
+    font-family: 'Gowun Batang', serif;
+    font-size: 20px; color: var(--text);
+  }
+  .profile-email { font-size: 12px; color: var(--text-muted); }
+  .btn-edit-nickname {
+    background: none; border: 1px solid var(--accent-dim);
+    border-radius: 8px; padding: 4px 10px;
+    color: var(--text-muted); font-size: 12px;
+    cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-edit-nickname:hover { border-color: var(--accent); color: var(--accent-soft); }
+
+  .nickname-input-row {
+    display: none;
+    gap: 8px; width: 100%;
+  }
+  .nickname-input-row.show { display: flex; }
+  .nickname-input {
+    flex: 1; background: var(--bg); border: 1px solid var(--accent-dim);
+    border-radius: 10px; padding: 10px 14px; color: var(--text);
+    font-size: 14px; font-family: 'Noto Sans KR', sans-serif; outline: none;
+  }
+  .btn-save-nickname {
+    background: var(--accent); border: none; border-radius: 10px;
+    padding: 10px 16px; color: white; font-size: 13px;
+    cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  .mypage-stats {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; margin-bottom: 16px;
+  }
+  .mypage-stat-card {
+    background: var(--surface); border-radius: 14px;
+    padding: 16px; border: 1px solid #2a1530; text-align: center;
+  }
+  .mypage-stat-icon { font-size: 20px; margin-bottom: 6px; display: block; }
+  .mypage-stat-val { font-family: 'Gowun Batang', serif; font-size: 22px; color: var(--text); }
+  .mypage-stat-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+  .mypage-menu { background: var(--surface); border-radius: 16px; border: 1px solid #2a1530; overflow: hidden; margin-bottom: 16px; }
+  .mypage-menu-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px; border-bottom: 1px solid #2a1530;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .mypage-menu-item:last-child { border-bottom: none; }
+  .mypage-menu-item:hover { background: var(--surface2); }
+  .mypage-menu-left { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text); }
+  .mypage-menu-icon { font-size: 18px; }
+  .mypage-menu-arrow { color: var(--text-dim); font-size: 16px; }
+  .mypage-menu-item.danger .mypage-menu-left { color: var(--accent); }
+
+  /* 하위 기록 섹션 */
+  .mypage-sub-section { display: none; padding: 0 16px 16px; }
+  .mypage-sub-section.show { display: block; }
 </style>
 </head>
 <body>
@@ -726,7 +889,7 @@
   <header>
     <span class="moon-icon">🌙</span>
     <h1>달의 기록</h1>
-    <p>나의 생리주기 트래커</p>
+    <p id="home-greet">나의 생리주기 트래커</p>
   </header>
 
 
@@ -734,7 +897,7 @@
   <div class="user-info" id="user-info">
     <div class="user-avatar" id="user-avatar">👤</div>
     <div class="user-name" id="user-name">로딩 중...</div>
-    <button class="btn-logout" onclick="signOut()">로그아웃</button>
+
   </div>
 
   <!-- 홈 -->
@@ -808,15 +971,71 @@
     </div>
   </div>
 
-  <!-- 기록 -->
-  <div class="tab-content" id="tab-records">
-    <div class="records-section">
-      <div style="display:flex;gap:0;margin:0 0 16px;background:var(--surface);border-radius:12px;padding:4px;">
-        <button id="rec-tab-period" onclick="switchRecTab('period')" style="flex:1;padding:8px;border:none;border-radius:9px;font-family:'Noto Sans KR',sans-serif;font-size:13px;cursor:pointer;background:var(--accent);color:white;transition:all 0.2s;">🩸 생리 기록</button>
-        <button id="rec-tab-log" onclick="switchRecTab('log')" style="flex:1;padding:8px;border:none;border-radius:9px;font-family:'Noto Sans KR',sans-serif;font-size:13px;cursor:pointer;background:transparent;color:var(--text-muted);transition:all 0.2s;">✍️ 상태 기록</button>
+  <!-- 마이페이지 -->
+  <div class="tab-content" id="tab-mypage">
+    <div class="mypage-section">
+
+      <!-- 프로필 카드 -->
+      <div class="profile-card">
+        <div class="profile-avatar-lg" id="mypage-avatar">👤</div>
+        <div style="text-align:center">
+          <div class="profile-name-row">
+            <div class="profile-nickname" id="mypage-nickname">닉네임 설정</div>
+            <button class="btn-edit-nickname" onclick="toggleNicknameEdit()">✎ 수정</button>
+          </div>
+          <div class="profile-email" id="mypage-email"></div>
+        </div>
+        <div class="nickname-input-row" id="nickname-input-row">
+          <input type="text" class="nickname-input" id="nickname-input" placeholder="닉네임 입력" maxlength="10">
+          <button class="btn-save-nickname" onclick="saveNickname()">저장</button>
+        </div>
       </div>
-      <div id="records-period-list"><div id="records-list"></div></div>
-      <div id="records-log-list" style="display:none"><div id="log-list"></div></div>
+
+      <!-- 통계 요약 -->
+      <div class="mypage-stats">
+        <div class="mypage-stat-card">
+          <span class="mypage-stat-icon">🩸</span>
+          <div class="mypage-stat-val" id="mypage-avg-cycle">—</div>
+          <div class="mypage-stat-label">평균 주기</div>
+        </div>
+        <div class="mypage-stat-card">
+          <span class="mypage-stat-icon">📅</span>
+          <div class="mypage-stat-val" id="mypage-avg-dur">—</div>
+          <div class="mypage-stat-label">평균 생리 기간</div>
+        </div>
+        <div class="mypage-stat-card">
+          <span class="mypage-stat-icon">📋</span>
+          <div class="mypage-stat-val" id="mypage-total-records">—</div>
+          <div class="mypage-stat-label">생리 기록 횟수</div>
+        </div>
+        <div class="mypage-stat-card">
+          <span class="mypage-stat-icon">✍️</span>
+          <div class="mypage-stat-val" id="mypage-total-logs">—</div>
+          <div class="mypage-stat-label">상태 기록 횟수</div>
+        </div>
+      </div>
+
+      <!-- 메뉴 -->
+      <div class="mypage-menu">
+        <div class="mypage-menu-item" onclick="toggleMypageSection('period-records')">
+          <div class="mypage-menu-left"><span class="mypage-menu-icon">🩸</span> 생리 기록</div>
+          <span class="mypage-menu-arrow" id="arrow-period-records">›</span>
+        </div>
+        <div class="mypage-sub-section" id="mypage-period-records">
+          <div id="records-list"></div>
+        </div>
+        <div class="mypage-menu-item" onclick="toggleMypageSection('log-records')">
+          <div class="mypage-menu-left"><span class="mypage-menu-icon">✍️</span> 상태 기록</div>
+          <span class="mypage-menu-arrow" id="arrow-log-records">›</span>
+        </div>
+        <div class="mypage-sub-section" id="mypage-log-records">
+          <div id="log-list"></div>
+        </div>
+        <div class="mypage-menu-item danger" onclick="signOut()">
+          <div class="mypage-menu-left"><span class="mypage-menu-icon">🚪</span> 로그아웃</div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -853,7 +1072,7 @@
   <nav class="bottom-nav">
     <button class="nav-item active" id="nav-home" onclick="switchTab('home')"><span class="nav-icon">🌙</span><span>홈</span></button>
     <button class="nav-item" id="nav-calendar" onclick="switchTab('calendar')"><span class="nav-icon">📅</span><span>달력</span></button>
-    <button class="nav-item" id="nav-records" onclick="switchTab('records')"><span class="nav-icon">📋</span><span>기록</span></button>
+    <button class="nav-item" id="nav-mypage" onclick="switchTab('mypage')"><span class="nav-icon">👤</span><span>마이</span></button>
     <button class="nav-item" id="nav-graph" onclick="switchTab('graph')"><span class="nav-icon">📊</span><span>그래프</span></button>
   </nav>
 </div>
@@ -1024,6 +1243,7 @@
 
     // 데이터 로드
     loadAllData();
+    loadNickname();
   }
 
   // ── Supabase DB 연동 ──
@@ -1515,6 +1735,86 @@
     empathy.parentNode.insertBefore(card, empathy.nextSibling);
   }
 
+
+  /* ── 마이페이지 ── */
+  let userNickname = '';
+
+  async function loadNickname() {
+    if (!currentUser) return;
+    const { data } = await sb.from('user_profiles').select('nickname').eq('id', currentUser.id).single();
+    if (data?.nickname) {
+      userNickname = data.nickname;
+      updateNicknameUI();
+    }
+  }
+
+  function updateNicknameUI() {
+    const el = document.getElementById('mypage-nickname');
+    if (el) el.textContent = userNickname || '닉네임 설정';
+    // 홈 헤더에도 반영
+    const homeGreet = document.getElementById('home-greet');
+    if (homeGreet && userNickname) homeGreet.textContent = `${userNickname}님의 달의 기록`;
+  }
+
+  function toggleNicknameEdit() {
+    const row = document.getElementById('nickname-input-row');
+    const input = document.getElementById('nickname-input');
+    const isShow = row.classList.toggle('show');
+    if (isShow) {
+      input.value = userNickname || '';
+      input.focus();
+    }
+  }
+
+  async function saveNickname() {
+    const val = document.getElementById('nickname-input').value.trim();
+    if (!val) return alert('닉네임을 입력해주세요');
+    if (!currentUser) return;
+    await sb.from('user_profiles').upsert({ id: currentUser.id, nickname: val });
+    userNickname = val;
+    updateNicknameUI();
+    document.getElementById('nickname-input-row').classList.remove('show');
+  }
+
+  function toggleMypageSection(id) {
+    const section = document.getElementById(`mypage-${id}`);
+    const arrow = document.getElementById(`arrow-${id}`);
+    const isShow = section.classList.toggle('show');
+    arrow.textContent = isShow ? '∨' : '›';
+    if (isShow) {
+      if (id === 'period-records') renderRecords();
+      if (id === 'log-records') renderLogList();
+    }
+  }
+
+  function renderMypage() {
+    if (!currentUser) return;
+    // 아바타
+    const avatar = document.getElementById('mypage-avatar');
+    if (currentUser.user_metadata?.avatar_url) {
+      avatar.innerHTML = `<img src="${currentUser.user_metadata.avatar_url}" alt="프로필">`;
+    } else {
+      avatar.textContent = (currentUser.email || '?')[0].toUpperCase();
+    }
+    document.getElementById('mypage-email').textContent = currentUser.email || '';
+
+    // 닉네임
+    updateNicknameUI();
+
+    // 통계
+    const records = loadRecords();
+    const logs = loadLogs();
+    const cycle = calcAvgCycle(records);
+    const avgDur = records.length
+      ? Math.round(records.reduce((s,r) => s + dateDiff(r.end,r.start)+1, 0) / records.length)
+      : 0;
+
+    document.getElementById('mypage-avg-cycle').textContent = records.length >= 2 ? `${cycle}일` : '—';
+    document.getElementById('mypage-avg-dur').textContent = records.length ? `${avgDur}일` : '—';
+    document.getElementById('mypage-total-records').textContent = `${records.length}회`;
+    document.getElementById('mypage-total-logs').textContent = `${Object.keys(logs).length}일`;
+  }
+
   /* ── 달력: 스크롤 방식 ── */
   function renderCalendarMonth(year, month, periodSet, pred, past, todayFull) {
     const block = document.createElement('div');
@@ -1741,13 +2041,14 @@
 
   /* ── 탭 전환 ── */
   function switchTab(tab) {
-    ['home','calendar','records','graph'].forEach(t=>{
+    ['home','calendar','graph','mypage'].forEach(t=>{
       document.getElementById(`tab-${t}`).classList.toggle('active',t===tab);
-      document.getElementById(`nav-${t}`).classList.toggle('active',t===tab);
+      const navEl = document.getElementById(`nav-${t}`);
+      if (navEl) navEl.classList.toggle('active',t===tab);
     });
     if (tab==='calendar') renderCalendar();
-    if (tab==='records') renderRecords();
     if (tab==='graph') renderGraph();
+    if (tab==='mypage') renderMypage();
   }
 
   /* ── 모달 ── */
