@@ -2702,7 +2702,7 @@
       const fo = document.createElementNS('http://www.w3.org/2000/svg','foreignObject');
       fo.setAttribute('x','0'); fo.setAttribute('y','0');
       fo.setAttribute('width', W); fo.setAttribute('height', H);
-      fo.innerHTML = `<div xmlns="http://www.w3.org/2000/svg" style="display:flex;align-items:center;justify-content:center;height:${H}px;font-size:12px;color:#bbb;text-align:center;line-height:1.7;padding:0 8px">${GUIDE}</div>`;
+      fo.innerHTML = `<div xmlns="http://www.w3.org/2000/svg" style="display:flex;align-items:center;justify-content:center;height:${H}px;font-size:12px;color:#bbb;text-align:center;line-height:1.7;padding:0 8px">상태 기록을 입력하면 해당 데이터를 분석해서 더 많은 인사이트를 드릴 수 있어요 ✍️</div>`;
       svg.appendChild(fo); return;
     }
 
@@ -2759,7 +2759,7 @@
   function renderReportPatterns(records, lastRecord) {
     const el = document.getElementById('report-patterns');
     if (records.length < 2) {
-      el.innerHTML = `<div style="text-align:center;padding:12px 0;font-size:12px;color:#bbb;line-height:1.7">${GUIDE}<br><br>또한 2사이클이 쌓이면 반복 패턴을 분석해드릴게요 🔍</div>`;
+      el.innerHTML = `<div style="text-align:center;padding:12px 0;font-size:12px;color:#bbb;line-height:1.7">상태 기록을 입력하면 해당 데이터를 분석해서 더 많은 인사이트를 드릴 수 있어요 ✍️<br><br>또한 2사이클이 쌓이면 반복 패턴을 분석해드릴게요 🔍</div>`;
       return;
     }
 
@@ -2813,7 +2813,7 @@
   function renderReportForecast(records, lastRecord) {
     const el = document.getElementById('report-forecast');
     if (records.length < 2) {
-      el.innerHTML = `<div style="text-align:center;padding:12px 0;font-size:12px;color:#bbb;line-height:1.7">${GUIDE}<br><br>또한 2사이클이 쌓이면 다음 사이클 예고를 보내드릴게요 🔮</div>`;
+      el.innerHTML = `<div style="text-align:center;padding:12px 0;font-size:12px;color:#bbb;line-height:1.7">상태 기록을 입력하면 해당 데이터를 분석해서 더 많은 인사이트를 드릴 수 있어요 ✍️<br><br>또한 2사이클이 쌓이면 다음 사이클 예고를 보내드릴게요 🔮</div>`;
       return;
     }
 
