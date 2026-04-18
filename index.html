@@ -1009,6 +1009,23 @@
     font-size: 12px; cursor: pointer; margin-top: 8px;
     font-family: 'Noto Sans KR', sans-serif;
   }
+  .report-ai-label {
+    font-size: 12px; color: #e8a0b0; font-weight: 600;
+    letter-spacing: 0.05em; margin-bottom: 8px;
+  }
+  .report-ai-section + .report-ai-section {
+    margin-top: 16px; padding-top: 16px;
+    border-top: 1px solid rgba(201,96,122,0.15);
+  }
+  .report-ai-locked .report-ai-text {
+    color: #6a5a62; font-style: italic;
+  }
+  .report-ai-encouragement {
+    margin-top: 20px; padding: 14px 16px;
+    background: rgba(201,96,122,0.12);
+    border-radius: 12px; border-left: 3px solid #c9607a;
+    font-size: 13px; color: #f0c0cc; line-height: 1.7;
+  }
 
   /* ── 피드백 섹션 ── */
   .report-feedback-section {
@@ -1510,6 +1527,17 @@
   const SUPABASE_KEY = 'sb_publishable_ad3WJqIrRSfKrpQYFjyTHA_DzktkuUA';
   const { createClient } = window.supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // ── XSS 방지 ──
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
 
   let currentUser = null;
 
@@ -2672,7 +2700,32 @@
 
   function openReport() {
     const records = loadRecords().sort((a,b) => a.start > b.start ? -1 : 1);
-    if (!records.length) return;
+    const _t = new Date();
+    const todayStr = `${_t.getFullYear()}-${String(_t.getMonth()+1).padStart(2,'0')}-${String(_t.getDate()).padStart(2,'0')}`;
+
+    // CASE2: 생리 기록 없는 유저
+    if (!records.length) {
+      const monthKey = `report_seen_noPeriod_${todayStr.slice(0,7)}`;
+      document.getElementById('report-title').textContent = `${parseInt(todayStr.slice(5,7))}월 사이클 리포트`;
+      document.getElementById('report-sub').textContent = `${todayStr.slice(0,7).replace('-','/')} 월간 기록`;
+      // 요약/패턴/에너지 섹션 숨기기 (생리 데이터 없으므로)
+      document.getElementById('report-summary').innerHTML = '<div style="font-size:13px;color:#aaa;padding:8px 0;">생리 기록을 입력하면 더 정확한 사이클 분석을 드릴 수 있어요 🌿</div>';
+      document.getElementById('report-phases').innerHTML = '';
+      document.getElementById('report-patterns').innerHTML = '';
+      document.getElementById('report-forecast').innerHTML = '';
+      document.getElementById('report-backdrop').classList.add('open');
+      localStorage.setItem(monthKey, '1');
+      document.getElementById('report-banner').classList.remove('show');
+      // AI 분석 호출 (CASE2)
+      const pseudoEndDate = todayStr;
+      currentReportEndDate = pseudoEndDate;
+      currentReportRecord = { start: todayStr, end: pseudoEndDate };
+      resetReportFeedback();
+      generateAIAnalysis([], { end: pseudoEndDate });
+      return;
+    }
+
+    // CASE1: 생리 기록 있는 유저
     const lastRecord = records[0];
     const [y, m] = lastRecord.start.split('-');
     document.getElementById('report-title').textContent = `${y}년 ${parseInt(m)}월 사이클 리포트`;
@@ -2686,19 +2739,11 @@
     renderReportForecast(records, lastRecord);
 
     document.getElementById('report-backdrop').classList.add('open');
-    // 배너 숨기기 + seen 저장
-    const records2 = loadRecords();
-    if (records2.length >= 1) {
-      localStorage.setItem(`report_seen_${lastRecord.end}`, '1');
-    } else {
-      const _tn = new Date();
-      const monthKey = `report_seen_noPeriod_${_tn.getFullYear()}-${String(_tn.getMonth()+1).padStart(2,'0')}`;
-      localStorage.setItem(monthKey, '1');
-    }
+    localStorage.setItem(`report_seen_${lastRecord.end}`, '1');
     document.getElementById('report-banner').classList.remove('show');
-    // AI 분석 호출
+    // AI 분석 호출 (CASE1)
     currentReportEndDate = lastRecord.end;
-    _retryRecord = lastRecord;
+    currentReportRecord = lastRecord;
     resetReportFeedback();
     generateAIAnalysis(records, lastRecord);
   }
@@ -3054,6 +3099,7 @@
     if (!currentUser) return;
     await sb.from('daily_logs').delete().eq('user_id', currentUser.id);
     await sb.from('period_records').delete().eq('user_id', currentUser.id);
+    await sb.from('cycle_reports').delete().eq('user_id', currentUser.id);
     await sb.from('user_profiles').delete().eq('id', currentUser.id);
     await sb.auth.signOut();
     currentUser = null;
@@ -3156,36 +3202,74 @@
     document.getElementById('report-backdrop').classList.add('open');
     // AI 분석 호출
     currentReportEndDate = target.end;
-    _retryRecord = target;
+    currentReportRecord = target;
     resetReportFeedback();
     generateAIAnalysis(reorderedRecords, target);
   }
 
 
-  const ANTHROPIC_API_KEY = ''; // Edge Functions로 대체 예정
   let currentReportEndDate = null;
+  let currentReportRecord = null; // _retryRecord와 통합된 변수
   let reportFeedbackRating = 0;
 
   // ── AI 분석 생성 ──
   async function generateAIAnalysis(records, targetRecord) {
+    if (!currentUser) return;
+
     // DB에 이미 저장된 분석 있으면 불러오기
     const existing = await loadReportFromDB(targetRecord.end);
     if (existing?.ai_analysis) {
       renderAIAnalysis(existing.ai_analysis);
-      // 피드백도 복원
       if (existing.feedback_rating) {
         restoreReportFeedback(existing);
       }
       return;
     }
 
-    // 없으면 API 호출
+    // 없으면 Edge Function 호출
     try {
-      const analysisData = prepareAnalysisData(records, targetRecord);
-      const analysis = await callClaudeAPI(analysisData);
-      renderAIAnalysis(analysis);
-      // DB에 저장
-      await saveReportToDB(targetRecord.end, analysis);
+      const caseType = records.length >= 1 ? 'CASE1' : 'CASE2';
+
+      // ④ access_token null 체크
+      const session = (await sb.auth.getSession()).data.session;
+      if (!session?.access_token) {
+        document.getElementById('report-ai-content').innerHTML = `
+          <div class="report-ai-error">
+            세션이 만료됐어요. 다시 로그인해주세요.
+          </div>`;
+        return;
+      }
+
+      const { data, error } = await sb.functions.invoke('analyze-cycle', {
+        body: {
+          user_id: currentUser.id,
+          period_end_date: targetRecord.end,
+          case_type: caseType,
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+
+      // 이미 생성된 리포트면 DB에서 불러오기
+      if (data.status === 'already_exists') {
+        renderAIAnalysis(data.ai_analysis);
+        return;
+      }
+
+      // 데이터 없음 (CASE2에서 로그 없을 때)
+      if (data.status === 'no_data') {
+        document.getElementById('report-ai-content').innerHTML = `
+          <div class="report-ai-error">
+            아직 상태 기록이 없어요.<br>매일 기록을 남기면 AI 분석을 받을 수 있어요 🌿
+          </div>`;
+        return;
+      }
+
+      renderAIAnalysis(data.ai_analysis);
+
     } catch(e) {
       console.error('AI 분석 오류:', e);
       document.getElementById('report-ai-content').innerHTML = `
@@ -3196,79 +3280,53 @@
     }
   }
 
-  function prepareAnalysisData(records, targetRecord) {
-    const logs = loadLogs();
-    const cycle = calcAvgCycle(records);
-
-    // 이번 사이클 데이터
-    const currentData = collectCycleData(targetRecord, logs, cycle);
-
-    // 직전 사이클 데이터
-    const sortedRecords = [...records].sort((a,b) => a.start > b.start ? -1 : 1);
-    const prevIdx = sortedRecords.findIndex(r => r.start === targetRecord.start) + 1;
-    const prevRecord = sortedRecords[prevIdx] || null;
-    const prevData = prevRecord ? collectCycleData(prevRecord, logs, cycle) : null;
-
-    return { currentData, prevData, cycle };
-  }
-
-  function collectCycleData(record, logs, cycle) {
-    const data = {
-      start: record.start, end: record.end,
-      duration: dateDiff(record.end, record.start) + 1,
-      mood: {}, symptom: {}, energy: {},
-      sleepAvg: [], logDays: 0
-    };
-
-    const start = new Date(record.start.replace(/-/g,'/'));
-    for (let day = 1; day <= cycle; day++) {
-      const d = new Date(start);
-      d.setDate(d.getDate() + day - 1);
-      const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-      const log = logs[ds];
-      if (!log) continue;
-      data.logDays++;
-      const phase = getCyclePhase(day, cycle);
-      if (!data.mood[phase]) data.mood[phase] = [];
-      if (!data.symptom[phase]) data.symptom[phase] = [];
-      if (!data.energy[phase]) data.energy[phase] = [];
-      (log.mood||[]).forEach(t => data.mood[phase].push(t));
-      (log.symptom||[]).forEach(t => data.symptom[phase].push(t));
-      (log.energy||[]).forEach(t => data.energy[phase].push(t));
-      if (log.sleepHours) data.sleepAvg.push(log.sleepHours);
+  function renderAIAnalysis(rawText) {
+    let parsed = null;
+    try {
+      parsed = typeof rawText === 'string' ? JSON.parse(rawText) : rawText;
+    } catch {
+      parsed = null;
     }
-    return data;
+
+    if (!parsed) {
+      document.getElementById('report-ai-content').innerHTML =
+        `<div class="report-ai-text">${rawText}</div>`;
+      return;
+    }
+
+    const noDataMsg = '상태 기록을 입력하면 해당 데이터를 분석해서 더 많은 인사이트를 드릴 수 있어요 🌿';
+
+    document.getElementById('report-ai-content').innerHTML = `
+      <div class="report-ai-section">
+        <div class="report-ai-label">📋 이번 사이클 요약</div>
+        <div class="report-ai-text">${escapeHtml(parsed.summary) || '-'}</div>
+      </div>
+      <div class="report-ai-section">
+        <div class="report-ai-label">🌿 사이클 단계별 패턴</div>
+        <div class="report-ai-text">${escapeHtml(parsed.pattern) || noDataMsg}</div>
+      </div>
+      <div class="report-ai-section">
+        <div class="report-ai-label">⚡ 에너지 흐름</div>
+        <div class="report-ai-text">${escapeHtml(parsed.energy_flow) || noDataMsg}</div>
+      </div>
+      <div class="report-ai-section ${parsed.highlight ? '' : 'report-ai-locked'}">
+        <div class="report-ai-label">🔁 반복 패턴 하이라이트</div>
+        <div class="report-ai-text">${escapeHtml(parsed.highlight) || '2사이클이 쌓이면 분석해드릴게요 🔒'}</div>
+      </div>
+      <div class="report-ai-section ${parsed.next_preview ? '' : 'report-ai-locked'}">
+        <div class="report-ai-label">🔮 다음 사이클 예고</div>
+        <div class="report-ai-text">${escapeHtml(parsed.next_preview) || '2사이클이 쌓이면 예고해드릴게요 🔒'}</div>
+      </div>
+      <div class="report-ai-encouragement">
+        💌 ${escapeHtml(parsed.encouragement) || ''}
+      </div>
+    `;
   }
 
-  async function callClaudeAPI(analysisData) {
-    // Supabase Edge Functions 호출 (API 키는 서버에서 안전하게 관리)
-    const { data, error } = await sb.functions.invoke('analyze-cycle', {
-      body: analysisData
-    });
-    if (error) throw error;
-    return data.analysis;
-  }
-
-  function renderAIAnalysis(text) {
-    document.getElementById('report-ai-content').innerHTML =
-      `<div class="report-ai-text">${text}</div>`;
-  }
-
-  let _retryRecord = null;
   function retryAIAnalysis() {
-    if (!_retryRecord) return;
+    if (!currentReportRecord) return;
     const records = loadRecords().sort((a,b) => a.start > b.start ? -1 : 1);
-    generateAIAnalysis(records, _retryRecord);
-  }
-
-  // ── DB 저장/불러오기 ──
-  async function saveReportToDB(endDate, aiAnalysis) {
-    if (!currentUser) return;
-    await sb.from('cycle_reports').upsert({
-      user_id: currentUser.id,
-      period_end_date: endDate,
-      ai_analysis: aiAnalysis,
-    }, { onConflict: 'user_id,period_end_date' });
+    generateAIAnalysis(records, currentReportRecord);
   }
 
   async function loadReportFromDB(endDate) {
@@ -3283,13 +3341,12 @@
 
   async function saveFeedbackToDB(endDate, rating, text) {
     if (!currentUser) return;
-    const _t = new Date();
     await sb.from('cycle_reports').upsert({
       user_id: currentUser.id,
       period_end_date: endDate,
       feedback_rating: rating,
       feedback_text: text,
-      feedback_at: _t.toISOString()
+      // feedback_at은 DB 트리거가 자동으로 기록
     }, { onConflict: 'user_id,period_end_date' });
   }
 
