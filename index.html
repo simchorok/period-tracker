@@ -967,6 +967,103 @@
   }
   .report-empty-icon { font-size: 40px; margin-bottom: 12px; }
   .report-empty-text { font-size: 13px; color: #999; line-height: 1.8; }
+
+  /* ── AI 분석 섹션 ── */
+  .report-ai-section {
+    background: linear-gradient(135deg, #1a0a2e, #2a1040);
+    margin: 0; padding: 20px;
+    border-bottom: 1px solid rgba(201,96,122,0.2);
+  }
+  .report-ai-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(201,96,122,0.2); border: 1px solid rgba(201,96,122,0.4);
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 11px; color: #e8a0b0;
+    letter-spacing: 0.1em; margin-bottom: 12px;
+  }
+  .report-ai-text {
+    font-size: 14px; color: #f0e6ea;
+    line-height: 1.9; white-space: pre-line;
+  }
+  .report-ai-loading {
+    display: flex; align-items: center; gap: 10px;
+    color: #9a7f88; font-size: 13px; padding: 8px 0;
+  }
+  .report-ai-loading-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #c9607a; animation: aiPulse 1.2s ease-in-out infinite;
+  }
+  .report-ai-loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .report-ai-loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes aiPulse {
+    0%,100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+  .report-ai-error {
+    color: #9a7f88; font-size: 13px; line-height: 1.7;
+    text-align: center; padding: 8px 0;
+  }
+  .report-ai-retry {
+    background: none; border: 1px solid rgba(201,96,122,0.4);
+    border-radius: 8px; padding: 6px 16px; color: #e8a0b0;
+    font-size: 12px; cursor: pointer; margin-top: 8px;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  /* ── 피드백 섹션 ── */
+  .report-feedback-section {
+    background: #FAF8F5; padding: 20px;
+    border-top: 1px solid #e8e0e4;
+  }
+  .report-feedback-title {
+    font-family: 'Gowun Batang', serif;
+    font-size: 16px; color: #1a1a1a; margin-bottom: 4px;
+  }
+  .report-feedback-sub {
+    font-size: 12px; color: #999; margin-bottom: 16px;
+  }
+  .report-stars {
+    display: flex; gap: 8px; margin-bottom: 16px;
+  }
+  .report-star-btn {
+    font-size: 28px; background: none; border: none;
+    cursor: pointer; padding: 2px;
+    filter: grayscale(1) opacity(0.3);
+    transition: all 0.15s;
+  }
+  .report-star-btn.active { filter: none; }
+  .report-feedback-textarea {
+    width: 100%; background: white;
+    border: 1px solid #e0d8dc; border-radius: 12px;
+    padding: 12px 14px; font-size: 13px; color: #1a1a1a;
+    font-family: 'Noto Sans KR', sans-serif;
+    resize: none; outline: none; line-height: 1.7;
+    min-height: 100px;
+  }
+  .report-feedback-textarea:focus { border-color: #c9607a; }
+  .report-feedback-count {
+    text-align: right; font-size: 11px; color: #bbb; margin-top: 4px;
+  }
+  .report-feedback-guide {
+    font-size: 12px; color: #c9607a; text-align: center;
+    margin: 12px 0; line-height: 1.6;
+  }
+  .report-save-btn {
+    width: 100%; padding: 14px; border: none; border-radius: 12px;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: all 0.2s;
+    background: #e0d0d5; color: #999;
+  }
+  .report-save-btn.active {
+    background: #c9607a; color: white;
+  }
+  .report-save-btn.active:active { transform: scale(0.97); }
+  .report-saved-badge {
+    display: none; text-align: center; padding: 12px;
+    font-size: 13px; color: #5dca8a;
+  }
+  .report-saved-badge.show { display: block; }
 </style>
 </head>
 <body>
@@ -1297,6 +1394,19 @@
       <button class="report-close-btn" onclick="closeReport()">✕</button>
     </div>
 
+    <!-- AI 분석 섹션 -->
+    <div class="report-ai-section" id="report-ai-section">
+      <div class="report-ai-badge">✨ AI 분석</div>
+      <div id="report-ai-content">
+        <div class="report-ai-loading">
+          <div class="report-ai-loading-dot"></div>
+          <div class="report-ai-loading-dot"></div>
+          <div class="report-ai-loading-dot"></div>
+          <span>AI가 이번 사이클을 분석 중이에요, 잠시만요 🌙</span>
+        </div>
+      </div>
+    </div>
+
     <!-- 이번 사이클 요약 -->
     <div class="report-section">
       <div class="report-section-title">이번 사이클 요약</div>
@@ -1327,6 +1437,26 @@
     <div class="report-section">
       <div class="report-section-title">다음 사이클 예고</div>
       <div class="report-card" id="report-forecast"></div>
+    </div>
+
+    <!-- 피드백 섹션 -->
+    <div class="report-feedback-section" id="report-feedback-section">
+      <div class="report-feedback-title">이 리포트가 도움이 됐나요?</div>
+      <div class="report-feedback-sub">별점과 피드백을 남겨주세요 (필수)</div>
+      <div class="report-stars" id="report-stars">
+        <button class="report-star-btn" data-val="1" onclick="selectReportStar(1)">⭐</button>
+        <button class="report-star-btn" data-val="2" onclick="selectReportStar(2)">⭐</button>
+        <button class="report-star-btn" data-val="3" onclick="selectReportStar(3)">⭐</button>
+        <button class="report-star-btn" data-val="4" onclick="selectReportStar(4)">⭐</button>
+        <button class="report-star-btn" data-val="5" onclick="selectReportStar(5)">⭐</button>
+      </div>
+      <textarea class="report-feedback-textarea" id="report-feedback-text"
+        placeholder="이번 리포트에 대한 솔직한 의견을 남겨주세요"
+        maxlength="500" oninput="onFeedbackInput()"></textarea>
+      <div class="report-feedback-count"><span id="feedback-char-count">0</span>/500자</div>
+      <div class="report-feedback-guide" id="feedback-guide">💬 리포트를 저장하려면 피드백을 남겨주세요!</div>
+      <button class="report-save-btn" id="report-save-btn" onclick="saveReportFeedback()" disabled>저장하기</button>
+      <div class="report-saved-badge" id="report-saved-badge">✅ 저장됐어요! 소중한 피드백 감사해요 🌙</div>
     </div>
 
   </div>
@@ -2566,6 +2696,11 @@
       localStorage.setItem(monthKey, '1');
     }
     document.getElementById('report-banner').classList.remove('show');
+    // AI 분석 호출
+    currentReportEndDate = lastRecord.end;
+    _retryRecord = lastRecord;
+    resetReportFeedback();
+    generateAIAnalysis(records, lastRecord);
   }
 
   function closeReport() {
@@ -3019,6 +3154,226 @@
     // 목록 숨기고 상세 열기
     document.getElementById('report-list-backdrop').classList.remove('open');
     document.getElementById('report-backdrop').classList.add('open');
+    // AI 분석 호출
+    currentReportEndDate = target.end;
+    _retryRecord = target;
+    resetReportFeedback();
+    generateAIAnalysis(reorderedRecords, target);
+  }
+
+
+  const ANTHROPIC_API_KEY = ''; // Edge Functions로 대체 예정
+  let currentReportEndDate = null;
+  let reportFeedbackRating = 0;
+
+  // ── AI 분석 생성 ──
+  async function generateAIAnalysis(records, targetRecord) {
+    // DB에 이미 저장된 분석 있으면 불러오기
+    const existing = await loadReportFromDB(targetRecord.end);
+    if (existing?.ai_analysis) {
+      renderAIAnalysis(existing.ai_analysis);
+      // 피드백도 복원
+      if (existing.feedback_rating) {
+        restoreReportFeedback(existing);
+      }
+      return;
+    }
+
+    // 없으면 API 호출
+    try {
+      const analysisData = prepareAnalysisData(records, targetRecord);
+      const analysis = await callClaudeAPI(analysisData);
+      renderAIAnalysis(analysis);
+      // DB에 저장
+      await saveReportToDB(targetRecord.end, analysis);
+    } catch(e) {
+      console.error('AI 분석 오류:', e);
+      document.getElementById('report-ai-content').innerHTML = `
+        <div class="report-ai-error">
+          분석 중 오류가 발생했어요.<br>다시 시도해주세요.
+          <br><button class="report-ai-retry" onclick="retryAIAnalysis()">다시 시도</button>
+        </div>`;
+    }
+  }
+
+  function prepareAnalysisData(records, targetRecord) {
+    const logs = loadLogs();
+    const cycle = calcAvgCycle(records);
+
+    // 이번 사이클 데이터
+    const currentData = collectCycleData(targetRecord, logs, cycle);
+
+    // 직전 사이클 데이터
+    const sortedRecords = [...records].sort((a,b) => a.start > b.start ? -1 : 1);
+    const prevIdx = sortedRecords.findIndex(r => r.start === targetRecord.start) + 1;
+    const prevRecord = sortedRecords[prevIdx] || null;
+    const prevData = prevRecord ? collectCycleData(prevRecord, logs, cycle) : null;
+
+    return { currentData, prevData, cycle };
+  }
+
+  function collectCycleData(record, logs, cycle) {
+    const data = {
+      start: record.start, end: record.end,
+      duration: dateDiff(record.end, record.start) + 1,
+      mood: {}, symptom: {}, energy: {},
+      sleepAvg: [], logDays: 0
+    };
+
+    const start = new Date(record.start.replace(/-/g,'/'));
+    for (let day = 1; day <= cycle; day++) {
+      const d = new Date(start);
+      d.setDate(d.getDate() + day - 1);
+      const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const log = logs[ds];
+      if (!log) continue;
+      data.logDays++;
+      const phase = getCyclePhase(day, cycle);
+      if (!data.mood[phase]) data.mood[phase] = [];
+      if (!data.symptom[phase]) data.symptom[phase] = [];
+      if (!data.energy[phase]) data.energy[phase] = [];
+      (log.mood||[]).forEach(t => data.mood[phase].push(t));
+      (log.symptom||[]).forEach(t => data.symptom[phase].push(t));
+      (log.energy||[]).forEach(t => data.energy[phase].push(t));
+      if (log.sleepHours) data.sleepAvg.push(log.sleepHours);
+    }
+    return data;
+  }
+
+  async function callClaudeAPI(analysisData) {
+    // Supabase Edge Functions 호출 (API 키는 서버에서 안전하게 관리)
+    const { data, error } = await sb.functions.invoke('analyze-cycle', {
+      body: analysisData
+    });
+    if (error) throw error;
+    return data.analysis;
+  }
+
+  function renderAIAnalysis(text) {
+    document.getElementById('report-ai-content').innerHTML =
+      `<div class="report-ai-text">${text}</div>`;
+  }
+
+  let _retryRecord = null;
+  function retryAIAnalysis() {
+    if (!_retryRecord) return;
+    const records = loadRecords().sort((a,b) => a.start > b.start ? -1 : 1);
+    generateAIAnalysis(records, _retryRecord);
+  }
+
+  // ── DB 저장/불러오기 ──
+  async function saveReportToDB(endDate, aiAnalysis) {
+    if (!currentUser) return;
+    await sb.from('cycle_reports').upsert({
+      user_id: currentUser.id,
+      period_end_date: endDate,
+      ai_analysis: aiAnalysis,
+    }, { onConflict: 'user_id,period_end_date' });
+  }
+
+  async function loadReportFromDB(endDate) {
+    if (!currentUser) return null;
+    const { data } = await sb.from('cycle_reports')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .eq('period_end_date', endDate)
+      .single();
+    return data;
+  }
+
+  async function saveFeedbackToDB(endDate, rating, text) {
+    if (!currentUser) return;
+    const _t = new Date();
+    await sb.from('cycle_reports').upsert({
+      user_id: currentUser.id,
+      period_end_date: endDate,
+      feedback_rating: rating,
+      feedback_text: text,
+      feedback_at: _t.toISOString()
+    }, { onConflict: 'user_id,period_end_date' });
+  }
+
+  // ── 피드백 UI ──
+  function selectReportStar(val) {
+    reportFeedbackRating = val;
+    document.querySelectorAll('.report-star-btn').forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.dataset.val) <= val);
+    });
+    checkFeedbackComplete();
+  }
+
+  function onFeedbackInput() {
+    const text = document.getElementById('report-feedback-text').value;
+    document.getElementById('feedback-char-count').textContent = text.length;
+    checkFeedbackComplete();
+  }
+
+  function checkFeedbackComplete() {
+    const text = document.getElementById('report-feedback-text').value.trim();
+    const btn = document.getElementById('report-save-btn');
+    const guide = document.getElementById('feedback-guide');
+    if (reportFeedbackRating > 0 && text.length > 0) {
+      btn.classList.add('active');
+      btn.disabled = false;
+      guide.style.display = 'none';
+    } else {
+      btn.classList.remove('active');
+      btn.disabled = true;
+      guide.style.display = 'block';
+    }
+  }
+
+  async function saveReportFeedback() {
+    const text = document.getElementById('report-feedback-text').value.trim();
+    if (!reportFeedbackRating || !text) return;
+    if (!currentReportEndDate) return;
+
+    const btn = document.getElementById('report-save-btn');
+    btn.textContent = '저장 중...';
+    btn.disabled = true;
+
+    await saveFeedbackToDB(currentReportEndDate, reportFeedbackRating, text);
+
+    btn.style.display = 'none';
+    document.getElementById('feedback-guide').style.display = 'none';
+    document.getElementById('report-saved-badge').classList.add('show');
+  }
+
+  function restoreReportFeedback(data) {
+    if (data.feedback_rating) {
+      reportFeedbackRating = data.feedback_rating;
+      selectReportStar(reportFeedbackRating);
+    }
+    if (data.feedback_text) {
+      document.getElementById('report-feedback-text').value = data.feedback_text;
+      document.getElementById('feedback-char-count').textContent = data.feedback_text.length;
+    }
+    if (data.feedback_rating && data.feedback_text) {
+      document.getElementById('report-save-btn').style.display = 'none';
+      document.getElementById('feedback-guide').style.display = 'none';
+      document.getElementById('report-saved-badge').classList.add('show');
+    }
+  }
+
+  function resetReportFeedback() {
+    reportFeedbackRating = 0;
+    currentReportEndDate = null;
+    document.querySelectorAll('.report-star-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('report-feedback-text').value = '';
+    document.getElementById('feedback-char-count').textContent = '0';
+    document.getElementById('report-save-btn').style.display = 'block';
+    document.getElementById('report-save-btn').classList.remove('active');
+    document.getElementById('report-save-btn').disabled = true;
+    document.getElementById('report-save-btn').textContent = '저장하기';
+    document.getElementById('feedback-guide').style.display = 'block';
+    document.getElementById('report-saved-badge').classList.remove('show');
+    document.getElementById('report-ai-content').innerHTML = `
+      <div class="report-ai-loading">
+        <div class="report-ai-loading-dot"></div>
+        <div class="report-ai-loading-dot"></div>
+        <div class="report-ai-loading-dot"></div>
+        <span>AI가 이번 사이클을 분석 중이에요, 잠시만요 🌙</span>
+      </div>`;
   }
 
   // PWA Service Worker 등록
