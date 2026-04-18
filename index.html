@@ -698,12 +698,12 @@
   .login-logo { font-size: 56px; margin-bottom: 16px; filter: drop-shadow(0 0 20px rgba(245,214,200,0.4)); }
   .login-title { font-family: 'Gowun Batang', serif; font-size: 28px; color: var(--moon); letter-spacing: 0.1em; margin-bottom: 8px; }
   .login-sub { font-size: 13px; color: var(--text-muted); text-align: center; line-height: 1.7; margin-bottom: 40px; }
-  .btn-google {
+  .btn-kakao {
     display: flex;
     align-items: center;
     gap: 12px;
-    background: white;
-    color: #3c4043;
+    background: #FEE500;
+    color: #3C1E1E;
     border: none;
     border-radius: 14px;
     padding: 16px 24px;
@@ -716,8 +716,7 @@
     transition: all 0.2s;
     font-family: 'Noto Sans KR', sans-serif;
   }
-  .btn-google:active { transform: scale(0.97); }
-  .btn-google-icon { font-size: 20px; }
+  .btn-kakao:active { transform: scale(0.97); }
   .login-privacy { font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 20px; line-height: 1.6; }
 
   /* 유저 정보 */
@@ -983,14 +982,11 @@
   <div class="login-logo">🌙</div>
   <div class="login-title">달의 기록</div>
   <div class="login-sub">나의 생리주기를 기록하고<br>몸과 감정의 패턴을 이해해요</div>
-  <button class="btn-google" onclick="signInWithGoogle()">
-    <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+  <button class="btn-kakao" onclick="signInWithKakao()">
+    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#3C1E1E" d="M12 3C6.477 3 2 6.477 2 10.5c0 2.548 1.516 4.787 3.81 6.132l-.972 3.604a.3.3 0 0 0 .44.337L9.67 18.2A11.3 11.3 0 0 0 12 18c5.523 0 10-3.477 10-7.5S17.523 3 12 3z"/>
     </svg>
-    Google로 시작하기
+    카카오로 시작하기
   </button>
   <div class="login-privacy">로그인하면 데이터가 안전하게 저장돼요.<br>개인정보는 본인만 볼 수 있어요.</div>
 </div>
@@ -1388,13 +1384,12 @@
   let currentUser = null;
 
   // ── 인증 ──
-  async function signInWithGoogle() {
+  async function signInWithKakao() {
     await sb.auth.signInWithOAuth({
-      provider: 'google',
+      provider: 'kakao',
       options: {
         redirectTo: 'https://simchorok.github.io/period-tracker/',
-        skipBrowserRedirect: false,
-        queryParams: { prompt: 'select_account' }
+        scopes: 'profile_nickname profile_image'
       }
     });
   }
@@ -3035,5 +3030,6 @@
   }
 
 </script>
+
 </body>
 </html>
