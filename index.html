@@ -2750,6 +2750,7 @@
 
   function closeReport() {
     document.getElementById('report-backdrop').classList.remove('open');
+    currentReportEndDate = null;
   }
   function closeReportOutside(e) {
     if (e.target === document.getElementById('report-backdrop')) closeReport();
@@ -3369,8 +3370,8 @@
 
   function resetReportFeedback() {
     reportFeedbackRating = 0;
-    currentReportEndDate = null;
     currentAIAnalysis = null;
+    // currentReportEndDate는 여기서 초기화하지 않음 (리포트 닫을 때 초기화)
     document.querySelectorAll('.report-star-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('report-feedback-text').value = '';
     document.getElementById('feedback-char-count').textContent = '0';
