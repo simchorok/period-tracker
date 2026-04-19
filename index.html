@@ -2680,6 +2680,7 @@
           .select('id')
           .eq('user_id', currentUser.id)
           .eq('period_end_date', last.end)
+          .not('feedback_rating', 'is', null)
           .maybeSingle();
         if (data) {
           document.getElementById('report-banner').classList.remove('show');
