@@ -3055,64 +3055,44 @@
   }
 
 
-  function openReportList() {
-    const records = loadRecords().sort((a,b) => a.start > b.start ? -1 : 1);
+  async function openReportList() {
+    if (!currentUser) return;
     const content = document.getElementById('report-list-content');
-    const _t = new Date();
-    const todayStr = `${_t.getFullYear()}-${String(_t.getMonth()+1).padStart(2,'0')}-${String(_t.getDate()).padStart(2,'0')}`;
-    // CASE1: 생리 기록 있음 → 종료일 다음날 이후
-    // CASE2: 생리 기록 없음 → 이번달 1일 이후
-    // app_start_date: 앱 최초 실행일 (과거 소급 방지)
-    const appStartKey = 'app_start_date';
-    if (!localStorage.getItem(appStartKey)) {
-      localStorage.setItem(appStartKey, todayStr);
-    }
-    const appStart = localStorage.getItem(appStartKey);
+    content.innerHTML = '<div style="text-align:center;padding:32px;color:#aaa;font-size:13px;">불러오는 중...</div>';
+    document.getElementById('report-list-backdrop').classList.add('open');
 
-    let sentReports = [];
-    if (records.length >= 1) {
-      // 종료일 다음날이 오늘 이전 AND 앱 시작일 이후인 것만
-      sentReports = records.filter(r => {
-        const nextDay = addDays(r.end, 1);
-        return nextDay <= todayStr && nextDay >= appStart;
-      });
-    }
+    // DB에서 feedback_rating 있는(완성된) 리포트만 조회
+    const { data: savedReports } = await sb.from('cycle_reports')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .not('feedback_rating', 'is', null)
+      .order('period_end_date', { ascending: false });
 
-    if (!sentReports.length) {
+    if (!savedReports || !savedReports.length) {
       content.innerHTML = `
         <div class="report-empty-state">
           <div class="report-empty-icon">🌙</div>
-          <div class="report-empty-text">아직 발송된 월간 사이클 리포트가 없어요.<br><br>리포트는 입력한 생리 기록 및 상태 기록을<br>분석하여 생리가 끝난 다음 날 발송해드려요!</div>
+          <div class="report-empty-text">아직 완성된 사이클 리포트가 없어요.<br><br>리포트가 도착하면 별점을 남겨<br>리포트를 완성해보세요!</div>
         </div>`;
-    } else {
-      // CASE4: 같은 달에 2개 이상이면 1차, 2차 표기
-      const monthCount = {};
-      const titledReports = sentReports.map(r => {
-        const key = r.start.slice(0,7);
-        monthCount[key] = (monthCount[key] || 0) + 1;
-        return { ...r, nth: monthCount[key] };
-      });
-      // nth 재계산 (역순이므로 같은달 내 순서 보정)
-      const monthTotal = {};
-      sentReports.forEach(r => {
-        const key = r.start.slice(0,7);
-        monthTotal[key] = (monthTotal[key] || 0) + 1;
-      });
-      content.innerHTML = titledReports.map((r, i) => {
-        const [y, m] = r.start.split('-');
-        const dur = dateDiff(r.end, r.start) + 1;
-        const key = r.start.slice(0,7);
-        const nth = monthTotal[key] > 1 ? ` ${r.nth}차` : '';
-        return `<div class="report-list-item" onclick="openReportByRecord(${i})">
-          <div class="report-list-item-left">
-            <div class="report-list-item-title">${y}년 ${parseInt(m)}월${nth} 사이클 리포트</div>
-            <div class="report-list-item-sub">${r.start.slice(5).replace('-','/')} ~ ${r.end.slice(5).replace('-','/')} · ${dur}일간</div>
-          </div>
-          <div class="report-list-item-arrow">›</div>
-        </div>`;
-      }).join('');
+      return;
     }
-    document.getElementById('report-list-backdrop').classList.add('open');
+
+    const records = loadRecords();
+    content.innerHTML = savedReports.map((report, i) => {
+      const endDate = report.period_end_date;
+      const matched = records.find(r => r.end === endDate);
+      const startDate = matched?.start || endDate;
+      const [y, m] = startDate.split('-');
+      const dur = matched ? dateDiff(endDate, startDate) + 1 : '—';
+      const stars = '⭐'.repeat(report.feedback_rating || 0);
+      return `<div class="report-list-item" onclick="openReportByEndDate('${endDate}')">
+        <div class="report-list-item-left">
+          <div class="report-list-item-title">${y}년 ${parseInt(m)}월 사이클 리포트</div>
+          <div class="report-list-item-sub">${startDate.slice(5).replace('-','/')} ~ ${endDate.slice(5).replace('-','/')} · ${dur}일간 ${stars}</div>
+        </div>
+        <div class="report-list-item-arrow">›</div>
+      </div>`;
+    }).join('');
   }
 
   function closeReportList() {
@@ -3147,6 +3127,26 @@
     document.getElementById('report-list-backdrop').classList.remove('open');
     document.getElementById('report-backdrop').classList.add('open');
     // AI 분석 호출
+    currentReportEndDate = target.end;
+    currentReportRecord = target;
+    resetReportFeedback();
+    generateAIAnalysis(reorderedRecords, target);
+  }
+
+  function openReportByEndDate(endDate) {
+    const records = loadRecords().sort((a,b) => a.start > b.start ? -1 : 1);
+    const target = records.find(r => r.end === endDate) || { start: endDate, end: endDate };
+    const [y, m] = target.start.split('-');
+    document.getElementById('report-title').textContent = `${y}년 ${parseInt(m)}월 사이클 리포트`;
+    document.getElementById('report-sub').textContent =
+      `${target.start.slice(5).replace('-','/')} ~ ${target.end.slice(5).replace('-','/')}`;
+    const reorderedRecords = [target, ...records.filter(r => r.start !== target.start)];
+    renderReportSummary(reorderedRecords);
+    renderReportPhases(reorderedRecords, target);
+    renderReportEnergyChart(target);
+    renderReportForecast(reorderedRecords, target);
+    document.getElementById('report-list-backdrop').classList.remove('open');
+    document.getElementById('report-backdrop').classList.add('open');
     currentReportEndDate = target.end;
     currentReportRecord = target;
     resetReportFeedback();
