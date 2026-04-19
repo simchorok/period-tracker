@@ -401,7 +401,7 @@
 
   async function loadNickname() {
     if (!currentUser) return;
-    const { data } = await sb.from('user_profiles').select('nickname').eq('id', currentUser.id).single();
+    const { data } = await sb.from('user_profiles').select('nickname').eq('id', currentUser.id).maybeSingle();
     if (data?.nickname) {
       userNickname = data.nickname;
       updateNicknameUI();
@@ -1444,12 +1444,6 @@
       </div>
     </div>
 
-    <!-- 반복 패턴 -->
-    <div class="report-section">
-      <div class="report-section-title">반복 패턴 하이라이트</div>
-      <div class="report-card" id="report-patterns"></div>
-    </div>
-
     <!-- 다음 사이클 예고 -->
     <div class="report-section">
       <div class="report-section-title">다음 사이클 예고</div>
@@ -1459,7 +1453,7 @@
     <!-- 피드백 섹션 -->
     <div class="report-feedback-section" id="report-feedback-section">
       <div class="report-feedback-title">이 리포트가 도움이 됐나요?</div>
-      <div class="report-feedback-sub">별점과 피드백을 남겨주세요 (필수)</div>
+      <div class="report-feedback-sub">별점을 남기면 리포트가 저장돼요 ⭐</div>
       <div class="report-stars" id="report-stars">
         <button class="report-star-btn" data-val="1" onclick="selectReportStar(1)">⭐</button>
         <button class="report-star-btn" data-val="2" onclick="selectReportStar(2)">⭐</button>
@@ -1468,11 +1462,11 @@
         <button class="report-star-btn" data-val="5" onclick="selectReportStar(5)">⭐</button>
       </div>
       <textarea class="report-feedback-textarea" id="report-feedback-text"
-        placeholder="이번 리포트에 대한 솔직한 의견을 남겨주세요"
+        placeholder="이번 리포트에 대한 솔직한 의견을 남겨주세요 (선택)"
         maxlength="500" oninput="onFeedbackInput()"></textarea>
       <div class="report-feedback-count"><span id="feedback-char-count">0</span>/500자</div>
-      <div class="report-feedback-guide" id="feedback-guide">💬 리포트를 저장하려면 피드백을 남겨주세요!</div>
-      <button class="report-save-btn" id="report-save-btn" onclick="saveReportFeedback()" disabled>저장하기</button>
+      <div class="report-feedback-guide" id="feedback-guide">⭐ 별점을 선택하면 리포트가 저장돼요!</div>
+      <button class="report-save-btn" id="report-save-btn" onclick="saveReportFeedback()" disabled>리포트 완성하기</button>
       <div class="report-saved-badge" id="report-saved-badge">✅ 저장됐어요! 소중한 피드백 감사해요 🌙</div>
     </div>
 
@@ -1762,7 +1756,7 @@
   }
 
   /* ── 홈 상태 업데이트 ── */
-  function updateStatus() {
+  async function updateStatus() {
     const records=loadRecords();
     document.getElementById('stat-count').textContent=records.length;
 
@@ -1814,7 +1808,7 @@
     updateCycleCard(records);
     updateEmpathyCard(records);
     updatePatternInsight(records);
-    checkReportBanner();
+    await checkReportBanner();
   }
 
 
@@ -2076,7 +2070,7 @@
 
   async function loadNickname() {
     if (!currentUser) return;
-    const { data } = await sb.from('user_profiles').select('nickname').eq('id', currentUser.id).single();
+    const { data } = await sb.from('user_profiles').select('nickname').eq('id', currentUser.id).maybeSingle();
     if (data?.nickname) {
       userNickname = data.nickname;
       updateNicknameUI();
@@ -2669,29 +2663,36 @@
 
   /* ── 월간 사이클 리포트 ── */
 
-  function checkReportBanner() {
+  async function checkReportBanner() {
+    if (!currentUser) return;
     const _t = new Date();
     const todayStr = `${_t.getFullYear()}-${String(_t.getMonth()+1).padStart(2,'0')}-${String(_t.getDate()).padStart(2,'0')}`;
     const records = loadRecords();
 
     if (records.length >= 1) {
-      // CASE1: 생리 기록 있음 → 종료일 다음날부터 확인 전까지 계속 노출
       const sorted = [...records].sort((a,b) => a.start > b.start ? -1 : 1);
       const last = sorted[0];
       const dayAfterEnd = addDays(last.end, 1);
-      const seenKey = `report_seen_${last.end}`;
       const appStartDate = localStorage.getItem('app_start_date') || todayStr;
-      if (todayStr >= dayAfterEnd && dayAfterEnd >= appStartDate && !localStorage.getItem(seenKey)) {
+      if (todayStr >= dayAfterEnd && dayAfterEnd >= appStartDate) {
+        // DB에 이미 저장된(완성된) 리포트 있는지 확인
+        const { data } = await sb.from('cycle_reports')
+          .select('id')
+          .eq('user_id', currentUser.id)
+          .eq('period_end_date', last.end)
+          .maybeSingle();
+        if (data) {
+          document.getElementById('report-banner').classList.remove('show');
+          return;
+        }
         const [y, m] = last.start.split('-');
         document.getElementById('report-banner').classList.add('show');
         document.getElementById('report-banner-title').textContent = `${y}년 ${parseInt(m)}월 사이클 리포트가 도착했어요`;
-        return;
       }
     } else {
-      // CASE2: 생리 기록 없음 → 매월 1일부터 확인 전까지 노출
-      const isFirstOfMonth = todayStr.slice(-2) === '01';
+      // CASE2: 생리 기록 없음 → 매월 1일부터 저장 전까지 노출
       const monthKey = `report_seen_noPeriod_${todayStr.slice(0,7)}`;
-      if (todayStr >= `${todayStr.slice(0,7)}-01` && !localStorage.getItem(monthKey)) {
+      if (!localStorage.getItem(monthKey)) {
         document.getElementById('report-banner').classList.add('show');
         document.getElementById('report-banner-title').textContent = `${parseInt(todayStr.slice(5,7))}월 사이클 리포트가 도착했어요`;
       }
@@ -2711,7 +2712,6 @@
       // 요약/패턴/에너지 섹션 숨기기 (생리 데이터 없으므로)
       document.getElementById('report-summary').innerHTML = '<div style="font-size:13px;color:#aaa;padding:8px 0;">생리 기록을 입력하면 더 정확한 사이클 분석을 드릴 수 있어요 🌿</div>';
       document.getElementById('report-phases').innerHTML = '';
-      document.getElementById('report-patterns').innerHTML = '';
       document.getElementById('report-forecast').innerHTML = '';
       document.getElementById('report-backdrop').classList.add('open');
       localStorage.setItem(monthKey, '1');
@@ -2735,7 +2735,6 @@
     renderReportSummary(records);
     renderReportPhases(records, lastRecord);
     renderReportEnergyChart(lastRecord);
-    renderReportPatterns(records, lastRecord);
     renderReportForecast(records, lastRecord);
 
     document.getElementById('report-backdrop').classList.add('open');
@@ -2931,59 +2930,6 @@
     });
   }
 
-  function renderReportPatterns(records, lastRecord) {
-    const el = document.getElementById('report-patterns');
-    if (records.length < 2) {
-      el.innerHTML = `<div style="text-align:center;padding:12px 0;font-size:12px;color:#bbb;line-height:1.7">상태 기록을 입력하면 해당 데이터를 분석해서 더 많은 인사이트를 드릴 수 있어요 ✍️<br><br>또한 2사이클이 쌓이면 반복 패턴을 분석해드릴게요 🔍</div>`;
-      return;
-    }
-
-    const logs = loadLogs();
-    const cycle = calcAvgCycle(records);
-    const phaseTagCounts = { winter:{}, spring:{}, summer:{}, autumn:{} };
-
-    // 과거 사이클들에서 단계별 태그 카운트
-    records.slice(1).forEach(r => {
-      const start = new Date(r.start.replace(/-/g,'/'));
-      for (let day = 1; day <= cycle; day++) {
-        const d = new Date(start);
-        d.setDate(d.getDate() + day - 1);
-        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        const phase = getCyclePhase(day, cycle);
-        const log = logs[ds];
-        if (!log) continue;
-        const tags = [...(log.mood||[]), ...(log.symptom||[])];
-        tags.forEach(t => {
-          phaseTagCounts[phase][t] = (phaseTagCounts[phase][t] || 0) + 1;
-        });
-      }
-    });
-
-    const totalPast = records.length - 1;
-    const threshold = Math.max(1, Math.floor(totalPast * 0.5));
-    const phaseNames = { winter:'겨울(생리기)', spring:'봄(여포기)', summer:'여름(배란기)', autumn:'가을(황체기)' };
-    const patterns = [];
-
-    Object.entries(phaseTagCounts).forEach(([phase, tagCounts]) => {
-      Object.entries(tagCounts).forEach(([tag, count]) => {
-        if (count >= threshold) {
-          patterns.push({ phase, tag, count, total: totalPast });
-        }
-      });
-    });
-
-    if (!patterns.length) {
-      el.innerHTML = '<div style="text-align:center;padding:12px 0;font-size:12px;color:#bbb;line-height:1.7">상태 기록을 입력하면 해당 데이터를 분석해서 더 많은 인사이트를 드릴 수 있어요 ✍️</div>';
-      return;
-    }
-
-    el.innerHTML = patterns.slice(0, 4).map(p =>
-      `<div class="report-pattern-item">
-        <div class="report-pattern-dot"></div>
-        <div class="report-pattern-text">${phaseNames[p.phase]}에 <strong>${p.tag}</strong>이(가) ${p.total}번 중 ${p.count}번 나타났어요</div>
-      </div>`
-    ).join('');
-  }
 
   function renderReportForecast(records, lastRecord) {
     const el = document.getElementById('report-forecast');
@@ -3194,7 +3140,6 @@
     renderReportSummary(reorderedRecords);
     renderReportPhases(reorderedRecords, target);
     renderReportEnergyChart(target);
-    renderReportPatterns(reorderedRecords, target);
     renderReportForecast(reorderedRecords, target);
 
     // 목록 숨기고 상세 열기
@@ -3211,6 +3156,7 @@
   let currentReportEndDate = null;
   let currentReportRecord = null; // _retryRecord와 통합된 변수
   let reportFeedbackRating = 0;
+  let currentAIAnalysis = null; // AI 분석 결과 임시 저장 (저장 버튼 클릭 전까지)
 
   // ── AI 분석 생성 ──
   async function generateAIAnalysis(records, targetRecord) {
@@ -3219,6 +3165,7 @@
     // DB에 이미 저장된 분석 있으면 불러오기
     const existing = await loadReportFromDB(targetRecord.end);
     if (existing?.ai_analysis) {
+      currentAIAnalysis = existing.ai_analysis;
       renderAIAnalysis(existing.ai_analysis);
       if (existing.feedback_rating) {
         restoreReportFeedback(existing);
@@ -3255,6 +3202,7 @@
 
       // 이미 생성된 리포트면 DB에서 불러오기
       if (data.status === 'already_exists') {
+        currentAIAnalysis = data.ai_analysis;
         renderAIAnalysis(data.ai_analysis);
         return;
       }
@@ -3268,6 +3216,8 @@
         return;
       }
 
+      // 결과 임시 저장 (저장하기 클릭 시 DB에 저장)
+      currentAIAnalysis = data.ai_analysis;
       renderAIAnalysis(data.ai_analysis);
 
     } catch(e) {
@@ -3309,10 +3259,6 @@
         <div class="report-ai-label">⚡ 에너지 흐름</div>
         <div class="report-ai-text">${escapeHtml(parsed.energy_flow) || noDataMsg}</div>
       </div>
-      <div class="report-ai-section ${parsed.highlight ? '' : 'report-ai-locked'}">
-        <div class="report-ai-label">🔁 반복 패턴 하이라이트</div>
-        <div class="report-ai-text">${escapeHtml(parsed.highlight) || '2사이클이 쌓이면 분석해드릴게요 🔒'}</div>
-      </div>
       <div class="report-ai-section ${parsed.next_preview ? '' : 'report-ai-locked'}">
         <div class="report-ai-label">🔮 다음 사이클 예고</div>
         <div class="report-ai-text">${escapeHtml(parsed.next_preview) || '2사이클이 쌓이면 예고해드릴게요 🔒'}</div>
@@ -3344,8 +3290,9 @@
     await sb.from('cycle_reports').upsert({
       user_id: currentUser.id,
       period_end_date: endDate,
+      ai_analysis: currentAIAnalysis,
       feedback_rating: rating,
-      feedback_text: text,
+      feedback_text: text || null,
       // feedback_at은 DB 트리거가 자동으로 기록
     }, { onConflict: 'user_id,period_end_date' });
   }
@@ -3366,10 +3313,9 @@
   }
 
   function checkFeedbackComplete() {
-    const text = document.getElementById('report-feedback-text').value.trim();
     const btn = document.getElementById('report-save-btn');
     const guide = document.getElementById('feedback-guide');
-    if (reportFeedbackRating > 0 && text.length > 0) {
+    if (reportFeedbackRating > 0) {
       btn.classList.add('active');
       btn.disabled = false;
       guide.style.display = 'none';
@@ -3381,16 +3327,19 @@
   }
 
   async function saveReportFeedback() {
-    const text = document.getElementById('report-feedback-text').value.trim();
-    if (!reportFeedbackRating || !text) return;
+    if (!reportFeedbackRating) return;
     if (!currentReportEndDate) return;
+    if (!currentAIAnalysis) return;
 
+    const text = document.getElementById('report-feedback-text').value.trim();
     const btn = document.getElementById('report-save-btn');
     btn.textContent = '저장 중...';
     btn.disabled = true;
 
     await saveFeedbackToDB(currentReportEndDate, reportFeedbackRating, text);
 
+    // 저장 완료 → 배너 숨김
+    document.getElementById('report-banner').classList.remove('show');
     btn.style.display = 'none';
     document.getElementById('feedback-guide').style.display = 'none';
     document.getElementById('report-saved-badge').classList.add('show');
@@ -3415,13 +3364,14 @@
   function resetReportFeedback() {
     reportFeedbackRating = 0;
     currentReportEndDate = null;
+    currentAIAnalysis = null;
     document.querySelectorAll('.report-star-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('report-feedback-text').value = '';
     document.getElementById('feedback-char-count').textContent = '0';
     document.getElementById('report-save-btn').style.display = 'block';
     document.getElementById('report-save-btn').classList.remove('active');
     document.getElementById('report-save-btn').disabled = true;
-    document.getElementById('report-save-btn').textContent = '저장하기';
+    document.getElementById('report-save-btn').textContent = '리포트 완성하기';
     document.getElementById('feedback-guide').style.display = 'block';
     document.getElementById('report-saved-badge').classList.remove('show');
     document.getElementById('report-ai-content').innerHTML = `
