@@ -1567,11 +1567,6 @@
     // 데이터 로드
     loadAllData();
     loadNickname();
-    // 앱 최초 실행일 저장 (과거 소급 방지)
-    if (!localStorage.getItem('app_start_date')) {
-      const _ta = new Date();
-      localStorage.setItem('app_start_date', `${_ta.getFullYear()}-${String(_ta.getMonth()+1).padStart(2,'0')}-${String(_ta.getDate()).padStart(2,'0')}`);
-    }
   }
 
   // ── Supabase DB 연동 ──
@@ -1671,6 +1666,12 @@
   });
 
   const STORAGE_KEY = 'period_records_v2';
+
+  // ── 날짜 헬퍼 ────────────────────────────────────
+  function getTodayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
   const DEFAULT_CYCLE = 28;
   const DEFAULT_DURATION = 6;
 
@@ -2665,21 +2666,24 @@
 
   async function checkReportBanner() {
     if (!currentUser) return;
-    const _t = new Date();
-    const todayStr = `${_t.getFullYear()}-${String(_t.getMonth()+1).padStart(2,'0')}-${String(_t.getDate()).padStart(2,'0')}`;
+    const today = getTodayStr();
     const records = loadRecords();
 
     if (records.length >= 1) {
-      const sorted = [...records].sort((a,b) => a.start > b.start ? -1 : 1);
-      const last = sorted[0];
+      const last = [...records].sort((a,b) => a.start > b.start ? -1 : 1)[0];
       const dayAfterEnd = addDays(last.end, 1);
-      const appStartDate = localStorage.getItem('app_start_date') || todayStr;
-      if (todayStr >= dayAfterEnd && dayAfterEnd >= appStartDate) {
-        // DB에 이미 저장된(완성된) 리포트 있는지 확인
+
+      // appStartDate: DB user_profiles.created_at 기준 (회원가입일)
+      const { data: profile } = await sb.from('user_profiles')
+        .select('created_at').eq('id', currentUser.id).maybeSingle();
+      const appStartDate = profile?.created_at?.slice(0, 10) ?? today;
+
+      if (today >= dayAfterEnd && dayAfterEnd >= appStartDate) {
+        // 동일 start_date 기준으로 완성된 리포트 있는지 확인
         const { data } = await sb.from('cycle_reports')
           .select('id')
           .eq('user_id', currentUser.id)
-          .eq('period_end_date', last.end)
+          .eq('period_start_date', last.start)
           .not('feedback_rating', 'is', null)
           .maybeSingle();
         if (data) {
@@ -2692,10 +2696,10 @@
       }
     } else {
       // CASE2: 생리 기록 없음 → 매월 1일부터 저장 전까지 노출
-      const monthKey = `report_seen_noPeriod_${todayStr.slice(0,7)}`;
+      const monthKey = `report_seen_noPeriod_${today.slice(0,7)}`;
       if (!localStorage.getItem(monthKey)) {
         document.getElementById('report-banner').classList.add('show');
-        document.getElementById('report-banner-title').textContent = `${parseInt(todayStr.slice(5,7))}월 사이클 리포트가 도착했어요`;
+        document.getElementById('report-banner-title').textContent = `${parseInt(today.slice(5,7))}월 사이클 리포트가 도착했어요`;
       }
     }
   }
@@ -3106,11 +3110,8 @@
 
   function openReportByRecord(idx) {
     const records = loadRecords().sort((a,b) => a.start > b.start ? -1 : 1);
-    const _t = new Date();
-    const todayStr = `${_t.getFullYear()}-${String(_t.getMonth()+1).padStart(2,'0')}-${String(_t.getDate()).padStart(2,'0')}`;
-    const appStartKey = 'app_start_date';
-    const appStart = localStorage.getItem(appStartKey) || todayStr;
-    const sentReports = records.filter(r => addDays(r.end, 1) <= todayStr && addDays(r.end, 1) >= appStart);
+    const today = getTodayStr();
+    const sentReports = records.filter(r => addDays(r.end, 1) <= today);
     const target = sentReports[idx];
     if (!target) return;
 
@@ -3193,28 +3194,30 @@
         body: {
           user_id: currentUser.id,
           period_end_date: targetRecord.end,
+          period_start_date: targetRecord.start ?? null,
           case_type: caseType,
         },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
+        headers: { Authorization: `Bearer ${session.access_token}` },
       });
 
-      if (error) throw error;
+      if (error) {
+        // 에러 코드별 구체적 메시지
+        const msg = error.message || '';
+        if (msg.includes('초과')) showAIError(msg);
+        else if (msg.includes('18일')) showAIError(msg);
+        else if (msg.includes('생리 기간')) showAIError(msg);
+        else throw error;
+        return;
+      }
 
-      // 이미 생성된 리포트면 DB에서 불러오기
       if (data.status === 'already_exists') {
         currentAIAnalysis = data.ai_analysis;
         renderAIAnalysis(data.ai_analysis);
         return;
       }
 
-      // 데이터 없음 (CASE2에서 로그 없을 때)
       if (data.status === 'no_data') {
-        document.getElementById('report-ai-content').innerHTML = `
-          <div class="report-ai-error">
-            아직 상태 기록이 없어요.<br>매일 기록을 남기면 AI 분석을 받을 수 있어요 🌿
-          </div>`;
+        showAIError('아직 상태 기록이 없어요.<br>매일 기록을 남기면 AI 분석을 받을 수 있어요 🌿');
         return;
       }
 
@@ -3224,12 +3227,14 @@
 
     } catch(e) {
       console.error('AI 분석 오류:', e);
-      document.getElementById('report-ai-content').innerHTML = `
-        <div class="report-ai-error">
-          분석 중 오류가 발생했어요.<br>다시 시도해주세요.
-          <br><button class="report-ai-retry" onclick="retryAIAnalysis()">다시 시도</button>
-        </div>`;
+      showAIError('분석 중 오류가 발생했어요.<br>다시 시도해주세요.<br><button class="report-ai-retry" onclick="retryAIAnalysis()">다시 시도</button>');
     }
+  }
+
+  // AI 에러 메시지 표시 헬퍼
+  function showAIError(msg) {
+    document.getElementById('report-ai-content').innerHTML =
+      `<div class="report-ai-error">${msg}</div>`;
   }
 
   function renderAIAnalysis(rawText) {
