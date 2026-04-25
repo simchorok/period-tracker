@@ -1081,6 +1081,109 @@
     font-size: 13px; color: #5dca8a;
   }
   .report-saved-badge.show { display: block; }
+
+  /* ── 데일리 질문 모달 ── */
+  .question-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:300; align-items:flex-end; justify-content:center; }
+  .question-backdrop.open { display:flex; }
+  .question-sheet { background:var(--surface); border-radius:24px 24px 0 0; padding:28px 20px 48px; width:100%; max-width:420px; border-top:1px solid var(--accent-dim); animation:slideUp 0.3s ease; }
+  .question-close { position:absolute; top:20px; right:20px; background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer; padding:4px; }
+  .question-header { font-size:12px; color:var(--accent); letter-spacing:0.1em; text-align:center; margin-bottom:16px; }
+  .question-tag-badge { display:inline-block; background:var(--accent-dim); color:var(--accent); font-size:11px; padding:3px 10px; border-radius:20px; margin-bottom:14px; }
+  .question-text { font-size:15px; color:var(--text); line-height:1.8; margin-bottom:24px; word-break:keep-all; }
+  .question-loading { text-align:center; color:var(--text-muted); font-size:13px; padding:32px 0; line-height:2; }
+  .question-answer-wrap { margin-bottom:16px; }
+  .question-answer { width:100%; background:var(--bg); border:1px solid var(--accent-dim); border-radius:12px; padding:14px; color:var(--text); font-size:14px; font-family:'Noto Sans KR',sans-serif; resize:none; min-height:100px; box-sizing:border-box; line-height:1.7; }
+  .question-answer:focus { outline:none; border-color:var(--accent); }
+  .question-answer-hint { font-size:11px; color:var(--text-muted); margin-top:6px; line-height:1.6; }
+  .question-save-btn { width:100%; padding:15px; background:var(--accent); color:#fff; border:none; border-radius:14px; font-size:15px; font-family:'Noto Sans KR',sans-serif; cursor:pointer; font-weight:600; }
+  .question-save-btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+  /* ── 질문 배너 (홈 하단) ── */
+  .question-banner { display:none; margin:12px 16px; background:var(--surface); border:1px solid var(--accent-dim); border-radius:16px; padding:16px 18px; cursor:pointer; }
+  .question-banner.show { display:flex; align-items:center; gap:12px; }
+  .question-banner-icon { font-size:22px; flex-shrink:0; }
+  .question-banner-text { flex:1; }
+  .question-banner-title { font-size:13px; color:var(--text); font-weight:600; margin-bottom:2px; }
+  .question-banner-sub { font-size:11px; color:var(--text-muted); }
+  .question-banner-arrow { color:var(--accent); font-size:18px; }
+
+  /* ── 메모 입력란 ── */
+  .log-memo-input {
+    width: 100%; box-sizing: border-box;
+    background: var(--bg); border: 1px solid var(--accent-dim);
+    border-radius: 12px; padding: 12px; color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif; font-size: 13px;
+    line-height: 1.6; resize: none; height: 90px;
+    outline: none;
+  }
+  .log-memo-input:focus { border-color: var(--accent); }
+  .log-memo-input::placeholder { color: var(--text-muted); }
+  .log-memo-count { text-align: right; font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+  /* ── 질문 배너 ── */
+  .question-banner {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+    width: calc(100% - 32px); max-width: 388px;
+    background: linear-gradient(135deg, #2a1040, #1a0a30);
+    border: 1px solid var(--accent-dim); border-radius: 16px;
+    padding: 14px 16px; z-index: 150;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    animation: slideUp 0.3s ease;
+  }
+  .question-banner-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .question-banner-text { font-size: 13px; color: var(--text); flex: 1; line-height: 1.5; }
+  .question-banner-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .question-banner-btn {
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 8px; padding: 7px 12px; font-size: 12px;
+    font-family: 'Noto Sans KR', sans-serif; cursor: pointer; white-space: nowrap;
+  }
+  .question-banner-dismiss {
+    background: none; border: none; color: var(--text-muted);
+    font-size: 14px; cursor: pointer; padding: 4px;
+  }
+
+  /* ── 질문 모달 ── */
+  .question-modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+    z-index: 300; display: flex; align-items: flex-end; justify-content: center;
+  }
+  .question-modal {
+    background: var(--surface); border-radius: 24px 24px 0 0;
+    padding: 28px 20px 48px; width: 100%; max-width: 420px;
+    border-top: 1px solid var(--accent-dim);
+    animation: slideUp 0.3s ease; position: relative; min-height: 260px;
+  }
+  .question-modal-close {
+    position: absolute; top: 16px; right: 16px;
+    background: none; border: none; color: var(--text-muted);
+    font-size: 18px; cursor: pointer; padding: 4px;
+  }
+  .question-loading-moon { font-size: 36px; text-align: center; margin: 20px 0 12px; animation: pulse 1.5s ease-in-out infinite; }
+  .question-loading-text { text-align: center; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .question-text {
+    font-size: 15px; color: var(--text); line-height: 1.8;
+    margin-bottom: 20px; margin-top: 8px; white-space: pre-wrap;
+  }
+  .question-answer-input {
+    width: 100%; box-sizing: border-box;
+    background: var(--bg); border: 1px solid var(--accent-dim);
+    border-radius: 12px; padding: 14px; color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif; font-size: 13px;
+    line-height: 1.6; resize: none; height: 110px; outline: none;
+  }
+  .question-answer-input:focus { border-color: var(--accent); }
+  .question-answer-input::placeholder { color: var(--text-muted); }
+  .question-answer-hint {
+    font-size: 11px; color: var(--text-muted); line-height: 1.6;
+    margin: 8px 0 16px; text-align: center;
+  }
+  .question-save-btn {
+    width: 100%; padding: 14px; background: var(--accent); color: #fff;
+    border: none; border-radius: 12px; font-size: 15px;
+    font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -1126,6 +1229,16 @@
     <div class="report-banner" id="report-banner" onclick="openReport()">
       <div class="report-banner-label">📊 월간 사이클 리포트</div>
       <div class="report-banner-title" id="report-banner-title">지난 사이클 리포트가 도착했어요</div>
+    </div>
+
+    <!-- 데일리 질문 배너 -->
+    <div class="question-banner" id="question-banner" onclick="openQuestionModal()">
+      <div class="question-banner-icon">🌙</div>
+      <div class="question-banner-text">
+        <div class="question-banner-title">달이 당신의 하루를 궁금해하고 있어요</div>
+        <div class="question-banner-sub">오늘의 질문 확인하기</div>
+      </div>
+      <div class="question-banner-arrow">›</div>
     </div>
 
     <!-- 사이클 씽킹 카드 -->
@@ -1390,9 +1503,16 @@
       </div>
     </div>
 
+    <!-- 메모 -->
+    <div class="log-section">
+      <div class="log-section-title">💬 메모 <span style="font-size:11px;color:var(--text-muted);font-weight:400;">(선택)</span></div>
+      <textarea id="log-memo" class="log-memo-input" placeholder="오늘 하루를 자유롭게 기록해봐요. 여기서 쓴 내용이 다음 리포트 분석에 반영돼요 🌙" maxlength="500"></textarea>
+      <div class="log-memo-count"><span id="log-memo-count">0</span>/500</div>
+    </div>
+
     <div class="log-modal-actions">
       <button class="btn-cancel" onclick="closeLogModal()">취소</button>
-      <button class="btn-save" onclick="saveLog()">저장</button>
+      <button class="btn-save" onclick="saveLog()">기록 완성하기</button>
     </div>
   </div>
 </div>
@@ -1475,6 +1595,41 @@
 
 
 <!-- 리포트 목록 바텀시트 -->
+<!-- 데일리 질문 모달 -->
+<div class="question-backdrop" id="question-backdrop" onclick="closeQuestionOutside(event)">
+  <div class="question-sheet" style="position:relative;">
+    <button class="question-close" onclick="closeQuestion()">✕</button>
+    <div class="question-header" id="question-header">🌙 달의 질문</div>
+
+    <!-- 로딩 상태 -->
+    <div id="question-loading" class="question-loading">
+      잠시, 오늘의 감정을 살펴보고 있어요...<br>🌙
+    </div>
+
+    <!-- 질문 + 답변 영역 -->
+    <div id="question-content" style="display:none;">
+      <div class="question-tag-badge" id="question-tag-badge"></div>
+      <div class="question-text" id="question-text"></div>
+      <div class="question-answer-wrap">
+        <textarea
+          class="question-answer"
+          id="question-answer"
+          placeholder="생각나는 대로 편하게 써줘요 🌙"
+          maxlength="500"
+        ></textarea>
+        <div class="question-answer-hint">
+          여기서 쓴 내용이 다음 사이클 리포트 분석에 반영돼요.<br>
+          구체적으로 쓸수록 나에게 맞는 분석을 받을 수 있어요.
+        </div>
+      </div>
+      <button class="question-save-btn" id="question-save-btn" onclick="saveQuestionAnswer()">저장할게요</button>
+    </div>
+
+    <!-- 에러 상태 -->
+    <div id="question-error" style="display:none; text-align:center; padding:24px 0; color:var(--text-muted); font-size:13px;"></div>
+  </div>
+</div>
+
 <div class="report-backdrop" id="report-list-backdrop" onclick="closeReportListOutside(event)">
   <div class="report-sheet" id="report-list-sheet">
     <div class="report-header">
@@ -1648,8 +1803,8 @@
       period_intensity: entry.periodIntensity || null,
       sleep_quality: entry.sleepQuality || null,
       sleep_hours: entry.sleepHours || null,
+      memo: entry.memo || null,
     };
-    // upsert: 있으면 update, 없으면 insert 자동 처리
     const { error } = await sb.from('daily_logs')
       .upsert(dbEntry, { onConflict: 'user_id,log_date' });
     if (error) console.error('DB 저장 오류:', error);
@@ -2571,8 +2726,18 @@
     resetLogExtras();
     restoreLogExtras(existing);
 
+    // 메모 복원
+    const memoEl = document.getElementById('log-memo');
+    memoEl.value = existing.memo || '';
+    document.getElementById('log-memo-count').textContent = memoEl.value.length;
+
     document.getElementById('log-modal').classList.add('open');
   }
+
+  // 메모 글자 수 카운터
+  document.getElementById('log-memo')?.addEventListener('input', function() {
+    document.getElementById('log-memo-count').textContent = this.value.length;
+  });
 
   function closeLogModal() {
     document.getElementById('log-modal').classList.remove('open');
@@ -2593,20 +2758,23 @@
         entry[cat].push(tag.dataset.val);
       });
     });
-    // 추가 데이터
     entry.periodIntensity = periodIntensity || null;
     const sleepQualityTag = document.querySelector('#log-sleep-quality .log-tag.selected');
     entry.sleepQuality = sleepQualityTag ? sleepQualityTag.dataset.val : null;
     entry.sleepHours = parseFloat(document.getElementById('sleep-hours').value) || null;
+    entry.memo = document.getElementById('log-memo')?.value?.trim() || null;
+    entry.memo = document.getElementById('log-memo').value.trim() || null;
 
     const hasAny = entry.mood.length > 0 || entry.symptom.length > 0 || entry.energy.length > 0 ||
-      entry.etc.length > 0 || entry.periodIntensity || entry.sleepQuality || entry.sleepHours;
+      entry.etc.length > 0 || entry.periodIntensity || entry.sleepQuality || entry.sleepHours || entry.memo;
     try {
       if (hasAny) {
-        // 저장 전에 기존 id 먼저 확인 (logs 덮어쓰기 전에!)
         const existingId = logs[logTargetDate] ? logs[logTargetDate].id : null;
         logs[logTargetDate] = entry;
         if (currentUser) await saveLogToDB(logTargetDate, entry, existingId);
+        // 질문 배너 노출 (태그 선택한 경우에만)
+        const allTags = [...entry.mood, ...entry.symptom, ...entry.energy, ...entry.etc];
+        if (allTags.length > 0) showQuestionBanner(logTargetDate, allTags);
       } else {
         delete logs[logTargetDate];
       }
@@ -2619,6 +2787,142 @@
     const recs = loadRecords();
     updateEmpathyCard(recs);
     updatePatternInsight(recs);
+
+    // 오늘 기록 완료 시 질문 배너 노출 (오늘 날짜 기록만)
+    if (hasAny && logTargetDate === getTodayStr() && currentUser) {
+      showQuestionBanner(entry);
+    }
+  }
+
+  // ── 질문 배너/모달 ──────────────────────────────
+
+  // 부정 태그 우선순위
+  const QUESTION_TAG_PRIORITY = [
+    // 1순위: 부정 감정
+    '예민해요','불안해요','슬퍼요','무기력해요','감정이 오락가락해요',
+    // 2순위: 신체 증상
+    '생리통(복통)','두통','온 몸이 쑤셔요','메스꺼움','유방통','기력이 없어요',
+    // 3순위: 에너지 저하
+    '좀 처져요','완전 방전','복부팽만/소화불량','두드러기/여드름','허리통증',
+    // 4순위: 긍정 감정
+    '행복해요','자신감 넘쳐요','활력 넘쳐요','집중이 잘 돼요',
+    // 5순위: 중립
+    '평온해요','보통이에요',
+  ];
+
+  let currentQuestionDate = null;
+  let currentQuestionTag = null;
+  let currentQuestionText = null;
+
+  function getTopPriorityTag(tags) {
+    for (const priority of QUESTION_TAG_PRIORITY) {
+      if (tags.includes(priority)) return priority;
+    }
+    return tags[0] ?? null;
+  }
+
+  function showQuestionBanner(logDate, allTags) {
+    const topTag = getTopPriorityTag(allTags);
+    if (!topTag) return;
+    currentQuestionDate = logDate;
+    currentQuestionTag = topTag;
+    currentQuestionText = null;
+    document.getElementById('question-banner').style.display = 'block';
+  }
+
+  function dismissQuestionBanner() {
+    document.getElementById('question-banner').style.display = 'none';
+  }
+
+  async function openQuestionModal() {
+    dismissQuestionBanner();
+    if (!currentUser || !currentQuestionDate || !currentQuestionTag) return;
+
+    // 모달 열고 로딩 상태
+    const modal = document.getElementById('question-modal');
+    modal.style.display = 'flex';
+    document.getElementById('question-loading').style.display = 'block';
+    document.getElementById('question-content').style.display = 'none';
+    document.getElementById('question-answer').value = '';
+
+    try {
+      // 최근 3일 태그 수집 (맥락용)
+      const logs = loadLogs();
+      const today = new Date(currentQuestionDate);
+      const recentTags = [];
+      for (let i = 1; i <= 3; i++) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const log = logs[ds];
+        if (log) {
+          const tags = [...(log.mood||[]), ...(log.symptom||[]), ...(log.energy||[])];
+          if (tags.length) recentTags.push({ date: ds, tags });
+        }
+      }
+
+      // 사이클 단계 계산
+      const records = loadRecords().sort((a,b) => a.start > b.start ? -1 : 1);
+      let cyclePhase = null;
+      if (records.length > 0) {
+        const last = records[0];
+        cyclePhase = getCyclePhase(currentQuestionDate, last.start, last.end);
+      }
+
+      // Edge Function 호출
+      const session = (await sb.auth.getSession()).data.session;
+      if (!session?.access_token) throw new Error('세션 없음');
+
+      const { data, error } = await sb.functions.invoke('generate-question', {
+        body: {
+          user_id: currentUser.id,
+          log_date: currentQuestionDate,
+          top_tag: currentQuestionTag,
+          recent_tags: recentTags,
+          cycle_phase: cyclePhase,
+        },
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+
+      if (error) throw error;
+
+      currentQuestionText = data.question;
+      document.getElementById('question-text').textContent = currentQuestionText;
+      document.getElementById('question-loading').style.display = 'none';
+      document.getElementById('question-content').style.display = 'block';
+
+    } catch(e) {
+      console.error('질문 생성 오류:', e);
+      document.getElementById('question-loading').innerHTML =
+        '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">질문을 불러오지 못했어요.<br>잠시 후 다시 시도해주세요.</div>';
+    }
+  }
+
+  function closeQuestionModal() {
+    document.getElementById('question-modal').style.display = 'none';
+    currentQuestionText = null;
+  }
+
+  async function saveQuestionAnswer() {
+    if (!currentUser || !currentQuestionDate || !currentQuestionText) return;
+    const answer = document.getElementById('question-answer').value.trim();
+
+    const btn = document.getElementById('question-save-btn');
+    btn.textContent = '저장 중...';
+    btn.disabled = true;
+
+    try {
+      await sb.from('daily_logs').upsert({
+        user_id: currentUser.id,
+        log_date: currentQuestionDate,
+        tag_question: currentQuestionText,
+        tag_answer: answer || null,
+      }, { onConflict: 'user_id,log_date' });
+    } catch(e) {
+      console.error('답변 저장 오류:', e);
+    }
+
+    closeQuestionModal();
   }
 
   /* 기록 탭 서브탭 */
@@ -3157,6 +3461,135 @@
 
 
   let currentReportEndDate = null;
+
+  // ── 데일리 질문 ──────────────────────────────────
+  let currentQuestionLogDate = null;
+  let currentQuestionTopTag = null;
+
+  // 질문 배너 노출
+  function showQuestionBanner(entry) {
+    const allTags = [...(entry.mood||[]), ...(entry.symptom||[]), ...(entry.energy||[])];
+    if (!allTags.length) return;
+    document.getElementById('question-banner').classList.add('show');
+    // 오늘 날짜 + 태그 저장
+    currentQuestionLogDate = getTodayStr();
+    window._questionTags = allTags;
+  }
+
+  // 질문 모달 열기 → 이 시점에 Edge Function 호출
+  async function openQuestionModal() {
+    if (!currentUser) return;
+    const backdrop = document.getElementById('question-backdrop');
+    backdrop.classList.add('open');
+
+    // 로딩 상태
+    document.getElementById('question-loading').style.display = 'block';
+    document.getElementById('question-content').style.display = 'none';
+    document.getElementById('question-error').style.display = 'none';
+
+    try {
+      const session = (await sb.auth.getSession()).data.session;
+      if (!session?.access_token) throw new Error('세션 없음');
+
+      // 사이클 단계 계산
+      const records = loadRecords().sort((a,b) => a.start > b.start ? -1 : 1);
+      const cyclePhase = getCurrentPhase(records);
+
+      const { data, error } = await sb.functions.invoke('generate-question', {
+        body: {
+          user_id: currentUser.id,
+          log_date: currentQuestionLogDate || getTodayStr(),
+          today_tags: window._questionTags || [],
+          cycle_phase: cyclePhase,
+        },
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+
+      if (error) throw error;
+
+      // 질문 노출
+      document.getElementById('question-loading').style.display = 'none';
+      document.getElementById('question-content').style.display = 'block';
+      document.getElementById('question-tag-badge').textContent = currentQuestionTopTag || (window._questionTags?.[0] ?? '');
+      document.getElementById('question-text').textContent = data.question;
+      currentQuestionTopTag = data.top_tag;
+      document.getElementById('question-answer').value = '';
+
+    } catch(e) {
+      console.error('질문 생성 오류:', e);
+      document.getElementById('question-loading').style.display = 'none';
+      document.getElementById('question-error').style.display = 'block';
+      document.getElementById('question-error').textContent = '질문을 불러오지 못했어요. 다시 시도해주세요.';
+    }
+  }
+
+  // 사이클 단계 계산 헬퍼
+  function getCurrentPhase(records) {
+    if (!records.length) return null;
+    const last = records[0];
+    const today = getTodayStr();
+    const start = new Date(last.start);
+    const end = new Date(last.end);
+    const todayDate = new Date(today);
+
+    if (todayDate >= start && todayDate <= end) return '❄️ 겨울(생리기)';
+
+    // 사이클 길이 추정
+    let cycleLength = 28;
+    if (records.length >= 2) {
+      const d1 = new Date(records[0].start);
+      const d2 = new Date(records[1].start);
+      cycleLength = Math.round((d1 - d2) / 86400000);
+    }
+
+    const dayAfterEnd = new Date(end);
+    dayAfterEnd.setDate(dayAfterEnd.getDate() + 1);
+    const daysSinceEnd = Math.round((todayDate - dayAfterEnd) / 86400000);
+
+    const springDays = Math.round(cycleLength * 0.4) - (end - start) / 86400000;
+    const summerDays = Math.round(cycleLength * 0.55) - (end - start) / 86400000;
+
+    if (daysSinceEnd < springDays) return '🌸 봄(여포기)';
+    if (daysSinceEnd < summerDays) return '☀️ 여름(배란기)';
+    return '🍂 가을(황체기)';
+  }
+
+  // 답변 저장
+  async function saveQuestionAnswer() {
+    if (!currentUser || !currentQuestionLogDate) return;
+    const answer = document.getElementById('question-answer').value.trim();
+    const question = document.getElementById('question-text').textContent;
+
+    const btn = document.getElementById('question-save-btn');
+    btn.disabled = true;
+    btn.textContent = '저장 중...';
+
+    try {
+      await sb.from('daily_logs').upsert({
+        user_id: currentUser.id,
+        log_date: currentQuestionLogDate,
+        tag_question: question,
+        tag_answer: answer || null,
+      }, { onConflict: 'user_id,log_date' });
+
+      // 배너 숨기기
+      document.getElementById('question-banner').classList.remove('show');
+      closeQuestion();
+    } catch(e) {
+      console.error('답변 저장 오류:', e);
+      btn.disabled = false;
+      btn.textContent = '저장할게요';
+    }
+  }
+
+  function closeQuestion() {
+    document.getElementById('question-backdrop').classList.remove('open');
+    currentQuestionTopTag = null;
+  }
+
+  function closeQuestionOutside(e) {
+    if (e.target === document.getElementById('question-backdrop')) closeQuestion();
+  }
   let currentReportRecord = null; // _retryRecord와 통합된 변수
   let reportFeedbackRating = 0;
   let currentAIAnalysis = null; // AI 분석 결과 임시 저장 (저장 버튼 클릭 전까지)
@@ -3404,6 +3837,34 @@
   }
 
 </script>
+
+<!-- 질문 배너 (기록 완료 후 노출) -->
+<div class="question-banner" id="question-banner" style="display:none;">
+  <div class="question-banner-inner">
+    <div class="question-banner-text">달이 당신의 하루를 궁금해하고 있어요 🌙</div>
+    <div class="question-banner-actions">
+      <button class="question-banner-btn" onclick="openQuestionModal()">확인하기</button>
+      <button class="question-banner-dismiss" onclick="dismissQuestionBanner()">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- 질문 모달 -->
+<div class="question-modal-backdrop" id="question-modal" style="display:none;">
+  <div class="question-modal">
+    <button class="question-modal-close" onclick="closeQuestionModal()">✕</button>
+    <div id="question-loading">
+      <div class="question-loading-moon">🌙</div>
+      <div class="question-loading-text">잠시, 오늘의 감정을 살펴보고 있어요...</div>
+    </div>
+    <div id="question-content" style="display:none;">
+      <div class="question-text" id="question-text"></div>
+      <textarea class="question-answer-input" id="question-answer" placeholder="짧아도 괜찮아요. 생각나는 대로 써줘요 🌙" maxlength="500"></textarea>
+      <div class="question-answer-hint">여기서 쓴 내용이 다음 리포트 분석에 반영돼요.<br>구체적으로 쓸수록 나에게 맞는 분석을 받을 수 있어요.</div>
+      <button class="question-save-btn" id="question-save-btn" onclick="saveQuestionAnswer()">저장할게요</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
