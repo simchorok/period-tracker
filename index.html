@@ -1595,41 +1595,6 @@
 
 
 <!-- 리포트 목록 바텀시트 -->
-<!-- 데일리 질문 모달 -->
-<div class="question-backdrop" id="question-backdrop" onclick="closeQuestionOutside(event)">
-  <div class="question-sheet" style="position:relative;">
-    <button class="question-close" onclick="closeQuestion()">✕</button>
-    <div class="question-header" id="question-header">🌙 달의 질문</div>
-
-    <!-- 로딩 상태 -->
-    <div id="question-loading" class="question-loading">
-      잠시, 오늘의 감정을 살펴보고 있어요...<br>🌙
-    </div>
-
-    <!-- 질문 + 답변 영역 -->
-    <div id="question-content" style="display:none;">
-      <div class="question-tag-badge" id="question-tag-badge"></div>
-      <div class="question-text" id="question-text"></div>
-      <div class="question-answer-wrap">
-        <textarea
-          class="question-answer"
-          id="question-answer"
-          placeholder="생각나는 대로 편하게 써줘요 🌙"
-          maxlength="500"
-        ></textarea>
-        <div class="question-answer-hint">
-          여기서 쓴 내용이 다음 사이클 리포트 분석에 반영돼요.<br>
-          구체적으로 쓸수록 나에게 맞는 분석을 받을 수 있어요.
-        </div>
-      </div>
-      <button class="question-save-btn" id="question-save-btn" onclick="saveQuestionAnswer()">저장할게요</button>
-    </div>
-
-    <!-- 에러 상태 -->
-    <div id="question-error" style="display:none; text-align:center; padding:24px 0; color:var(--text-muted); font-size:13px;"></div>
-  </div>
-</div>
-
 <div class="report-backdrop" id="report-list-backdrop" onclick="closeReportListOutside(event)">
   <div class="report-sheet" id="report-list-sheet">
     <div class="report-header">
@@ -2877,8 +2842,7 @@
         body: {
           user_id: currentUser.id,
           log_date: currentQuestionDate,
-          top_tag: currentQuestionTag,
-          recent_tags: recentTags,
+          today_tags: [currentQuestionTag, ...recentTags.flatMap(r => r.tags)].filter((v,i,a) => a.indexOf(v) === i),
           cycle_phase: cyclePhase,
         },
         headers: { Authorization: `Bearer ${session.access_token}` },
@@ -3462,134 +3426,7 @@
 
   let currentReportEndDate = null;
 
-  // ── 데일리 질문 ──────────────────────────────────
-  let currentQuestionLogDate = null;
-  let currentQuestionTopTag = null;
 
-  // 질문 배너 노출
-  function showQuestionBanner(entry) {
-    const allTags = [...(entry.mood||[]), ...(entry.symptom||[]), ...(entry.energy||[])];
-    if (!allTags.length) return;
-    document.getElementById('question-banner').classList.add('show');
-    // 오늘 날짜 + 태그 저장
-    currentQuestionLogDate = getTodayStr();
-    window._questionTags = allTags;
-  }
-
-  // 질문 모달 열기 → 이 시점에 Edge Function 호출
-  async function openQuestionModal() {
-    if (!currentUser) return;
-    const backdrop = document.getElementById('question-backdrop');
-    backdrop.classList.add('open');
-
-    // 로딩 상태
-    document.getElementById('question-loading').style.display = 'block';
-    document.getElementById('question-content').style.display = 'none';
-    document.getElementById('question-error').style.display = 'none';
-
-    try {
-      const session = (await sb.auth.getSession()).data.session;
-      if (!session?.access_token) throw new Error('세션 없음');
-
-      // 사이클 단계 계산
-      const records = loadRecords().sort((a,b) => a.start > b.start ? -1 : 1);
-      const cyclePhase = getCurrentPhase(records);
-
-      const { data, error } = await sb.functions.invoke('generate-question', {
-        body: {
-          user_id: currentUser.id,
-          log_date: currentQuestionLogDate || getTodayStr(),
-          today_tags: window._questionTags || [],
-          cycle_phase: cyclePhase,
-        },
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      });
-
-      if (error) throw error;
-
-      // 질문 노출
-      document.getElementById('question-loading').style.display = 'none';
-      document.getElementById('question-content').style.display = 'block';
-      document.getElementById('question-tag-badge').textContent = currentQuestionTopTag || (window._questionTags?.[0] ?? '');
-      document.getElementById('question-text').textContent = data.question;
-      currentQuestionTopTag = data.top_tag;
-      document.getElementById('question-answer').value = '';
-
-    } catch(e) {
-      console.error('질문 생성 오류:', e);
-      document.getElementById('question-loading').style.display = 'none';
-      document.getElementById('question-error').style.display = 'block';
-      document.getElementById('question-error').textContent = '질문을 불러오지 못했어요. 다시 시도해주세요.';
-    }
-  }
-
-  // 사이클 단계 계산 헬퍼
-  function getCurrentPhase(records) {
-    if (!records.length) return null;
-    const last = records[0];
-    const today = getTodayStr();
-    const start = new Date(last.start);
-    const end = new Date(last.end);
-    const todayDate = new Date(today);
-
-    if (todayDate >= start && todayDate <= end) return '❄️ 겨울(생리기)';
-
-    // 사이클 길이 추정
-    let cycleLength = 28;
-    if (records.length >= 2) {
-      const d1 = new Date(records[0].start);
-      const d2 = new Date(records[1].start);
-      cycleLength = Math.round((d1 - d2) / 86400000);
-    }
-
-    const dayAfterEnd = new Date(end);
-    dayAfterEnd.setDate(dayAfterEnd.getDate() + 1);
-    const daysSinceEnd = Math.round((todayDate - dayAfterEnd) / 86400000);
-
-    const springDays = Math.round(cycleLength * 0.4) - (end - start) / 86400000;
-    const summerDays = Math.round(cycleLength * 0.55) - (end - start) / 86400000;
-
-    if (daysSinceEnd < springDays) return '🌸 봄(여포기)';
-    if (daysSinceEnd < summerDays) return '☀️ 여름(배란기)';
-    return '🍂 가을(황체기)';
-  }
-
-  // 답변 저장
-  async function saveQuestionAnswer() {
-    if (!currentUser || !currentQuestionLogDate) return;
-    const answer = document.getElementById('question-answer').value.trim();
-    const question = document.getElementById('question-text').textContent;
-
-    const btn = document.getElementById('question-save-btn');
-    btn.disabled = true;
-    btn.textContent = '저장 중...';
-
-    try {
-      await sb.from('daily_logs').upsert({
-        user_id: currentUser.id,
-        log_date: currentQuestionLogDate,
-        tag_question: question,
-        tag_answer: answer || null,
-      }, { onConflict: 'user_id,log_date' });
-
-      // 배너 숨기기
-      document.getElementById('question-banner').classList.remove('show');
-      closeQuestion();
-    } catch(e) {
-      console.error('답변 저장 오류:', e);
-      btn.disabled = false;
-      btn.textContent = '저장할게요';
-    }
-  }
-
-  function closeQuestion() {
-    document.getElementById('question-backdrop').classList.remove('open');
-    currentQuestionTopTag = null;
-  }
-
-  function closeQuestionOutside(e) {
-    if (e.target === document.getElementById('question-backdrop')) closeQuestion();
-  }
   let currentReportRecord = null; // _retryRecord와 통합된 변수
   let reportFeedbackRating = 0;
   let currentAIAnalysis = null; // AI 분석 결과 임시 저장 (저장 버튼 클릭 전까지)
