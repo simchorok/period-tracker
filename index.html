@@ -1930,6 +1930,7 @@
     updateEmpathyCard(records);
     updatePatternInsight(records);
     await checkReportBanner();
+    await checkQuestionBanner();
   }
 
 
@@ -2797,6 +2798,29 @@
 
   function dismissQuestionBanner() {
     document.getElementById('question-banner').style.display = 'none';
+    localStorage.setItem(`question_dismissed_${getTodayStr()}`, '1');
+  }
+
+  // 앱 로딩 시 질문 배너 노출 여부 체크
+  async function checkQuestionBanner() {
+    if (!currentUser) return;
+    const today = getTodayStr();
+
+    // 오늘 이미 닫았으면 스킵
+    if (localStorage.getItem(`question_dismissed_${today}`)) return;
+
+    // 오늘 로그 있고, 질문 답변 없으면 배너 노출
+    const { data } = await sb.from('daily_logs')
+      .select('mood, symptom, energy, tag_answer')
+      .eq('user_id', currentUser.id)
+      .eq('log_date', today)
+      .maybeSingle();
+
+    if (!data) return;
+    const allTags = [...(data.mood||[]), ...(data.symptom||[]), ...(data.energy||[])];
+    if (allTags.length && !data.tag_answer) {
+      showQuestionBanner(today, allTags);
+    }
   }
 
   async function openQuestionModal() {
@@ -2865,6 +2889,7 @@
   function closeQuestionModal() {
     document.getElementById('question-modal').style.display = 'none';
     currentQuestionText = null;
+    dismissQuestionBanner();
   }
 
   async function saveQuestionAnswer() {
