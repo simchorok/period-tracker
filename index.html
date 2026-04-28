@@ -2867,7 +2867,8 @@
         body: {
           user_id: currentUser.id,
           log_date: currentQuestionDate,
-          today_tags: [currentQuestionTag],
+          top_tag: currentQuestionTag,
+          recent_tags: recentTags,
           cycle_phase: cyclePhase,
         },
         headers: { Authorization: `Bearer ${session.access_token}` },
@@ -3632,6 +3633,7 @@
   }
 
   async function saveReportFeedback() {
+    if (!currentUser) return;
     if (!reportFeedbackRating) return;
     if (!currentReportEndDate) return;
     if (!currentAIAnalysis) {
