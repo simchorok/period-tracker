@@ -1101,11 +1101,11 @@
   /* ── 질문 배너 (홈 하단) ── */
   .question-banner { display:none; margin:12px 16px; background:var(--surface); border:1px solid var(--accent-dim); border-radius:16px; padding:16px 18px; cursor:pointer; }
   .question-banner.show { display:flex; align-items:center; gap:12px; }
-  .question-banner-icon { font-size:22px; flex-shrink:0; }
+  .question-banner-icon { font-size:24px; flex-shrink:0; }
   .question-banner-text { flex:1; }
-  .question-banner-title { font-size:13px; color:var(--text); font-weight:600; margin-bottom:2px; }
-  .question-banner-sub { font-size:11px; color:var(--text-muted); }
-  .question-banner-arrow { color:var(--accent); font-size:18px; }
+  .question-banner-title { font-size:13px; color:var(--text); font-weight:600; margin-bottom:3px; }
+  .question-banner-sub { font-size:11px; color:var(--accent); }
+  .question-banner-dismiss { background:none; border:none; color:var(--text-muted); font-size:16px; cursor:pointer; padding:4px; flex-shrink:0; }
 
   /* ── 메모 입력란 ── */
   .log-memo-input {
@@ -1146,13 +1146,18 @@
   /* ── 질문 모달 ── */
   .question-modal-backdrop {
     position: fixed; inset: 0; background: rgba(0,0,0,0.75);
-    z-index: 300; display: flex; align-items: flex-end; justify-content: center;
+    z-index: 300; display: flex; align-items: center; justify-content: center;
+    padding: 20px;
   }
   .question-modal {
-    background: var(--surface); border-radius: 24px 24px 0 0;
-    padding: 28px 20px 48px; width: 100%; max-width: 420px;
-    border-top: 1px solid var(--accent-dim);
-    animation: slideUp 0.3s ease; position: relative; min-height: 260px;
+    background: var(--surface); border-radius: 24px;
+    padding: 28px 24px 32px; width: 100%; max-width: 380px;
+    border: 1px solid var(--accent-dim);
+    animation: fadeInScale 0.25s ease; position: relative;
+  }
+  @keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
   }
   .question-modal-close {
     position: absolute; top: 16px; right: 16px;
@@ -1233,12 +1238,12 @@
 
     <!-- 데일리 질문 배너 -->
     <div class="question-banner" id="question-banner" onclick="openQuestionModal()">
-      <div class="question-banner-icon">🌙</div>
+      <div class="question-banner-icon">📬</div>
       <div class="question-banner-text">
-        <div class="question-banner-title">달이 당신의 하루를 궁금해하고 있어요</div>
-        <div class="question-banner-sub">오늘의 질문 확인하기</div>
+        <div class="question-banner-title">달이 당신의 하루를 궁금해하고 있어요 🌙</div>
+        <div class="question-banner-sub">오늘의 질문이 도착했어요 · 탭해서 확인하기</div>
       </div>
-      <div class="question-banner-arrow">›</div>
+      <button class="question-banner-dismiss" onclick="event.stopPropagation(); dismissQuestionBanner()">✕</button>
     </div>
 
     <!-- 사이클 씽킹 카드 -->
@@ -2729,7 +2734,6 @@
     entry.sleepQuality = sleepQualityTag ? sleepQualityTag.dataset.val : null;
     entry.sleepHours = parseFloat(document.getElementById('sleep-hours').value) || null;
     entry.memo = document.getElementById('log-memo')?.value?.trim() || null;
-    entry.memo = document.getElementById('log-memo').value.trim() || null;
 
     const hasAny = entry.mood.length > 0 || entry.symptom.length > 0 || entry.energy.length > 0 ||
       entry.etc.length > 0 || entry.periodIntensity || entry.sleepQuality || entry.sleepHours || entry.memo;
@@ -2738,9 +2742,11 @@
         const existingId = logs[logTargetDate] ? logs[logTargetDate].id : null;
         logs[logTargetDate] = entry;
         if (currentUser) await saveLogToDB(logTargetDate, entry, existingId);
-        // 질문 배너 노출 (태그 선택한 경우에만)
+        // 질문 배너 노출 (오늘 날짜 + 태그 선택한 경우에만)
         const allTags = [...entry.mood, ...entry.symptom, ...entry.energy, ...entry.etc];
-        if (allTags.length > 0) showQuestionBanner(logTargetDate, allTags);
+        if (allTags.length > 0 && logTargetDate === getTodayStr()) {
+          showQuestionBanner(logTargetDate, allTags);
+        }
       } else {
         delete logs[logTargetDate];
       }
@@ -2753,11 +2759,6 @@
     const recs = loadRecords();
     updateEmpathyCard(recs);
     updatePatternInsight(recs);
-
-    // 오늘 기록 완료 시 질문 배너 노출 (오늘 날짜 기록만)
-    if (hasAny && logTargetDate === getTodayStr() && currentUser) {
-      showQuestionBanner(entry);
-    }
   }
 
   // ── 질문 배너/모달 ──────────────────────────────
@@ -2793,11 +2794,11 @@
     currentQuestionDate = logDate;
     currentQuestionTag = topTag;
     currentQuestionText = null;
-    document.getElementById('question-banner').style.display = 'block';
+    document.getElementById('question-banner').classList.add('show');
   }
 
   function dismissQuestionBanner() {
-    document.getElementById('question-banner').style.display = 'none';
+    document.getElementById('question-banner').classList.remove('show');
     localStorage.setItem(`question_dismissed_${getTodayStr()}`, '1');
   }
 
@@ -2866,7 +2867,7 @@
         body: {
           user_id: currentUser.id,
           log_date: currentQuestionDate,
-          today_tags: [currentQuestionTag, ...recentTags.flatMap(r => r.tags)].filter((v,i,a) => a.indexOf(v) === i),
+          today_tags: [currentQuestionTag],
           cycle_phase: cyclePhase,
         },
         headers: { Authorization: `Bearer ${session.access_token}` },
@@ -3585,7 +3586,7 @@
       .select('*')
       .eq('user_id', currentUser.id)
       .eq('period_end_date', endDate)
-      .single();
+      .maybeSingle();
     return data;
   }
 
@@ -3700,16 +3701,7 @@
 
 </script>
 
-<!-- 질문 배너 (기록 완료 후 노출) -->
-<div class="question-banner" id="question-banner" style="display:none;">
-  <div class="question-banner-inner">
-    <div class="question-banner-text">달이 당신의 하루를 궁금해하고 있어요 🌙</div>
-    <div class="question-banner-actions">
-      <button class="question-banner-btn" onclick="openQuestionModal()">확인하기</button>
-      <button class="question-banner-dismiss" onclick="dismissQuestionBanner()">✕</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- 질문 모달 -->
 <div class="question-modal-backdrop" id="question-modal" style="display:none;">
