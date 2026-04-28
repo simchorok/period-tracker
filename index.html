@@ -2742,9 +2742,13 @@
         const existingId = logs[logTargetDate] ? logs[logTargetDate].id : null;
         logs[logTargetDate] = entry;
         if (currentUser) await saveLogToDB(logTargetDate, entry, existingId);
-        // 질문 배너 노출 (오늘 날짜 + 태그 선택한 경우에만)
+        // 질문 배너 노출 (오늘 날짜 + 태그 있음 + 오늘 dismiss 안 했음 + 질문 답변 없음)
         const allTags = [...entry.mood, ...entry.symptom, ...entry.energy, ...entry.etc];
-        if (allTags.length > 0 && logTargetDate === getTodayStr()) {
+        const today = getTodayStr();
+        const alreadyDismissed = localStorage.getItem(`question_dismissed_${today}`);
+        const existingLog = logs[today];
+        const alreadyAnswered = existingLog?.tag_answer;
+        if (allTags.length > 0 && logTargetDate === today && !alreadyDismissed && !alreadyAnswered) {
           showQuestionBanner(logTargetDate, allTags);
         }
       } else {
@@ -2825,7 +2829,8 @@
   }
 
   async function openQuestionModal() {
-    dismissQuestionBanner();
+    // 배너 숨기기 (localStorage dismiss는 X 버튼/저장 완료 시에만)
+    document.getElementById('question-banner').classList.remove('show');
     if (!currentUser || !currentQuestionDate || !currentQuestionTag) return;
 
     // 모달 열고 로딩 상태
