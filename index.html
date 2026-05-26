@@ -1682,12 +1682,16 @@
     document.getElementById('login-screen').classList.add('show');
   }
 
-  function showApp(user) {
+  async function showApp(user) {
     currentUser = user;
     document.getElementById('loading-screen').classList.remove('show');
     document.getElementById('login-screen').classList.remove('show');
 
-
+    // 마지막 접속일 업데이트
+    sb.from('user_profiles')
+      .upsert({ id: user.id, last_seen_at: new Date().toISOString() }, { onConflict: 'id' })
+      .then(() => {})
+      .catch(() => {});
 
     // 데이터 로드
     loadAllData();
@@ -2828,50 +2832,43 @@
     }
   }
 
-  let _questionGenerating = false;
-
   async function openQuestionModal() {
     // 배너 숨기기 (localStorage dismiss는 X 버튼/저장 완료 시에만)
     document.getElementById('question-banner').classList.remove('show');
     if (!currentUser || !currentQuestionDate || !currentQuestionTag) return;
 
-    // 모달 열기
+    // 모달 열고 로딩 상태
     const modal = document.getElementById('question-modal');
     modal.style.display = 'flex';
-
-    // 이미 생성된 질문이 있으면 재사용 (비용 절약)
-    if (currentQuestionText) {
-      document.getElementById('question-loading').style.display = 'none';
-      document.getElementById('question-content').style.display = 'block';
-      document.getElementById('question-text').textContent = currentQuestionText;
-      document.getElementById('question-answer').value = '';
-      return;
-    }
-
-    // 동시 호출 방지
-    if (_questionGenerating) return;
-    _questionGenerating = true;
-
     document.getElementById('question-loading').style.display = 'block';
     document.getElementById('question-content').style.display = 'none';
     document.getElementById('question-answer').value = '';
 
     try {
-      // 사이클 단계 계산 (서버에서 최근 7일 답변 포함 DB 직접 조회)
+      // 최근 3일 태그 수집 (맥락용)
+      const logs = loadLogs();
+      const today = new Date(currentQuestionDate);
+      const recentTags = [];
+      for (let i = 1; i <= 3; i++) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const log = logs[ds];
+        if (log) {
+          const tags = [...(log.mood||[]), ...(log.symptom||[]), ...(log.energy||[])];
+          if (tags.length) recentTags.push({ date: ds, tags });
+        }
+      }
+
+      // 사이클 단계 계산
       const records = loadRecords().sort((a,b) => a.start > b.start ? -1 : 1);
       let cyclePhase = null;
       if (records.length > 0) {
         const last = records[0];
-        const cycle = calcAvgCycle(records);
-        const dayOfCycle = dateDiff(currentQuestionDate, last.start) + 1;
-        if (dayOfCycle >= 1) {
-          const phaseKey = getCyclePhase(dayOfCycle, cycle);
-          const phaseNames = { winter:'❄️ 겨울(생리기)', spring:'🌸 봄(여포기)', summer:'☀️ 여름(배란기)', autumn:'🍂 가을(황체기)' };
-          cyclePhase = phaseNames[phaseKey] || null;
-        }
+        cyclePhase = getCyclePhase(currentQuestionDate, last.start, last.end);
       }
 
-      // Edge Function 호출 (recent_logs는 서버에서 DB 직접 조회)
+      // Edge Function 호출
       const session = (await sb.auth.getSession()).data.session;
       if (!session?.access_token) throw new Error('세션 없음');
 
@@ -2880,6 +2877,7 @@
           user_id: currentUser.id,
           log_date: currentQuestionDate,
           top_tag: currentQuestionTag,
+          recent_tags: recentTags,
           cycle_phase: cyclePhase,
         },
         headers: { Authorization: `Bearer ${session.access_token}` },
@@ -2896,8 +2894,6 @@
       console.error('질문 생성 오류:', e);
       document.getElementById('question-loading').innerHTML =
         '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">질문을 불러오지 못했어요.<br>잠시 후 다시 시도해주세요.</div>';
-    } finally {
-      _questionGenerating = false;
     }
   }
 
