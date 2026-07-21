@@ -187,24 +187,6 @@
     }
   };
 
-  const EMPATHY_MAP = [
-    // [사이클단계, 기록태그, 메시지]
-    ['autumn', '예민해요',    '🍂 <strong>생리 전이라 예민할 수 있어요.</strong> 감정이 격해지는 건 자연스러운 거예요. 충분히 괜찮아요 💙'],
-    ['autumn', '무기력해요',  '🍂 <strong>황체기에는 에너지가 낮아져요.</strong> 오늘은 조금 쉬어가도 괜찮아요.'],
-    ['autumn', '불안해요',    '🍂 <strong>생리 전 불안감은 흔해요.</strong> 심호흡하고 나를 다독여줘요 🤍'],
-    ['autumn', '두통',        '🍂 <strong>황체기 두통은 호르몬 변화 때문이에요.</strong> 수분 섭취와 휴식이 도움돼요.'],
-    ['autumn', '복부팽만',    '🍂 <strong>생리 전 붓기는 자연스러워요.</strong> 짠 음식을 줄이면 좋아요.'],
-    ['winter', '생리통',      '❄️ <strong>생리통이 심하다면</strong> 따뜻하게 해주세요 🫖 무리한 활동은 잠시 쉬어요.'],
-    ['winter', '피로감',      '❄️ <strong>생리 중 피로는 당연해요.</strong> 철분이 풍부한 음식이 도움돼요.'],
-    ['winter', '무기력해요',  '❄️ <strong>생리기엔 에너지가 낮아요.</strong> 오늘은 쉬는 게 최선이에요. 🌙'],
-    ['spring', '활력 넘쳐요', '🌱 <strong>에너지가 넘치는 봄이에요!</strong> 하고 싶었던 걸 시작해봐요.'],
-    ['spring', '집중이 잘 돼요', '🌱 <strong>집중력이 올라오는 시기예요.</strong> 중요한 일을 지금 해봐요!'],
-    ['summer', '활력 넘쳐요', '☀️ <strong>배란기라 에너지가 최고조예요!</strong> 오늘 뭐든 잘 될 거예요 ✨'],
-    ['summer', '자신감 넘쳐요', '☀️ <strong>지금 자신감이 넘치는 건 자연스러워요.</strong> 이 에너지를 활용해봐요!'],
-    ['autumn', '수면 잘 못함', '🍂 <strong>황체기엔 수면이 얕아질 수 있어요.</strong> 취침 전 휴식 루틴을 만들어봐요.'],
-    ['winter', '수면 잘 못함', '❄️ <strong>생리 중 수면 불편은 흔해요.</strong> 따뜻한 환경을 만들어줘요.'],
-  ];
-
   function getCyclePhase(dayOfCycle, cycleLength) {
     // 사용자 평균 주기 기반으로 각 단계 계산
     // 겨울(생리기): 약 13%, 봄(여포기): 약 35%, 여름(배란기): 약 15%, 가을(황체기): 약 37%
@@ -1263,10 +1245,8 @@
       </div>
     </div>
 
-    <!-- 공감 메시지 -->
-    <div class="empathy-card" id="empathy-card">
-      <div class="empathy-text" id="empathy-text"></div>
-    </div>
+    <!-- 인사이트 카드 -->
+    <div class="empathy-card" id="insight-card"></div>
 
     <div class="dday-badge" id="dday-badge">
       <div class="dday-badge-text" id="dday-badge-text"></div>
@@ -1435,6 +1415,7 @@
         <span class="log-tag" data-val="불안해요">😰 불안해요</span>
         <span class="log-tag" data-val="무기력해요">😔 무기력해요</span>
         <span class="log-tag" data-val="슬퍼요">😢 슬퍼요</span>
+        <span class="log-tag" data-val="갑자기 눈물이 나요">😢 갑자기 눈물이 나요</span>
         <span class="log-tag" data-val="우울해요">🌧️ 우울해요</span>
       </div>
     </div>
@@ -1687,12 +1668,15 @@
     document.getElementById('login-screen').classList.add('show');
   }
 
-  function showApp(user) {
+  async function showApp(user) {
     currentUser = user;
     document.getElementById('loading-screen').classList.remove('show');
     document.getElementById('login-screen').classList.remove('show');
 
-
+    // 마지막 접속일 업데이트
+    sb.from('user_profiles')
+      .upsert({ id: user.id, last_seen_at: new Date().toISOString() }, { onConflict: 'id' })
+      .then(() => {}).catch(() => {});
 
     // 데이터 로드
     loadAllData();
@@ -1937,8 +1921,7 @@
     document.getElementById('next-ovulation').textContent=fmtDate(pred.ovulation);
     document.getElementById('next-fertile').textContent=`${fmtDate(pred.fertile.start)} ~ ${fmtDate(pred.fertile.end)}`;
     updateCycleCard(records);
-    updateEmpathyCard(records);
-    updatePatternInsight(records);
+    updateInsightCard(records);
     await checkReportBanner();
     await checkQuestionBanner();
   }
@@ -1988,213 +1971,153 @@
     }
   };
 
-  const EMPATHY_MAP = [
-    // [사이클단계, 기록태그, 메시지]
-    ['autumn', '예민해요',    '🍂 <strong>생리 전이라 예민할 수 있어요.</strong> 감정이 격해지는 건 자연스러운 거예요. 충분히 괜찮아요 💙'],
-    ['autumn', '무기력해요',  '🍂 <strong>황체기에는 에너지가 낮아져요.</strong> 오늘은 조금 쉬어가도 괜찮아요.'],
-    ['autumn', '불안해요',    '🍂 <strong>생리 전 불안감은 흔해요.</strong> 심호흡하고 나를 다독여줘요 🤍'],
-    ['autumn', '두통',        '🍂 <strong>황체기 두통은 호르몬 변화 때문이에요.</strong> 수분 섭취와 휴식이 도움돼요.'],
-    ['autumn', '복부팽만',    '🍂 <strong>생리 전 붓기는 자연스러워요.</strong> 짠 음식을 줄이면 좋아요.'],
-    ['winter', '생리통',      '❄️ <strong>생리통이 심하다면</strong> 따뜻하게 해주세요 🫖 무리한 활동은 잠시 쉬어요.'],
-    ['winter', '피로감',      '❄️ <strong>생리 중 피로는 당연해요.</strong> 철분이 풍부한 음식이 도움돼요.'],
-    ['winter', '무기력해요',  '❄️ <strong>생리기엔 에너지가 낮아요.</strong> 오늘은 쉬는 게 최선이에요. 🌙'],
-    ['spring', '활력 넘쳐요', '🌱 <strong>에너지가 넘치는 봄이에요!</strong> 하고 싶었던 걸 시작해봐요.'],
-    ['spring', '집중이 잘 돼요', '🌱 <strong>집중력이 올라오는 시기예요.</strong> 중요한 일을 지금 해봐요!'],
-    ['summer', '활력 넘쳐요', '☀️ <strong>배란기라 에너지가 최고조예요!</strong> 오늘 뭐든 잘 될 거예요 ✨'],
-    ['summer', '자신감 넘쳐요', '☀️ <strong>지금 자신감이 넘치는 건 자연스러워요.</strong> 이 에너지를 활용해봐요!'],
-    ['autumn', '수면 잘 못함', '🍂 <strong>황체기엔 수면이 얕아질 수 있어요.</strong> 취침 전 휴식 루틴을 만들어봐요.'],
-    ['winter', '수면 잘 못함', '❄️ <strong>생리 중 수면 불편은 흔해요.</strong> 따뜻한 환경을 만들어줘요.'],
-  ];
-
-  function getCyclePhase(dayOfCycle, cycleLength) {
-    // 사용자 평균 주기 기반으로 각 단계 계산
-    // 겨울(생리기): 약 13%, 봄(여포기): 약 35%, 여름(배란기): 약 15%, 가을(황체기): 약 37%
-    const winterEnd = 6;
-    const springEnd = Math.round(cycleLength * 0.48);
-    const summerEnd = Math.round(cycleLength * 0.63);
-    if (dayOfCycle <= winterEnd) return 'winter';
-    if (dayOfCycle <= springEnd) return 'spring';
-    if (dayOfCycle <= summerEnd) return 'summer';
-    return 'autumn';
-  }
-
-  function updateCycleCard(records) {
-    const card = document.getElementById('cycle-card');
-    if (!records.length) { card.classList.remove('show'); return; }
-
-    const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
-    const last = sorted[sorted.length-1];
-    const _tc=new Date(); const todayStr=`${_tc.getFullYear()}-${String(_tc.getMonth()+1).padStart(2,'0')}-${String(_tc.getDate()).padStart(2,'0')}`;
-    const cycle = calcAvgCycle(records);
-
-    // 마지막 생리 시작일 기준 오늘이 몇일째인지
-    const dayOfCycle = dateDiff(todayStr, last.start) + 1;
-    if (dayOfCycle < 1 || dayOfCycle > cycle + 5) { card.classList.remove('show'); return; }
-
-    const phase = getCyclePhase(dayOfCycle, cycle);
-    const info = CYCLE_PHASES[phase];
-    const msg = info.messages[dayOfCycle % info.messages.length];
-
-    // 단계별 범위 계산 (사용자 평균 주기 기반)
-    const winterEnd = 6;
-    const springEnd = Math.round(cycle * 0.48);
-    const summerEnd = Math.round(cycle * 0.63);
-    const ranges = { winter:[1,winterEnd], spring:[winterEnd+1,springEnd], summer:[springEnd+1,summerEnd], autumn:[summerEnd+1,cycle] };
-    const [phaseStart, phaseEnd] = ranges[phase];
-    const progress = phaseEnd === phaseStart ? 100 : Math.min(100, Math.round(((dayOfCycle - phaseStart + 1) / (phaseEnd - phaseStart + 1)) * 100));
-
-    // 렌더링
-    card.className = `cycle-card show ${info.cls}`;
-    document.getElementById('cycle-season').textContent = info.season;
-    document.getElementById('cycle-day-badge').textContent = `${dayOfCycle}일째`;
-    document.getElementById('cycle-phase-name').textContent = info.name;
-    document.getElementById('cycle-message').textContent = msg;
-    document.getElementById('cycle-progress-fill').style.width = progress + '%';
-    document.getElementById('cycle-progress-start').textContent = `${phaseStart}일`;
-    document.getElementById('cycle-progress-end').textContent = `${phaseEnd}일`;
-  }
-
-  function updateEmpathyCard(records) {
-    const card = document.getElementById('empathy-card');
-    const _te=new Date(); const todayStr=`${_te.getFullYear()}-${String(_te.getMonth()+1).padStart(2,'0')}-${String(_te.getDate()).padStart(2,'0')}`;
-    const logs = loadLogs();
-    const todayLog = logs[todayStr];
-
-    if (!records.length || !todayLog) { card.classList.remove('show'); return; }
-
-    const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
-    const last = sorted[sorted.length-1];
-    const cycle = calcAvgCycle(records);
-    const dayOfCycle = dateDiff(todayStr, last.start) + 1;
-    const phase = getCyclePhase(dayOfCycle, cycle);
-
-    const allTags = [...(todayLog.mood||[]), ...(todayLog.symptom||[]), ...(todayLog.energy||[]), ...(todayLog.etc||[])];
-
-    // 매칭되는 공감 메시지 찾기
-    let matched = null;
-    for (const [p, tag, msg] of EMPATHY_MAP) {
-      if (p === phase && allTags.includes(tag)) { matched = msg; break; }
-    }
-
-    if (matched) {
-      card.classList.add('show');
-      document.getElementById('empathy-text').innerHTML = matched;
-    } else {
-      card.classList.remove('show');
-    }
-  }
-
-
-  /* ── 패턴 인사이트 ── */
-  const PATTERN_MESSAGES = {
-    '예민해요':     { pre: '지난번 이 시기에도 예민함을 느꼈어요. 오늘 감정이 격해진다면, 그건 탓이 아니에요 🤍',
-                     post: '지난번에도 이 시기에 예민했어요. 당연한 감정이에요, 너무 자책하지 마요 💙' },
-    '무기력해요':   { pre: '지난번에도 이맘때 무기력했어요. 오늘 아무것도 하기 싫다면, 충분히 이유가 있어요.',
-                     post: '지난번에도 이맘때 무기력했어요. 몸이 보내는 신호예요, 오늘은 쉬어요.' },
-    '두통':         { pre: '지난번 이 시기에 두통이 있었어요. 오늘 머리가 무겁다면 수분을 충분히 챙겨봐요 💧',
-                     post: '지난번에도 이 시기에 두통이 있었네요. 호르몬 변화 때문이에요, 따뜻하게 쉬어요.' },
-    '피로감':       { pre: '지난번에도 이 시기엔 많이 피곤했어요. 오늘 일찍 쉬어도 괜찮아요.',
-                     post: '지난번에도 이 시기에 많이 피곤했어요. 오늘은 일찍 쉬어요.' },
-    '불안해요':     { pre: '지난번에도 이맘때 불안감이 올라왔어요. 오늘 마음이 불안하다면 호르몬의 영향일 수 있어요.',
-                     post: '지난번에도 이맘때 불안했어요. 감정이 롤러코스터처럼 느껴지는 건 자연스러워요 🤍' },
-    '생리통':       { pre: '지난번 생리 때도 통증이 있었어요. 따뜻하게 미리 준비해봐요 🫖',
-                     post: '지난번 생리 때도 아팠어요. 오늘도 따뜻한 걸 가까이 두어요 🫖' },
-    '복부팽만':     { pre: '지난번 이 시기에 붓기가 있었어요. 오늘 짠 음식은 조금 줄여봐요.',
-                     post: '지난번에도 이 시기에 붓기가 있었네요. 식단에 조금 신경 써봐요.' },
-    '수면 잘 못함': { pre: '지난번에도 이맘때 잠을 잘 못 잤어요. 오늘은 일찍 누워봐요 🌙',
-                     post: '지난번에도 이 시기에 잠을 잘 못 잤네요. 취침 전 루틴을 만들어봐요.' },
-    '여드름':       { pre: '지난번 이 시기에 여드름이 났었어요. 피부 관리에 조금 더 신경 써봐요.',
-                     post: '지난번에도 이 시기에 여드름이 있었어요. 호르몬 변화 때문이에요.' },
-    '유방통':       { pre: '지난번에도 이맘때 유방통이 있었어요. 오늘 불편하다면 당연한 거예요.',
-                     post: '지난번에도 이 시기에 유방통이 있었네요. 몸이 보내는 신호예요.' },
+  /* ── 인사이트 카드 ── */
+  const INSIGHT_PHASE = {
+    winter: '몸이 가장 많은 에너지를 쓰는 시기예요. 무리하지 않는 게 최선이에요.',
+    spring: '에너지가 서서히 올라오는 시기예요. 새로운 걸 시작하기 좋아요.',
+    summer: '에너지와 자신감이 최고조인 시기예요. 중요한 일은 지금 하세요.',
+    autumn: '몸이 생리를 준비하는 시기예요. 감정 기복과 신체 증상이 자연스럽게 나타날 수 있어요.',
   };
 
-  function getPatternInsight(records, phase, todayTags, hasLogToday) {
-    if (records.length < 2) return null;
-    const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
-    const cycle = calcAvgCycle(records);
+  const INSIGHT_PATTERN = {
+    '예민해요':         '이 시기마다 예민해지는 패턴이 있어요. 성격이 아니라 호르몬이에요.',
+    '무기력해요':       '이 시기엔 에너지가 떨어지는 게 반복되고 있어요. 오늘 아무것도 하기 싫은 건 충분히 이유가 있어요.',
+    '불안해요':         '이 시기마다 불안감이 올라오는 패턴이 있어요. 호르몬 변화가 감정에 영향을 주는 거예요.',
+    '슬퍼요':           '이 시기에 감정이 가라앉는 패턴이 있어요. 지나가는 리듬이에요.',
+    '우울해요':         '이 시기에 반복적으로 우울감이 오고 있어요. 몸의 신호예요, 자책하지 마요.',
+    '감정이 오락가락해요': '이 시기에 감정 기복이 반복되는 패턴이 있어요. 호르몬이 만드는 거예요.',
+    '두통':             '이 시기마다 두통이 오는 패턴이 있어요. 호르몬 변화 때문이에요.',
+    '생리통':           '생리 때마다 통증이 오는 패턴이 있어요. 미리 대비하면 훨씬 나아요.',
+    '복통':             '이 시기에 복통이 반복되고 있어요. 따뜻하게 해주는 게 도움이 돼요.',
+    '붓기가 있어요':    '이 시기마다 붓기가 오는 패턴이 있어요. 호르몬 때문에 수분이 쌓이는 거예요.',
+    '식욕이 늘었어요':  '이 시기마다 식욕이 늘어나는 패턴이 있어요. 몸이 에너지를 더 원하는 거예요.',
+    '완전 방전':        '이 시기마다 에너지가 바닥나는 패턴이 있어요. 오늘은 쉬는 게 맞아요.',
+    '온 몸이 쑤셔요':   '이 시기에 몸이 쑤시는 패턴이 있어요. 몸이 보내는 신호예요.',
+    '기력이 없어요':    '이 시기에 기력이 없는 게 반복되고 있어요. 몸이 쉬고 싶다는 신호예요.',
+  };
 
-    // 과거 각 기록에서 같은 사이클 단계에 해당하는 날짜 범위 구하기
+  const INSIGHT_ADVICE = {
+    '두통':             '두통약을 미리 챙겨두고, 수분을 충분히 마셔봐요.',
+    '생리통':           '핫팩을 배에 올려두고, 진통제를 미리 먹어두는 게 좋아요.',
+    '복통':             '따뜻한 음료를 마시고 배를 따뜻하게 해주세요.',
+    '붓기가 있어요':    '짠 음식을 줄이고 물을 많이 마셔봐요.',
+    '식욕이 늘었어요':  '건강한 간식을 미리 챙겨두면 폭식을 줄이는 데 도움이 돼요.',
+    '입맛이 없어요':    '부담 없이 먹을 수 있는 가벼운 음식을 챙겨봐요.',
+    '완전 방전':        '철분이 부족할 수 있어요. 철분 보충제를 챙겨봐요.',
+    '무기력해요':       '가볍게 스트레칭만 해도 혈액순환에 도움이 돼요.',
+    '냉이 많아요':      '배란기나 생리 전 분비물이 늘어나는 건 자연스러워요. 방수 팬티를 미리 준비해두면 훨씬 편해요.',
+    '온 몸이 쑤셔요':   '따뜻한 물로 반신욕을 해보는 건 어때요.',
+    '예민해요':         '카페인을 줄이고 따뜻한 음료로 바꿔봐요.',
+    '우울해요':         '오늘은 나를 다독이는 시간을 가져봐요. 가볍게 산책하거나 좋아하는 음악을 들어봐요.',
+    '불안해요':         '천천히 깊게 호흡해봐요. 불안한 감정을 일기에 적으면 마음이 한결 가벼워져요.',
+    '단 게 당겨요':     '설탕 대신 과일이나 다크초콜릿으로 달콤함을 채워봐요.',
+    '두드러기/여드름':  '세안을 꼼꼼히 하고 보습을 충분히 해줘요.',
+    '메스꺼움':         '공복을 피하고 소량씩 자주 먹어봐요.',
+    '허리통증':         '스트레칭이나 핫팩으로 허리를 풀어줘봐요.',
+    '유방통':           '카페인을 줄이면 유방통이 완화되는 경우가 있어요.',
+  };
+
+  function getRepeatPatternTag(records, phase, todayTags, cycle, logs) {
+    const sorted = [...records].sort((a,b) => a.start > b.start ? 1 : -1);
     const tagCounts = {};
-    const logs = loadLogs();
-
     sorted.forEach((r, i) => {
-      if (i === sorted.length - 1) return; // 가장 최근은 제외 (현재 진행 중)
-      // 이 생리 시작일 기준으로 각 날짜의 사이클 단계 계산
+      if (i === sorted.length - 1) return;
       const startDate = new Date(r.start);
       for (let day = 1; day <= cycle; day++) {
         const d = new Date(startDate);
         d.setDate(d.getDate() + day - 1);
         const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        const p = getCyclePhase(day, cycle);
-        if (p !== phase) continue;
+        if (getCyclePhase(day, cycle) !== phase) continue;
         const log = logs[ds];
         if (!log) continue;
-        const allTags = [...(log.mood||[]), ...(log.symptom||[]), ...(log.energy||[]), ...(log.etc||[])];
-        allTags.forEach(tag => { tagCounts[tag] = (tagCounts[tag] || 0) + 1; });
+        [...(log.mood||[]), ...(log.symptom||[]), ...(log.energy||[])].forEach(tag => {
+          tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        });
       }
     });
-
-    // 2회 이상 반복된 태그 중 오늘 기록된 것 또는 패턴 예고
-    const totalPastCycles = sorted.length - 1;
-    const threshold = Math.max(1, Math.floor(totalPastCycles * 0.5)); // 50% 이상 반복
-
-    if (hasLogToday && todayTags.length > 0) {
-      // 오늘 기록한 태그 중 패턴 매칭
-      for (const tag of todayTags) {
-        if (tagCounts[tag] >= threshold && PATTERN_MESSAGES[tag]) {
-          return { type: 'post', tag, msg: PATTERN_MESSAGES[tag].post, count: tagCounts[tag], total: totalPastCycles };
-        }
-      }
-    } else {
-      // 오늘 기록 없으면 예고형
-      for (const [tag, count] of Object.entries(tagCounts)) {
-        if (count >= threshold && PATTERN_MESSAGES[tag]) {
-          return { type: 'pre', tag, msg: PATTERN_MESSAGES[tag].pre, count, total: totalPastCycles };
-        }
-      }
+    const threshold = Math.max(1, Math.floor((sorted.length - 1) * 0.4));
+    for (const tag of todayTags) {
+      if (tagCounts[tag] >= threshold && INSIGHT_PATTERN[tag]) return tag;
     }
     return null;
   }
 
-  function updatePatternInsight(records) {
-    // 기존 패턴 카드가 있으면 제거
-    const existing = document.getElementById('pattern-card');
-    if (existing) existing.remove();
+  function updateInsightCard(records) {
+    const card = document.getElementById('insight-card');
+    if (!card) return;
+    const today = getTodayStr();
+    const logs = loadLogs();
+    const todayLog = logs[today];
+    const todayTags = todayLog ? [
+      ...(todayLog.mood||[]), ...(todayLog.symptom||[]),
+      ...(todayLog.energy||[]), ...(todayLog.etc||[])
+    ] : [];
 
-    if (records.length < 2) return;
+    // Case 1: 생리 기록 없음
+    if (!records.length) {
+      card.innerHTML = `<div style="font-size:13px;color:var(--text-muted);text-align:center;line-height:1.8;padding:4px 0">생리 기록을 입력하면 맞춤 인사이트를 드려요 🌙</div>`;
+      card.classList.add('show');
+      return;
+    }
 
-    const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
-    const last = sorted[sorted.length-1];
-    const todayStr = (() => { const _d=new Date(); return `${_d.getFullYear()}-${String(_d.getMonth()+1).padStart(2,'0')}-${String(_d.getDate()).padStart(2,'0')}`; })();
+    // 사이클 단계 계산
+    const sorted = [...records].sort((a,b) => a.start > b.start ? -1 : 1);
+    const last = sorted[0];
     const cycle = calcAvgCycle(records);
-    const dayOfCycle = dateDiff(todayStr, last.start) + 1;
-    if (dayOfCycle < 1 || dayOfCycle > cycle + 5) return;
+    const dayOfCycle = dateDiff(today, last.start) + 1;
+    if (dayOfCycle < 1 || dayOfCycle > cycle + 5) { card.classList.remove('show'); return; }
 
     const phase = getCyclePhase(dayOfCycle, cycle);
-    const logs = loadLogs();
-    const todayLog = logs[todayStr];
-    const todayTags = todayLog ? [...(todayLog.mood||[]), ...(todayLog.symptom||[]), ...(todayLog.energy||[]), ...(todayLog.etc||[])] : [];
-    const hasLogToday = !!todayLog;
+    const phaseEmoji = { winter:'❄️', spring:'🌸', summer:'☀️', autumn:'🍂' };
+    const pred = getNextPredictions(records);
+    const daysUntil = pred ? dateDiff(pred.nextStart, today) : null;
 
-    const insight = getPatternInsight(records, phase, todayTags, hasLogToday);
-    if (!insight) return;
+    const parts = [];
 
-    // 패턴 카드 생성
-    const card = document.createElement('div');
-    card.id = 'pattern-card';
-    card.style.cssText = 'margin:0 16px 16px;background:var(--surface);border-radius:16px;padding:16px;border:1px solid #2a1a3a;';
+    // ① 사이클 단계 설명 (항상)
+    parts.push(`${phaseEmoji[phase]} ${INSIGHT_PHASE[phase]}`);
 
-    const countText = `${insight.total}번 중 ${insight.count}번`;
-    card.innerHTML = `
-      <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.12em;margin-bottom:8px">📊 패턴 인사이트 · ${countText}</div>
-      <div style="font-size:13px;color:var(--text-muted);line-height:1.8">${insight.msg}</div>
-    `;
+    // ② 내 데이터 패턴 (2사이클 이상 + 오늘 기록 있음)
+    if (records.length >= 2 && todayLog && todayTags.length > 0) {
+      const patternTag = getRepeatPatternTag(records, phase, todayTags, cycle, logs);
+      if (patternTag) parts.push(INSIGHT_PATTERN[patternTag]);
+    }
 
-    // 공감 카드 뒤에 삽입
-    const empathy = document.getElementById('empathy-card');
-    empathy.parentNode.insertBefore(card, empathy.nextSibling);
+    // ③ 앞날 예측
+    if (phase === 'winter') {
+      const daysLeft = dateDiff(last.end, today);
+      parts.push(daysLeft >= 0
+        ? '생리 중이에요. 이 시기가 지나면 에너지가 다시 올라와요.'
+        : '생리가 끝났어요. 몸이 서서히 회복되고 있어요.');
+    } else if (daysUntil !== null && daysUntil >= 0) {
+      if (daysUntil >= 7)      parts.push(`다음 생리까지 ${daysUntil}일 남았어요. 지금부터 무리하지 않는 게 좋아요.`);
+      else if (daysUntil >= 3) parts.push(`생리까지 ${daysUntil}일 남았어요. 슬슬 몸이 신호를 보내기 시작할 거예요.`);
+      else if (daysUntil >= 1) parts.push(`곧 생리가 시작될 것 같아요. 따뜻하게 준비해두세요.`);
+      else                     parts.push('오늘이 예상 생리 시작일이에요. 몸을 따뜻하게 해주세요.');
+    }
+
+    // ④ 행동 조언 (오늘 기록 있을 때) — 신체 1개 + 감정 1개
+    if (todayLog && todayTags.length > 0) {
+      const PHYSICAL_PRIORITY = [
+        '생리통','복통','두통','온 몸이 쑤셔요','메스꺼움','어지러워요',
+        '유방통','허리통증','붓기가 있어요','냉이 많아요',
+        '식욕이 늘었어요','입맛이 없어요','단 게 당겨요',
+      ];
+      const EMOTIONAL_PRIORITY = [
+        '우울해요','불안해요','무기력해요','슬퍼요',
+        '예민해요','감정이 오락가락해요','기력이 없어요',
+      ];
+      const physicalTag = PHYSICAL_PRIORITY.find(t => todayTags.includes(t) && INSIGHT_ADVICE[t]);
+      const emotionalTag = EMOTIONAL_PRIORITY.find(t => todayTags.includes(t) && INSIGHT_ADVICE[t]);
+      if (physicalTag) parts.push(INSIGHT_ADVICE[physicalTag]);
+      if (emotionalTag) parts.push(INSIGHT_ADVICE[emotionalTag]);
+    }
+
+    card.innerHTML = `<div style="font-size:13px;color:var(--text-muted);line-height:2">${parts.join('<br><br>')}</div>`;
+    card.classList.add('show');
   }
+
+
 
 
   /* ── 마이페이지 ── */
@@ -2762,8 +2685,7 @@
     closeLogModal();
     renderLogList();
     const recs = loadRecords();
-    updateEmpathyCard(recs);
-    updatePatternInsight(recs);
+    updateInsightCard(recs);
   }
 
   // ── 질문 배너/모달 ──────────────────────────────
@@ -2829,40 +2751,46 @@
     }
   }
 
+  let _questionGenerating = false;
+
   async function openQuestionModal() {
     // 배너 숨기기 (localStorage dismiss는 X 버튼/저장 완료 시에만)
     document.getElementById('question-banner').classList.remove('show');
     if (!currentUser || !currentQuestionDate || !currentQuestionTag) return;
 
-    // 모달 열고 로딩 상태
     const modal = document.getElementById('question-modal');
     modal.style.display = 'flex';
+
+    // 이미 생성된 질문 있으면 재사용
+    if (currentQuestionText) {
+      document.getElementById('question-loading').style.display = 'none';
+      document.getElementById('question-content').style.display = 'block';
+      document.getElementById('question-text').textContent = currentQuestionText;
+      document.getElementById('question-answer').value = '';
+      return;
+    }
+
+    // 동시 호출 방지
+    if (_questionGenerating) return;
+    _questionGenerating = true;
+
     document.getElementById('question-loading').style.display = 'block';
     document.getElementById('question-content').style.display = 'none';
     document.getElementById('question-answer').value = '';
 
     try {
-      // 최근 3일 태그 수집 (맥락용)
-      const logs = loadLogs();
-      const today = new Date(currentQuestionDate);
-      const recentTags = [];
-      for (let i = 1; i <= 3; i++) {
-        const d = new Date(today);
-        d.setDate(d.getDate() - i);
-        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        const log = logs[ds];
-        if (log) {
-          const tags = [...(log.mood||[]), ...(log.symptom||[]), ...(log.energy||[])];
-          if (tags.length) recentTags.push({ date: ds, tags });
-        }
-      }
-
       // 사이클 단계 계산
       const records = loadRecords().sort((a,b) => a.start > b.start ? -1 : 1);
       let cyclePhase = null;
       if (records.length > 0) {
         const last = records[0];
-        cyclePhase = getCyclePhase(currentQuestionDate, last.start, last.end);
+        const cycle = calcAvgCycle(records);
+        const dayOfCycle = dateDiff(currentQuestionDate, last.start) + 1;
+        if (dayOfCycle >= 1) {
+          const phaseKey = getCyclePhase(dayOfCycle, cycle);
+          const phaseNames = { winter:'❄️ 겨울(생리기)', spring:'🌸 봄(여포기)', summer:'☀️ 여름(배란기)', autumn:'🍂 가을(황체기)' };
+          cyclePhase = phaseNames[phaseKey] || null;
+        }
       }
 
       // Edge Function 호출
@@ -2874,7 +2802,6 @@
           user_id: currentUser.id,
           log_date: currentQuestionDate,
           top_tag: currentQuestionTag,
-          recent_tags: recentTags,
           cycle_phase: cyclePhase,
         },
         headers: { Authorization: `Bearer ${session.access_token}` },
@@ -2891,6 +2818,8 @@
       console.error('질문 생성 오류:', e);
       document.getElementById('question-loading').innerHTML =
         '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">질문을 불러오지 못했어요.<br>잠시 후 다시 시도해주세요.</div>';
+    } finally {
+      _questionGenerating = false;
     }
   }
 
