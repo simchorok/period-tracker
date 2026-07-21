@@ -2321,11 +2321,7 @@
       if (parseInt(ty)===year&&parseInt(tm)-1===month&&parseInt(td)===d) cls+=' today';
 
       cell.className=cls; cell.textContent=d;
-      cell.onclick=()=>{
-        document.getElementById('date-start').value=ds;
-        document.getElementById('date-end').value=addDays(ds,DEFAULT_DURATION-1);
-        openModal();
-      };
+      cell.onclick=()=>{ openLogModal(ds); };
       daysGrid.appendChild(cell);
     }
     grid.appendChild(daysGrid);
