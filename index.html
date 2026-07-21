@@ -1435,6 +1435,7 @@
         <span class="log-tag" data-val="불안해요">😰 불안해요</span>
         <span class="log-tag" data-val="무기력해요">😔 무기력해요</span>
         <span class="log-tag" data-val="슬퍼요">😢 슬퍼요</span>
+        <span class="log-tag" data-val="우울해요">🌧️ 우울해요</span>
       </div>
     </div>
 
@@ -1454,7 +1455,8 @@
     <div class="log-section">
       <div class="log-section-title">🤕 신체 불편함</div>
       <div class="log-tags" id="log-symptom">
-        <span class="log-tag" data-val="생리통(복통)">🩸 생리통(복통)</span>
+        <span class="log-tag" data-val="생리통">🩸 생리통</span>
+        <span class="log-tag" data-val="복통">🫃 복통</span>
         <span class="log-tag" data-val="두통">🤕 두통</span>
         <span class="log-tag" data-val="복부팽만/소화불량">🫃 복부팽만/소화불량</span>
         <span class="log-tag" data-val="허리통증">🔥 허리통증</span>
@@ -1463,6 +1465,9 @@
         <span class="log-tag" data-val="메스꺼움">🤢 메스꺼움</span>
         <span class="log-tag" data-val="기력이 없어요">😮‍💨 기력이 없어요</span>
         <span class="log-tag" data-val="온 몸이 쑤셔요">😩 온 몸이 쑤셔요</span>
+        <span class="log-tag" data-val="식욕이 늘었어요">🍽️ 식욕이 늘었어요</span>
+        <span class="log-tag" data-val="입맛이 없어요">🙁 입맛이 없어요</span>
+        <span class="log-tag" data-val="냉이 많아요">💧 냉이 많아요</span>
       </div>
 
     </div>
@@ -1682,16 +1687,12 @@
     document.getElementById('login-screen').classList.add('show');
   }
 
-  async function showApp(user) {
+  function showApp(user) {
     currentUser = user;
     document.getElementById('loading-screen').classList.remove('show');
     document.getElementById('login-screen').classList.remove('show');
 
-    // 마지막 접속일 업데이트
-    sb.from('user_profiles')
-      .upsert({ id: user.id, last_seen_at: new Date().toISOString() }, { onConflict: 'id' })
-      .then(() => {})
-      .catch(() => {});
+
 
     // 데이터 로드
     loadAllData();
@@ -2774,9 +2775,9 @@
   // 부정 태그 우선순위
   const QUESTION_TAG_PRIORITY = [
     // 1순위: 부정 감정
-    '예민해요','불안해요','슬퍼요','무기력해요','감정이 오락가락해요',
+    '예민해요','불안해요','슬퍼요','무기력해요','감정이 오락가락해요','우울해요',
     // 2순위: 신체 증상
-    '생리통(복통)','두통','온 몸이 쑤셔요','메스꺼움','유방통','기력이 없어요',
+    '생리통','복통','두통','온 몸이 쑤셔요','메스꺼움','유방통','기력이 없어요','식욕이 늘었어요','입맛이 없어요',
     // 3순위: 에너지 저하
     '좀 처져요','완전 방전','복부팽만/소화불량','두드러기/여드름','허리통증',
     // 4순위: 긍정 감정
