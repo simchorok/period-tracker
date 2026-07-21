@@ -199,41 +199,6 @@
     return 'autumn';
   }
 
-  function updateCycleCard(records) {
-    const card = document.getElementById('cycle-card');
-    if (!records.length) { card.classList.remove('show'); return; }
-
-    const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
-    const last = sorted[sorted.length-1];
-    const _tc=new Date(); const todayStr=`${_tc.getFullYear()}-${String(_tc.getMonth()+1).padStart(2,'0')}-${String(_tc.getDate()).padStart(2,'0')}`;
-    const cycle = calcAvgCycle(records);
-
-    // 마지막 생리 시작일 기준 오늘이 몇일째인지
-    const dayOfCycle = dateDiff(todayStr, last.start) + 1;
-    if (dayOfCycle < 1 || dayOfCycle > cycle + 5) { card.classList.remove('show'); return; }
-
-    const phase = getCyclePhase(dayOfCycle, cycle);
-    const info = CYCLE_PHASES[phase];
-    const msg = info.messages[dayOfCycle % info.messages.length];
-
-    // 단계별 범위 계산 (사용자 평균 주기 기반)
-    const winterEnd = 6;
-    const springEnd = Math.round(cycle * 0.48);
-    const summerEnd = Math.round(cycle * 0.63);
-    const ranges = { winter:[1,winterEnd], spring:[winterEnd+1,springEnd], summer:[springEnd+1,summerEnd], autumn:[summerEnd+1,cycle] };
-    const [phaseStart, phaseEnd] = ranges[phase];
-    const progress = phaseEnd === phaseStart ? 100 : Math.min(100, Math.round(((dayOfCycle - phaseStart + 1) / (phaseEnd - phaseStart + 1)) * 100));
-
-    // 렌더링
-    card.className = `cycle-card show ${info.cls}`;
-    document.getElementById('cycle-season').textContent = info.season;
-    document.getElementById('cycle-day-badge').textContent = `${dayOfCycle}일째`;
-    document.getElementById('cycle-phase-name').textContent = info.name;
-    document.getElementById('cycle-message').textContent = msg;
-    document.getElementById('cycle-progress-fill').style.width = progress + '%';
-    document.getElementById('cycle-progress-start').textContent = `${phaseStart}일`;
-    document.getElementById('cycle-progress-end').textContent = `${phaseEnd}일`;
-  }
 
   function updateEmpathyCard(records) {
     const card = document.getElementById('empathy-card');
@@ -2044,6 +2009,41 @@
     return null;
   }
 
+  function updateCycleCard(records) {
+    const card = document.getElementById('cycle-card');
+    if (!records.length) { card.classList.remove('show'); return; }
+
+    const sorted = [...records].sort((a,b)=>a.start>b.start?1:-1);
+    const last = sorted[sorted.length-1];
+    const _tc=new Date(); const todayStr=`${_tc.getFullYear()}-${String(_tc.getMonth()+1).padStart(2,'0')}-${String(_tc.getDate()).padStart(2,'0')}`;
+    const cycle = calcAvgCycle(records);
+
+    // 마지막 생리 시작일 기준 오늘이 몇일째인지
+    const dayOfCycle = dateDiff(todayStr, last.start) + 1;
+    if (dayOfCycle < 1 || dayOfCycle > cycle + 5) { card.classList.remove('show'); return; }
+
+    const phase = getCyclePhase(dayOfCycle, cycle);
+    const info = CYCLE_PHASES[phase];
+    const msg = info.messages[dayOfCycle % info.messages.length];
+
+    // 단계별 범위 계산 (사용자 평균 주기 기반)
+    const winterEnd = 6;
+    const springEnd = Math.round(cycle * 0.48);
+    const summerEnd = Math.round(cycle * 0.63);
+    const ranges = { winter:[1,winterEnd], spring:[winterEnd+1,springEnd], summer:[springEnd+1,summerEnd], autumn:[summerEnd+1,cycle] };
+    const [phaseStart, phaseEnd] = ranges[phase];
+    const progress = phaseEnd === phaseStart ? 100 : Math.min(100, Math.round(((dayOfCycle - phaseStart + 1) / (phaseEnd - phaseStart + 1)) * 100));
+
+    // 렌더링
+    card.className = `cycle-card show ${info.cls}`;
+    document.getElementById('cycle-season').textContent = info.season;
+    document.getElementById('cycle-day-badge').textContent = `${dayOfCycle}일째`;
+    document.getElementById('cycle-phase-name').textContent = info.name;
+    document.getElementById('cycle-message').textContent = msg;
+    document.getElementById('cycle-progress-fill').style.width = progress + '%';
+    document.getElementById('cycle-progress-start').textContent = `${phaseStart}일`;
+    document.getElementById('cycle-progress-end').textContent = `${phaseEnd}일`;
+  }
   function updateInsightCard(records) {
     const card = document.getElementById('insight-card');
     if (!card) return;
