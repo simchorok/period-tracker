@@ -117,7 +117,7 @@ function renderOrbit(opts) {
     const from = Math.max(0.2, s.from - 0.45);
     const to = Math.min(cycle + 0.6, s.to + 0.45);
     if (to - from < 0.9) return;
-    arcs += `<path d="${_orbitArc(ORBIT_R, from, to, cycle)}" fill="none" stroke="${c}" stroke-width="${isActive ? 3 : 2}" stroke-linecap="round" opacity="${isActive ? '.95' : '.34'}"/>`;
+    arcs += `<path d="${_orbitArc(ORBIT_R, from, to, cycle)}" fill="none" stroke="${c}" stroke-width="${isActive ? 3 : 2}" stroke-linecap="round" opacity="${isActive ? '.92' : '.42'}"/>`;
   });
   arcsG.innerHTML = arcs;
 
@@ -321,8 +321,10 @@ function renderCalendar() {
     const target = document.getElementById('cal-today-block');
     const scroller = document.getElementById('screens');
     if (!target || !scroller) return;
+    const topBar = document.querySelector('#tab-calendar .cal-top');
+    const offset = (topBar ? topBar.offsetHeight : 96) + 6;
     const top = target.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
-    scroller.scrollTo({ top: Math.max(0, top - 96), behavior: 'smooth' });
+    scroller.scrollTo({ top: Math.max(0, top - offset), behavior: 'smooth' });
   }, 100);
 }
 
