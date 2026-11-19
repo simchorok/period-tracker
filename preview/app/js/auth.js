@@ -83,6 +83,32 @@ sb.auth.onAuthStateChange((event, session) => {
   }
 });
 
+/* ── 카카오 콜백 보완 ──
+   브라우저 캐시·bfcache 등으로 클라이언트가 콜백 해시를 소비하지 못한 경우,
+   해시의 토큰으로 세션을 직접 복원한다. (정상 처리된 경우에는 아무 것도 하지 않음) */
+async function recoverSessionFromUrlHash() {
+  const hash = location.hash || '';
+  if (!hash.includes('access_token=')) return false;
+  const params = new URLSearchParams(hash.replace(/^#/, ''));
+  const access_token = params.get('access_token');
+  const refresh_token = params.get('refresh_token');
+  if (!access_token || !refresh_token) return false;
+  try {
+    const { data, error } = await sb.auth.setSession({ access_token, refresh_token });
+    if (error || !data?.session) return false;
+    history.replaceState(null, '', location.pathname + location.search);
+    showApp(data.session.user);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+(async () => {
+  const { data } = await sb.auth.getSession();
+  if (!data?.session) await recoverSessionFromUrlHash();
+})();
+
 /* ── 마이페이지: 닉네임 ── */
 let userNickname = '';
 

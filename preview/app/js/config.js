@@ -4,7 +4,15 @@
 const SUPABASE_URL = 'https://nzxtpfgjiysmkecktekw.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_ad3WJqIRRSfKrpQYFjyTHA_DzktkuUA';
 const { createClient } = window.supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: {
+    // 라이브 본체와 같은 방식(implicit)으로 카카오 콜백을 처리한다
+    flowType: 'implicit',
+    detectSessionInUrl: true,
+    persistSession: true,
+    autoRefreshToken: true
+  }
+});
 
 // ── 경로 ──
 // 이 앱의 위치(끝에 / 포함). 카카오 로그인 후 이 주소로 돌아온다.
