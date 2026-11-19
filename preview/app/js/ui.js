@@ -345,7 +345,7 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
   if (!svg) return;
   svg.innerHTML = '';
   const W = svg.parentElement.offsetWidth || 300;
-  const H = 88;
+  const H = 92;
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svg.setAttribute('width', W);
   svg.setAttribute('height', H);
@@ -397,7 +397,7 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
     const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     label.setAttribute('x', cx); label.setAttribute('y', H - 4);
     label.setAttribute('text-anchor', 'middle'); label.setAttribute('fill', 'rgba(244,239,232,.5)');
-    label.setAttribute('font-size', '11.5'); label.textContent = `${i + 1}`;
+    label.setAttribute('font-size', '12.5'); label.textContent = `${i + 1}`;
     svg.appendChild(label);
 
     const spread = Math.max(...values) - Math.min(...values);
@@ -406,7 +406,7 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
       vLabel.setAttribute('x', cx); vLabel.setAttribute('y', cy - 8);
       vLabel.setAttribute('text-anchor', 'middle');
       vLabel.setAttribute('fill', isLast ? colorStroke : 'rgba(244,239,232,.7)');
-      vLabel.setAttribute('font-size', '12.5'); vLabel.setAttribute('font-weight', isLast ? '500' : '400');
+      vLabel.setAttribute('font-size', '13'); vLabel.setAttribute('font-weight', isLast ? '500' : '400');
       vLabel.textContent = v;
       svg.appendChild(vLabel);
     }

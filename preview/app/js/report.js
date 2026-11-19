@@ -211,7 +211,7 @@ function renderReportEnergyChart(lastRecord) {
   const svg = document.getElementById('report-energy-chart');
   if (!svg) return;
   svg.innerHTML = '';
-  const W = 340, H = 88;
+  const W = 340, H = 96;
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svg.style.width = '100%';
 
@@ -258,7 +258,7 @@ function renderReportEnergyChart(lastRecord) {
   labels.forEach((l, i) => {
     const t = document.createElementNS('http://www.w3.org/2000/svg','text');
     t.setAttribute('x', 2); t.setAttribute('y', toY(i + 1) + 3.5);
-    t.setAttribute('fill','rgba(244,239,232,.56)'); t.setAttribute('font-size','11');
+    t.setAttribute('fill','rgba(244,239,232,.6)'); t.setAttribute('font-size','12.5');
     t.textContent = l; svg.appendChild(t);
   });
 }
