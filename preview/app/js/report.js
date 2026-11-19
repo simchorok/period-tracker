@@ -473,19 +473,19 @@ function renderAIAnalysis(rawText) {
   const noDataMsg = '상태 기록을 남기면 이 부분의 인사이트를 더 받을 수 있어요.';
 
   el.innerHTML = `
-    <div class="report-ai-section">
+    <div class="ai-block">
       <div class="report-ai-label">이번 사이클 요약</div>
       <div class="report-ai-text">${escapeHtml(parsed.summary) || '-'}</div>
     </div>
-    <div class="report-ai-section">
+    <div class="ai-block">
       <div class="report-ai-label">사이클 단계별 패턴</div>
       <div class="report-ai-text">${escapeHtml(parsed.pattern) || noDataMsg}</div>
     </div>
-    <div class="report-ai-section">
+    <div class="ai-block">
       <div class="report-ai-label">에너지 흐름</div>
       <div class="report-ai-text">${escapeHtml(parsed.energy_flow) || noDataMsg}</div>
     </div>
-    <div class="report-ai-section">
+    <div class="ai-block">
       <div class="report-ai-label">다음 사이클 예고</div>
       <div class="report-ai-text">${escapeHtml(parsed.next_preview) || '2사이클이 쌓이면 예고해드릴게요.'}</div>
     </div>
