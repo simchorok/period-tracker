@@ -40,7 +40,14 @@ if (new URLSearchParams(location.search).has('diag')) {
         authHead: (hs.get('authorization') || '').slice(0, 20)
       });
     } catch (e) {}
-    return _origFetch(input, init);
+    return _origFetch(input, init).then(res => {
+      if (res.status >= 400 && window.__reqs.length <= 8) {
+        try {
+          res.clone().text().then(t => { window.__reqBody = window.__reqBody || []; window.__reqBody.push({ s: res.status, t: t.slice(0, 240) }); });
+        } catch (e) {}
+      }
+      return res;
+    });
   };
 }
 
