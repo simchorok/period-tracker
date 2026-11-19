@@ -2,7 +2,7 @@
 
 // ── Supabase 설정 (라이브 본체와 동일 프로젝트) ──
 const SUPABASE_URL = 'https://nzxtpfgjiysmkecktekw.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_ad3WJqIRRSfKrpQYFjyTHA_DzktkuUA';
+const SUPABASE_KEY = 'sb_publishable_ad3WJqIrRSfKrpQYFjyTHA_DzktkuUA';
 const { createClient } = window.supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
