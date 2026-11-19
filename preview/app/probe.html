@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><title>probe</title></head>
+<body>
+<pre id="out">running…</pre>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const URL_ = 'https://nzxtpfgjiysmkecktekw.supabase.co';
+const KEY = 'sb_publishable_ad3WJqIrRSfKrpQYFjyTHA_DzktkuUA';
+const out = [];
+const log = (k, v) => { out.push(k + ': ' + v); document.getElementById('out').textContent = out.join('\n'); };
+
+(async () => {
+  // 1) 라이브 본체와 동일한 호출
+  const a = supabase.createClient(URL_, KEY);
+  try {
+    const r = await a.from('period_records').select('id', { count: 'exact', head: true });
+    log('A(옵션없음)', JSON.stringify({ count: r.count, err: r.error && { m: r.error.message, c: r.error.code, s: r.status } }));
+    const s = await a.auth.getSession();
+    log('A.session', s.data.session ? 'yes' : 'no');
+  } catch (e) { log('A.throw', String(e)); }
+
+  // 2) preview/app 설정과 동일한 호출
+  const b = supabase.createClient(URL_, KEY, {
+    auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true }
+  });
+  try {
+    const r = await b.from('period_records').select('id', { count: 'exact', head: true });
+    log('B(옵션포함)', JSON.stringify({ count: r.count, err: r.error && { m: r.error.message, c: r.error.code, s: r.status } }));
+    const s = await b.auth.getSession();
+    log('B.session', s.data.session ? 'yes' : 'no');
+  } catch (e) { log('B.throw', String(e)); }
+
+  // 3) 원시 fetch — apikey만
+  try {
+    const r = await fetch(URL_ + '/rest/v1/period_records?select=id&limit=1', { headers: { apikey: KEY } });
+    log('fetch.apikey', r.status + ' ' + (await r.text()).slice(0, 80));
+  } catch (e) { log('fetch.apikey.throw', String(e)); }
+
+  log('sdk', (a.headers || {})['X-Client-Info'] || '?');
+  log('done', 'yes');
+})();
+</script>
+</body>
+</html>
