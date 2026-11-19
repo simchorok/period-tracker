@@ -1038,3 +1038,243 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   }
   .share-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* ── 상태 공유 카드 v2 ── */
+  .share-view {
+    --share-accent: #e8a0b0;
+    --share-accent-soft: #e8a0b0;
+    --share-accent-strong: #c9607a;
+    --share-glow: rgba(201, 96, 122, 0.20);
+    --share-glow-strong: rgba(201, 96, 122, 0.38);
+    --share-border: rgba(107, 45, 62, 0.75);
+    --share-border-soft: rgba(107, 45, 62, 0.55);
+    --share-chip-bg: rgba(107, 45, 62, 0.32);
+    --share-chip-text: #efc6d0;
+    --share-insight-bg: rgba(107, 45, 62, 0.20);
+    --share-card-a: rgba(40, 20, 46, 0.94);
+    --share-card-b: rgba(18, 9, 24, 0.96);
+    --share-bg-top: #2a0a1e;
+    align-items: safe center;
+    justify-content: center;
+    padding: 26px 16px 34px;
+    background: radial-gradient(ellipse at 50% -8%, var(--share-bg-top) 0%, #0e0610 58%, #090309 100%);
+  }
+
+  /* 페이즈별 컬러 무드 */
+  .share-view[data-phase="winter"] {
+    --share-accent: #b9c6ff; --share-accent-soft: #a9b8f7; --share-accent-strong: #7b8fe8;
+    --share-glow: rgba(123, 143, 232, 0.24); --share-glow-strong: rgba(123, 143, 232, 0.42);
+    --share-border: rgba(123, 143, 232, 0.42); --share-border-soft: rgba(123, 143, 232, 0.26);
+    --share-chip-bg: rgba(49, 62, 110, 0.42); --share-chip-text: #dce3ff;
+    --share-insight-bg: rgba(49, 62, 110, 0.26);
+    --share-card-a: rgba(24, 26, 54, 0.94); --share-card-b: rgba(11, 12, 26, 0.96);
+    --share-bg-top: #131a3c;
+  }
+  .share-view[data-phase="spring"] {
+    --share-accent: #a8f0d3; --share-accent-soft: #8ee3c4; --share-accent-strong: #4fc79e;
+    --share-glow: rgba(79, 199, 158, 0.22); --share-glow-strong: rgba(79, 199, 158, 0.40);
+    --share-border: rgba(79, 199, 158, 0.40); --share-border-soft: rgba(79, 199, 158, 0.24);
+    --share-chip-bg: rgba(30, 78, 64, 0.42); --share-chip-text: #d4fbee;
+    --share-insight-bg: rgba(30, 78, 64, 0.26);
+    --share-card-a: rgba(18, 40, 36, 0.94); --share-card-b: rgba(9, 18, 17, 0.96);
+    --share-bg-top: #0d2a24;
+  }
+  .share-view[data-phase="summer"] {
+    --share-accent: #f8dfa0; --share-accent-soft: #f0cf8a; --share-accent-strong: #e0a94b;
+    --share-glow: rgba(224, 169, 75, 0.24); --share-glow-strong: rgba(224, 169, 75, 0.42);
+    --share-border: rgba(224, 169, 75, 0.42); --share-border-soft: rgba(224, 169, 75, 0.26);
+    --share-chip-bg: rgba(92, 68, 26, 0.42); --share-chip-text: #ffefc9;
+    --share-insight-bg: rgba(92, 68, 26, 0.26);
+    --share-card-a: rgba(38, 30, 18, 0.94); --share-card-b: rgba(16, 12, 8, 0.96);
+    --share-bg-top: #2a2010;
+  }
+  .share-view[data-phase="autumn"] {
+    --share-accent: #f7b3ac; --share-accent-soft: #f0a09a; --share-accent-strong: #dd776e;
+    --share-glow: rgba(221, 119, 110, 0.22); --share-glow-strong: rgba(221, 119, 110, 0.40);
+    --share-border: rgba(221, 119, 110, 0.40); --share-border-soft: rgba(221, 119, 110, 0.24);
+    --share-chip-bg: rgba(92, 42, 42, 0.42); --share-chip-text: #ffd9d4;
+    --share-insight-bg: rgba(92, 42, 42, 0.26);
+    --share-card-a: rgba(40, 22, 26, 0.94); --share-card-b: rgba(17, 9, 11, 0.96);
+    --share-bg-top: #2b1518;
+  }
+
+  .share-view .share-inner { gap: 16px; }
+  .share-view .share-brand { color: var(--share-accent); opacity: 0.8; font-size: 14px; }
+
+  .share-view .share-card {
+    padding: 22px 20px 20px;
+    border-radius: 26px;
+    border: 1px solid var(--share-border-soft);
+    background: linear-gradient(160deg, var(--share-card-a), var(--share-card-b));
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 70px var(--share-glow) inset;
+  }
+
+  /* 달 위상 + 이름 */
+  .share-hero { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .share-moon { margin-bottom: 6px; }
+  .share-moon-svg {
+    width: 82px; height: 82px; display: block;
+    filter: drop-shadow(0 0 18px var(--share-glow-strong));
+    animation: shareMoonFloat 8s ease-in-out infinite;
+  }
+  @keyframes shareMoonFloat {
+    0%, 100% { transform: translateY(1px); }
+    50%      { transform: translateY(-4px); }
+  }
+  .share-view .share-name {
+    font-size: 20px;
+    line-height: 1.35;
+    word-break: keep-all;
+    letter-spacing: 0.01em;
+  }
+  .share-view .share-season {
+    justify-content: center;
+    gap: 6px;
+    margin-top: 7px;
+    font-size: 13px;
+    color: var(--share-accent-soft);
+    letter-spacing: 0.05em;
+  }
+  .share-season-emoji { font-size: 15px; filter: drop-shadow(0 0 8px var(--share-glow-strong)); }
+  .share-view .share-day-badge {
+    font-size: 10.5px;
+    color: var(--share-chip-text);
+    background: var(--share-chip-bg);
+    border: 1px solid var(--share-border-soft);
+    padding: 3px 9px;
+    letter-spacing: 0.04em;
+  }
+
+  /* 주기 진행 바 */
+  .share-cycle { margin-top: 18px; }
+  .share-cycle-track { position: relative; padding: 5px 0; }
+  .share-cycle-bar {
+    display: flex;
+    height: 9px;
+    border-radius: 99px;
+    overflow: hidden;
+    background: #1c1020;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+  .share-cycle-seg { height: 100%; opacity: 0.34; transition: opacity 0.3s; }
+  .share-cycle-seg.is-current { opacity: 1; }
+  .share-cycle-seg + .share-cycle-seg { box-shadow: inset 1px 0 0 rgba(9, 3, 9, 0.6); }
+  .seg-winter { background: linear-gradient(90deg, #4d5cae, #99acf7); }
+  .seg-spring { background: linear-gradient(90deg, #3fae8b, #a8f0d3); }
+  .seg-summer { background: linear-gradient(90deg, #d99b3c, #f8dfa0); }
+  .seg-autumn { background: linear-gradient(90deg, #c4615a, #f7b3ac); }
+  .share-cycle-marker {
+    position: absolute;
+    top: 50%;
+    width: 13px; height: 13px;
+    margin-top: -6.5px;
+    border-radius: 50%;
+    background: #fffaf4;
+    transform: translateX(-50%);
+    box-shadow: 0 0 0 3px var(--share-glow-strong), 0 0 14px var(--share-glow-strong);
+  }
+  .share-cycle-legend {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+  .share-cycle-legend strong { color: var(--share-accent); font-weight: 500; }
+  .share-cycle-next { color: var(--share-accent-soft); opacity: 0.8; white-space: nowrap; }
+
+  /* 페이즈 인사이트 */
+  .share-insight {
+    margin-top: 18px;
+    padding: 14px 15px 15px;
+    border-radius: 16px;
+    background: linear-gradient(140deg, var(--share-insight-bg), rgba(10, 4, 14, 0.35));
+    border: 1px solid var(--share-border-soft);
+    border-left: 2px solid var(--share-accent);
+  }
+  .share-insight-kicker {
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    color: var(--share-accent);
+  }
+  .share-insight-text {
+    margin-top: 7px;
+    font-family: 'Gowun Batang', serif;
+    font-size: 13.5px;
+    line-height: 1.85;
+    color: #ede2e7;
+    word-break: keep-all;
+  }
+
+  /* 상태 태그 */
+  .share-view .share-source {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 18px;
+    font-size: 10.5px;
+    letter-spacing: 0.09em;
+    color: var(--share-accent-soft);
+    opacity: 0.95;
+  }
+  .share-view .share-source::before {
+    content: '';
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--share-accent);
+  }
+  .share-view .share-tags { margin-top: 9px; gap: 6px; }
+  .share-view .share-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--share-chip-text);
+    background: var(--share-chip-bg);
+    border: 1px solid var(--share-border-soft);
+    border-radius: 999px;
+    padding: 6px 11px;
+  }
+  .share-tag-emoji { font-size: 12.5px; line-height: 1; }
+  .share-view .share-tags-empty { margin-top: 9px; font-size: 12px; color: var(--text-muted); opacity: 0.8; }
+
+  /* 케어 박스 */
+  .share-view .share-care {
+    margin-top: 18px;
+    padding: 15px;
+    border-radius: 16px;
+    background: rgba(9, 4, 13, 0.55);
+    border: 1px solid var(--share-border-soft);
+  }
+  .share-view .share-care-head {
+    font-size: 10.5px;
+    letter-spacing: 0.09em;
+    color: var(--share-accent);
+    margin-bottom: 11px;
+  }
+  .share-view .share-care-item + .share-care-item { border-top: 1px dashed var(--share-border-soft); }
+  .share-view .share-care-title { color: #f4ebef; }
+  .share-view .share-care-text { color: var(--text-muted); }
+
+  /* CTA · 안내 */
+  .share-view .share-cta {
+    background: linear-gradient(135deg, var(--share-accent-strong), var(--share-accent));
+    color: #170810;
+    font-weight: 500;
+    box-shadow: 0 12px 28px var(--share-glow);
+  }
+  .share-view .share-foot { color: var(--share-accent-soft); opacity: 0.5; }
+
+  @media (max-width: 380px) {
+    .share-view { padding: 22px 12px 28px; }
+    .share-view .share-card { padding: 20px 16px 18px; }
+    .share-view .share-name { font-size: 18.5px; }
+    .share-insight-text { font-size: 13px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .share-moon-svg, .share-stars span { animation: none; }
+    .share-inner { animation: none; }
+  }
