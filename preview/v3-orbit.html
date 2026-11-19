@@ -115,12 +115,13 @@
 
   /* 궤도 */
   .orb{position:relative; margin:4px auto 0; width:100%; max-width:314px; aspect-ratio:1/1}
-  .orb svg{width:100%; height:100%; display:block; overflow:visible}
+  .orb svg.ring-svg{width:100%; height:100%; display:block; overflow:visible}
   .orb-center{
-    position:absolute; left:50%; top:50%; transform:translate(-50%,-52%);
-    text-align:center; pointer-events:none;
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    pointer-events:none;
   }
-  .orb-day{display:flex; align-items:baseline; justify-content:center; gap:4px; margin-top:6px}
+  .orb-moon{width:94px; height:94px; display:block; filter:drop-shadow(0 0 24px rgba(242,206,140,.22))}
+  .orb-day{display:flex; align-items:baseline; justify-content:center; gap:5px; margin-top:6px}
   .orb-day .n{font-family:var(--latin); font-weight:300; font-size:38px; line-height:.86; letter-spacing:-.02em; color:#FBF6EE}
   .orb-day .u{font-size:11px; color:var(--ink-70); letter-spacing:.06em}
   .orb-season{
@@ -259,39 +260,39 @@
     </div>
 
     <div class="orb">
-      <svg id="orbitSvg" viewBox="0 0 342 342" aria-label="28일 주기 궤도">
+      <svg class="ring-svg" id="orbitSvg" viewBox="0 0 342 342" aria-label="28일 주기 궤도">
         <defs>
           <linearGradient id="progGrad" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stop-color="#D9C9A6"/>
             <stop offset="55%" stop-color="#BFEBD6"/>
             <stop offset="100%" stop-color="#A9E3C6"/>
           </linearGradient>
-          <radialGradient id="moonLit" cx="36%" cy="30%" r="76%">
-            <stop offset="0%" stop-color="#FFFDF6"/>
-            <stop offset="52%" stop-color="#F7E8C9"/>
-            <stop offset="100%" stop-color="#CBB086"/>
-          </radialGradient>
-          <filter id="softGlow" x="-60%" y="-60%" width="220%" height="220%">
-            <feGaussianBlur stdDeviation="6" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
           <filter id="dotGlow" x="-200%" y="-200%" width="500%" height="500%">
             <feGaussianBlur stdDeviation="4" result="b"/>
             <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
         </defs>
+        <circle cx="171" cy="171" r="150" fill="none" stroke="rgba(255,255,255,.05)" stroke-width=".8"/>
         <g id="orbitTicks"></g>
         <g id="orbitArcs"></g>
         <g id="orbitProgress"></g>
-        <!-- 중앙 달 -->
-        <circle cx="171" cy="171" r="52" fill="rgba(255,255,255,.035)" stroke="rgba(255,255,255,.10)" stroke-width=".8"/>
-        <path d="M171,119 A52,52 0 0 1 171,223 A22.9,52 0 0 1 171,119 Z" fill="url(#moonLit)" filter="url(#softGlow)"/>
-        <circle cx="196" cy="150" r="6.4" fill="rgba(105,84,52,.12)"/>
-        <circle cx="200" cy="186" r="4" fill="rgba(105,84,52,.10)"/>
-        <circle cx="158" cy="200" r="3" fill="rgba(105,84,52,.08)"/>
       </svg>
 
       <div class="orb-center">
+        <svg class="orb-moon" viewBox="0 0 100 100" aria-hidden="true">
+          <defs>
+            <radialGradient id="moonLit" cx="36%" cy="30%" r="76%">
+              <stop offset="0%" stop-color="#FFFDF6"/>
+              <stop offset="52%" stop-color="#F7E8C9"/>
+              <stop offset="100%" stop-color="#CBB086"/>
+            </radialGradient>
+          </defs>
+          <circle cx="50" cy="50" r="42" fill="rgba(255,255,255,.035)" stroke="rgba(255,255,255,.10)" stroke-width=".7"/>
+          <path d="M50,8 A42,42 0 0 1 50,92 A18.5,42 0 0 1 50,8 Z" fill="url(#moonLit)"/>
+          <circle cx="63" cy="40" r="5" fill="rgba(105,84,52,.12)"/>
+          <circle cx="66" cy="64" r="3.2" fill="rgba(105,84,52,.10)"/>
+          <circle cx="40" cy="72" r="2.4" fill="rgba(105,84,52,.07)"/>
+        </svg>
         <div class="orb-day"><span class="n">9</span><span class="u">일째</span></div>
         <div class="orb-season">여포기</div>
       </div>
