@@ -12,10 +12,11 @@
 <body>
 <!-- 검증용 임시 프레임 (390×844). 검증이 끝나면 삭제합니다.
      ?local=1 이면 이 브라우저에 캐시된 기록만으로 화면을 그린다(DB 미접근). -->
-<iframe id="f" src="./index.html"></iframe>
+<iframe id="f"></iframe>
 <script>
   const p = new URLSearchParams(location.search);
   const f = document.getElementById('f');
+  f.src = './index.html?cb=' + (p.get('cb') || Date.now());
   const open = p.get('open') || '';
   const tab = p.get('tab') || 'home';
   let applied = false;
