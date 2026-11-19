@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>달의 기록 — 리뉴얼 시안 3종</title>
+<meta name="description" content="달의 기록 리뉴얼 브랜딩·UI 시안 3종 프리뷰">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --paper:#F3F1EC;
+    --ink:#171719;
+    --ink-55:rgba(23,23,25,.55);
+    --ink-35:rgba(23,23,25,.35);
+    --hair:rgba(23,23,25,.12);
+    --sans:'Pretendard','Noto Sans KR',-apple-system,system-ui,sans-serif;
+    --serif:'Gowun Batang',serif;
+    --latin:'Cormorant Garamond',serif;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{height:100%; margin:0}
+  body{
+    background:var(--paper); color:var(--ink); font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(rgba(23,23,25,.055) 1px, transparent 1px);
+    background-size:22px 22px;
+  }
+  .hub{min-height:100dvh; height:100dvh; display:flex; flex-direction:column}
+
+  /* ── 헤더 ── */
+  header{padding:22px 28px 0; flex:0 0 auto}
+  .head-row{display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap}
+  .brand{display:flex; align-items:center; gap:12px}
+  .brand svg{width:26px; height:26px}
+  .brand .bt{font-family:var(--serif); font-size:19px; font-weight:700; letter-spacing:.02em}
+  .brand .bs{font-size:11px; color:var(--ink-55); letter-spacing:.04em; margin-top:3px}
+  .badge{
+    font-family:var(--latin); font-size:10px; letter-spacing:.24em; text-transform:uppercase;
+    color:var(--ink-55); border:1px solid var(--hair); border-radius:999px; padding:6px 12px; white-space:nowrap;
+  }
+
+  .tabs{display:flex; gap:8px; margin-top:18px; flex-wrap:wrap}
+  .tab{
+    display:flex; align-items:center; gap:9px; cursor:pointer;
+    background:rgba(255,255,255,.55); border:1px solid var(--hair); border-radius:12px;
+    padding:10px 15px; font-family:var(--sans); color:var(--ink); transition:.18s ease;
+  }
+  .tab:hover{background:#fff}
+  .tab .no{
+    font-family:var(--latin); font-size:11px; letter-spacing:.1em; color:var(--ink-35);
+  }
+  .tab .nm{font-size:12.5px; font-weight:500; letter-spacing:.01em}
+  .tab .dot{width:6px; height:6px; border-radius:50%; flex:0 0 auto}
+  .tab[aria-selected="true"]{background:var(--ink); border-color:var(--ink); color:#fff}
+  .tab[aria-selected="true"] .no{color:rgba(255,255,255,.5)}
+
+  /* ── 스테이지 ── */
+  main{flex:1 1 auto; min-height:0; display:flex; justify-content:center; gap:34px; padding:16px 28px 0}
+  .frame-wrap{height:100%; display:flex; flex-direction:column; align-items:center; min-height:0}
+  .frame{
+    position:relative; width:390px; flex:1 1 auto; height:auto; min-height:0; max-height:812px;
+    border-radius:44px; overflow:hidden; background:#000;
+    box-shadow:0 30px 70px -28px rgba(23,23,25,.55), 0 0 0 1px rgba(23,23,25,.16), 0 0 0 10px #17181c, 0 0 0 11px rgba(255,255,255,.08);
+    display:flex; flex-direction:column;
+  }
+  .frame iframe{width:100%; height:100%; border:0; display:block; background:#000}
+  .controls{
+    display:flex; align-items:center; justify-content:center; gap:8px; margin-top:16px; flex-wrap:wrap;
+  }
+  .ctl{
+    display:inline-flex; align-items:center; gap:7px; cursor:pointer;
+    background:rgba(255,255,255,.6); border:1px solid var(--hair); border-radius:999px;
+    padding:9px 16px; font-family:var(--sans); font-size:11.5px; color:var(--ink);
+    transition:.16s ease;
+  }
+  .ctl:hover{background:#fff}
+  .ctl:active{transform:translateY(1px)}
+  .ctl.primary{background:var(--ink); color:#fff; border-color:var(--ink)}
+  .ctl svg{width:13px; height:13px}
+
+  /* ── 설명 패널 ── */
+  .panel{
+    width:292px; flex:0 0 auto; padding-top:6px; align-self:flex-start;
+    max-height:100%; overflow:auto;
+  }
+  .p-no{font-family:var(--latin); font-size:11px; letter-spacing:.24em; color:var(--ink-35)}
+  .p-title{font-family:var(--serif); font-size:25px; font-weight:400; letter-spacing:-.01em; margin:8px 0 0; line-height:1.35}
+  .p-key{font-size:11px; letter-spacing:.05em; color:var(--ink-55); margin-top:9px; line-height:1.7}
+  .p-desc{font-size:12px; line-height:1.85; color:rgba(23,23,25,.66); margin-top:14px; padding-top:14px; border-top:1px solid var(--hair)}
+  .sw{display:flex; gap:6px; margin-top:16px}
+  .sw i{width:26px; height:26px; border-radius:5px; display:block; box-shadow:inset 0 0 0 1px rgba(23,23,25,.12)}
+  .p-meta{margin-top:18px; padding-top:14px; border-top:1px solid var(--hair)}
+  .p-meta div{display:flex; justify-content:space-between; font-size:11px; color:var(--ink-55); padding:5px 0}
+  .p-meta b{font-weight:500; color:var(--ink); font-family:var(--latin); letter-spacing:.04em; font-size:12px}
+  .p-note{margin-top:16px; font-size:10.5px; line-height:1.8; color:var(--ink-35)}
+
+  footer{flex:0 0 auto; padding:14px 28px 16px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap}
+  .f-note{font-size:10.5px; color:var(--ink-35); letter-spacing:.02em}
+  .f-links{display:flex; gap:14px}
+  .f-links a{font-size:10.5px; color:var(--ink-55); text-decoration:none; border-bottom:1px solid var(--hair); padding-bottom:2px}
+  .f-links a:hover{color:var(--ink); border-color:var(--ink)}
+
+  /* ── 모바일: 앱처럼 꽉 채우기 ── */
+  @media (max-width:1080px){
+    .panel{display:none}
+  }
+  @media (max-width:760px){
+    header{padding:14px 16px 0}
+    .head-row{gap:12px}
+    .brand svg{width:22px; height:22px}
+    .brand .bt{font-size:16px}
+    .brand .bs{font-size:10px}
+    .badge{display:none}
+    .tabs{margin-top:12px; gap:6px; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding-bottom:2px}
+    .tabs::-webkit-scrollbar{display:none}
+    .tab{padding:8px 12px; border-radius:10px; flex:0 0 auto}
+    .tab .nm{font-size:11.5px}
+    main{padding:10px 0 0}
+    .frame-wrap{width:100%}
+    .frame{width:100%; max-width:100%; border-radius:20px 20px 0 0; max-height:none; box-shadow:0 -1px 0 rgba(23,23,25,.12), 0 -10px 30px -20px rgba(23,23,25,.5)}
+    .controls{margin-top:10px; padding:0 12px}
+    .ctl{padding:8px 14px; font-size:11px}
+    footer{display:none}
+  }
+  @media (max-height:720px) and (min-width:761px){
+    .frame{max-height:640px}
+    header{padding-top:14px}
+    .panel{font-size:11px}
+  }
+</style>
+</head>
+<body>
+<div class="hub">
+
+  <header>
+    <div class="head-row">
+      <div class="brand">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(23,23,25,.2)" stroke-width="2"/>
+          <circle cx="50" cy="50" r="30" fill="#171719" mask="url(#hm)"/>
+          <defs>
+            <mask id="hm">
+              <rect width="100" height="100" fill="#000"/>
+              <circle cx="50" cy="50" r="30" fill="#fff"/>
+              <circle cx="62" cy="40" r="27" fill="#000"/>
+            </mask>
+          </defs>
+        </svg>
+        <div>
+          <div class="bt">달의 기록</div>
+          <div class="bs">리뉴얼 브랜딩 · UI 시안 3종 · 스플래시 &amp; 홈</div>
+        </div>
+      </div>
+      <div class="badge">Preview · 390 × 844</div>
+    </div>
+
+    <nav class="tabs" role="tablist" aria-label="시안 선택">
+      <button class="tab" role="tab" aria-selected="true" data-key="v1" data-src="v1-editorial.html">
+        <span class="no">01</span><span class="dot" style="background:#0B0D14"></span><span class="nm">천체·에디토리얼</span>
+      </button>
+      <button class="tab" role="tab" aria-selected="false" data-key="v2" data-src="v2-paper.html">
+        <span class="no">02</span><span class="dot" style="background:#233D32"></span><span class="nm">미니멀 페이퍼</span>
+      </button>
+      <button class="tab" role="tab" aria-selected="false" data-key="v3" data-src="v3-orbit.html">
+        <span class="no">03</span><span class="dot" style="background:#A9E3C6"></span><span class="nm">달 궤도 오브제</span>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="frame-wrap">
+      <div class="frame">
+        <iframe id="view" src="v1-editorial.html" title="시안 미리보기" allow="fullscreen"></iframe>
+      </div>
+      <div class="controls">
+        <button class="ctl primary" id="btn-splash">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4v4.6h-4.6"/>
+          </svg>
+          스플래시 다시 보기
+        </button>
+        <button class="ctl" id="btn-home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 11.2 12 4l8 7.2"/><path d="M6.4 9.8V20h11.2V9.8"/>
+          </svg>
+          홈 화면
+        </button>
+        <a class="ctl" id="btn-open" href="v1-editorial.html" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 4h6v6"/><path d="M20 4 11 13"/><path d="M18 14.5V20H4V6h5.5"/>
+          </svg>
+          새 창에서
+        </a>
+      </div>
+    </div>
+
+    <aside class="panel" id="panel">
+      <div class="p-no">Concept 01</div>
+      <h2 class="p-title">천체 · 에디토리얼</h2>
+      <div class="p-key">미드나잇 네이비 · 금빛 초승달 · 명조</div>
+      <p class="p-desc">밤하늘의 정체성은 그대로 두고, 이모지 대신 얇은 선의 커스텀 아이콘과 여백·타이포 위계로 잡지처럼 풀었습니다.</p>
+      <div class="sw">
+        <i style="background:#0B0D14"></i><i style="background:#D8B77C"></i><i style="background:#EDE8DE"></i><i style="background:#AFB9CE"></i>
+      </div>
+      <div class="p-meta">
+        <div><span>배경</span><b>#0B0D14</b></div>
+        <div><span>포인트</span><b>#D8B77C</b></div>
+        <div><span>서체</span><b>Gowun Batang</b></div>
+      </div>
+      <div class="p-note">스플래시: 별이 흩어지고 금빛 초승달이 그려진 뒤 로고가 떠오릅니다.</div>
+    </aside>
+  </main>
+
+  <footer>
+    <div class="f-note">스플래시가 끝나면 홈 화면으로 넘어갑니다 · 탭을 바꾸면 새 시안이 처음부터 재생됩니다</div>
+    <div class="f-links">
+      <a href="v1-editorial.html" target="_blank" rel="noopener">1안</a>
+      <a href="v2-paper.html" target="_blank" rel="noopener">2안</a>
+      <a href="v3-orbit.html" target="_blank" rel="noopener">3안</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var META = {
+    v1:{ no:'Concept 01', title:'천체 · 에디토리얼', key:'미드나잇 네이비 · 금빛 초승달 · 명조',
+         desc:'밤하늘의 정체성은 그대로 두고, 이모지 대신 얇은 선의 커스텀 아이콘과 여백·타이포 위계로 잡지처럼 풀었습니다.',
+         sw:['#0B0D14','#D8B77C','#EDE8DE','#AFB9CE'], meta:[['배경','#0B0D14'],['포인트','#D8B77C'],['서체','Gowun Batang']],
+         note:'스플래시: 별이 흩어지고 금빛 초승달이 그려진 뒤 로고가 떠오릅니다.' },
+    v2:{ no:'Concept 02', title:'미니멀 페이퍼', key:'아이보리 페이퍼 · 포레스트 · 테라코타',
+         desc:'다크모드를 걷어내고 종이 질감의 라이트 톤으로. 표지 같은 타이포와 28일 리듬 곡선으로 담백하게 정리했습니다.',
+         sw:['#F7F4EE','#233D32','#C86D51','#E7E2D8'], meta:[['배경','#F7F4EE'],['포인트','#233D32'],['서체','Noto Serif KR']],
+         note:'스플래시: 크림색 바탕에 잉크 선화 달 심볼이 그려지고 로고가 내려앉습니다.' },
+    v3:{ no:'Concept 03', title:'달 궤도 오브제', key:'딥 플럼 · 28일 궤도 링 · 모던 웰니스',
+         desc:'화면의 절반을 28일 원형 궤도가 차지합니다. 현재 위치가 빛나는 아크와 점으로 표시되고 중앙에 달과 9일째가 놓입니다.',
+         sw:['#14101B','#A9E3C6','#F2CE8C','#D9A08B'], meta:[['배경','#14101B'],['포인트','#A9E3C6'],['서체','Pretendard']],
+         note:'스플래시: 궤도가 한 바퀴 회전하며 그려지고 중앙의 달이 차오릅니다.' }
+  };
+
+  var view = document.getElementById('view');
+  var panel = document.getElementById('panel');
+  var open = document.getElementById('btn-open');
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+
+  function renderPanel(key){
+    var m = META[key];
+    if (!m) return;
+    panel.innerHTML =
+      '<div class="p-no">' + m.no + '</div>' +
+      '<h2 class="p-title">' + m.title + '</h2>' +
+      '<div class="p-key">' + m.key + '</div>' +
+      '<p class="p-desc">' + m.desc + '</p>' +
+      '<div class="sw">' + m.sw.map(function(c){ return '<i style="background:' + c + '"></i>'; }).join('') + '</div>' +
+      '<div class="p-meta">' + m.meta.map(function(r){ return '<div><span>' + r[0] + '</span><b>' + r[1] + '</b></div>'; }).join('') + '</div>' +
+      '<div class="p-note">' + m.note + '</div>';
+  }
+
+  function select(tab){
+    tabs.forEach(function(t){ t.setAttribute('aria-selected', String(t === tab)); });
+    var src = tab.dataset.src;
+    view.src = src;
+    open.href = src;
+    renderPanel(tab.dataset.key);
+    try { history.replaceState(null, '', '?v=' + tab.dataset.key); } catch(e){}
+  }
+
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){ select(tab); });
+  });
+
+  function callIframe(fn){
+    try {
+      if (view.contentWindow && typeof view.contentWindow[fn] === 'function') view.contentWindow[fn]();
+      else view.src = view.src;
+    } catch(e){ view.src = view.src; }
+  }
+  document.getElementById('btn-splash').addEventListener('click', function(){ callIframe('replaySplash'); });
+  document.getElementById('btn-home').addEventListener('click', function(){ callIframe('showHome'); });
+
+  var initial = new URLSearchParams(location.search).get('v');
+  if (initial) {
+    var t = tabs.filter(function(x){ return x.dataset.key === initial; })[0];
+    if (t) select(t);
+  }
+
+  document.addEventListener('keydown', function(e){
+    var i = ['1','2','3'].indexOf(e.key);
+    if (i >= 0) select(tabs[i]);
+  });
+})();
+</script>
+</body>
+</html>

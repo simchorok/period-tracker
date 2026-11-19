@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>달의 기록 — 2안 미니멀 페이퍼</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --paper:#F7F4EE;
+    --paper-2:#FCFAF6;
+    --ink:#233D32;
+    --ink-70:rgba(35,61,50,.70);
+    --ink-50:rgba(35,61,50,.50);
+    --ink-34:rgba(35,61,50,.34);
+    --ink-16:rgba(35,61,50,.16);
+    --ink-08:rgba(35,61,50,.08);
+    --clay:#C86D51;
+    --clay-soft:rgba(200,109,81,.12);
+    --serif:'Noto Serif KR', 'Gowun Batang', serif;
+    --latin:'Cormorant Garamond', 'Times New Roman', serif;
+    --sans:'Pretendard', 'Noto Sans KR', -apple-system, system-ui, sans-serif;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{height:100%; margin:0}
+  body{
+    background:#E7E2D8; display:flex; align-items:center; justify-content:center;
+    font-family:var(--sans); color:var(--ink); -webkit-font-smoothing:antialiased;
+  }
+  .phone{
+    position:relative; width:100%; max-width:390px; height:100dvh; max-height:844px;
+    overflow:hidden; background:var(--paper);
+    border-radius:40px; box-shadow:0 40px 90px -30px rgba(35,61,50,.45), 0 0 0 1px rgba(35,61,50,.06);
+  }
+  @media (max-width:520px){ .phone{max-height:none; border-radius:0} }
+  html.embedded, html.embedded body{background:transparent; display:block}
+  html.embedded .phone{max-width:none; max-height:none; height:100dvh; border-radius:0; box-shadow:none}
+
+  .screen{position:absolute; inset:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:96px}
+  .screen::-webkit-scrollbar{display:none}
+
+  /* ── 스플래시 ── */
+  .splash{
+    position:absolute; inset:0; z-index:40; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:var(--paper);
+    transition:opacity .85s ease, transform 1s cubic-bezier(.22,.61,.36,1);
+  }
+  .splash::before{
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(80% 60% at 50% 38%, #FCFAF5 0%, #F7F4EE 62%, #EFEAE0 100%);
+  }
+  .splash.gone{opacity:0; transform:scale(1.03); pointer-events:none}
+  .ink-mark{position:relative; width:190px; height:190px; opacity:0; animation:markIn 1.5s cubic-bezier(.22,.61,.36,1) forwards .25s}
+  @keyframes markIn{from{opacity:0; transform:scale(.94)} to{opacity:1; transform:scale(1)}}
+  .ink-mark svg{width:100%; height:100%; display:block}
+  .ring-draw{stroke-dasharray:340; stroke-dashoffset:340; animation:draw 1.9s cubic-bezier(.4,0,.2,1) forwards .4s}
+  @keyframes draw{to{stroke-dashoffset:0}}
+
+  .splash-copy{position:relative; margin-top:30px; text-align:center}
+  .splash-logo{
+    font-family:var(--serif); font-size:25px; font-weight:400; letter-spacing:.34em; text-indent:.34em;
+    color:var(--ink); opacity:0; transform:translateY(8px);
+    animation:up .9s cubic-bezier(.22,.61,.36,1) forwards 1.5s;
+  }
+  .splash-rule{width:44px; height:1px; background:var(--ink-34); margin:16px auto 14px; opacity:0; animation:up .8s ease forwards 1.75s}
+  .splash-line{
+    font-family:var(--serif); font-size:12.5px; letter-spacing:.08em; color:var(--ink-70);
+    opacity:0; transform:translateY(7px); animation:up .9s ease forwards 1.95s;
+  }
+  .splash-foot{
+    position:absolute; bottom:34px; left:0; right:0; text-align:center;
+    font-family:var(--latin); font-size:10px; letter-spacing:.36em; text-transform:uppercase;
+    color:var(--ink-34); opacity:0; animation:up .9s ease forwards 2.4s;
+  }
+  .skip{
+    position:absolute; top:44px; right:26px; z-index:3; background:none; border:0; padding:8px; cursor:pointer;
+    font-family:var(--latin); font-size:10px; letter-spacing:.24em; color:var(--ink-34);
+    opacity:0; animation:up .8s ease forwards 1s;
+  }
+  @keyframes up{to{opacity:1; transform:translateY(0)}}
+
+  /* ── 홈 ── */
+  .home{opacity:0; transition:opacity .9s ease .15s}
+  .home.in{opacity:1}
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 26px 14px; border-bottom:1px solid var(--ink-08);
+  }
+  .topbar .mark{display:flex; align-items:center; gap:9px}
+  .topbar .mark svg{width:17px; height:17px}
+  .topbar .mark b{font-family:var(--serif); font-size:12.5px; font-weight:500; letter-spacing:.26em}
+  .topbar .vol{font-family:var(--latin); font-size:9.5px; letter-spacing:.24em; text-transform:uppercase; color:var(--ink-34)}
+
+  .cover{padding:22px 26px 0; position:relative}
+  .cover-eyebrow{
+    font-family:var(--latin); font-size:10px; letter-spacing:.28em; text-transform:uppercase;
+    color:var(--clay);
+  }
+  .cover-title{
+    margin:12px 0 0; font-family:var(--serif); font-weight:400; font-size:38px; line-height:1.3;
+    letter-spacing:-.045em; color:var(--ink);
+  }
+  .cover-title em{font-style:normal; color:var(--clay)}
+  .cover-meta{margin-top:14px; display:flex; align-items:center; gap:10px}
+  .cover-meta .rule{flex:1; height:1px; background:var(--ink-16)}
+  .cover-meta span{font-family:var(--latin); font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-34)}
+  .cover-lead{
+    margin:14px 0 0; font-family:var(--serif); font-size:13px; line-height:1.95; color:var(--ink-70);
+  }
+  .cover-moon{position:absolute; right:26px; top:34px; width:74px; height:74px; opacity:.9}
+
+  /* 리듬 카드 */
+  .rhythm{
+    margin:26px 20px 0; background:var(--paper-2);
+    border:1px solid var(--ink-08); border-radius:4px;
+    padding:20px 18px 14px;
+    box-shadow:0 14px 30px -26px rgba(35,61,50,.5);
+  }
+  .rhythm-head{display:flex; align-items:baseline; justify-content:space-between}
+  .rhythm-head b{font-family:var(--serif); font-size:12.5px; font-weight:500; letter-spacing:.12em; color:var(--ink)}
+  .rhythm-head span{font-family:var(--latin); font-size:9.5px; letter-spacing:.2em; color:var(--ink-34); text-transform:uppercase}
+  .chart{margin-top:6px; position:relative}
+  .chart svg{width:100%; height:112px; display:block; overflow:visible}
+  .chart .grid-line{stroke:rgba(35,61,50,.08); stroke-width:1; stroke-dasharray:2 4}
+  .chart .curve{fill:none; stroke:var(--ink); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round}
+  .chart .area{fill:url(#areaGrad)}
+  .chart .now-line{stroke:var(--clay); stroke-width:1; stroke-dasharray:3 3; opacity:.55}
+  .rhythm-foot{display:flex; justify-content:space-between; margin-top:8px; padding-top:11px; border-top:1px solid var(--ink-08)}
+  .rhythm-foot div{text-align:center; flex:1}
+  .rhythm-foot .k{font-family:var(--serif); font-size:10px; letter-spacing:.08em; color:var(--ink-34)}
+  .rhythm-foot .v{font-family:var(--latin); font-size:15px; margin-top:2px; color:var(--ink)}
+  .rhythm-foot div + div{border-left:1px solid var(--ink-08)}
+
+  /* 오늘의 한 줄 */
+  .today{padding:30px 26px 0}
+  .sec-label{display:flex; align-items:center; gap:10px}
+  .sec-label b{font-family:var(--serif); font-size:12px; font-weight:500; letter-spacing:.14em; color:var(--ink)}
+  .sec-label i{flex:1; height:1px; background:var(--ink-08)}
+  .sec-label .no{font-family:var(--latin); font-size:9.5px; letter-spacing:.2em; color:var(--clay)}
+  .quote{
+    margin-top:16px; padding-left:16px; border-left:2px solid var(--clay-soft);
+    font-family:var(--serif); font-size:15.5px; line-height:1.95; color:var(--ink);
+  }
+  .quote b{font-weight:500; border-bottom:1px solid rgba(200,109,81,.35); padding-bottom:1px}
+  .tags{display:flex; gap:14px; margin-top:14px}
+  .tags span{
+    font-family:var(--serif); font-size:10.5px; letter-spacing:.06em; color:var(--ink-50);
+    display:flex; align-items:center; gap:5px;
+  }
+  .tags span::before{content:''; width:3px; height:3px; border-radius:50%; background:var(--clay); opacity:.7}
+
+  /* 다가오는 날 */
+  .upcoming{padding:30px 26px 0}
+  .up-list{margin-top:6px; border-top:1px solid var(--ink-08)}
+  .up-list .row{display:flex; align-items:center; gap:12px; padding:14px 0; border-bottom:1px solid var(--ink-08)}
+  .up-list .row .date{font-family:var(--latin); font-size:17px; letter-spacing:.02em; min-width:52px}
+  .up-list .row .name{font-family:var(--serif); font-size:12.5px; letter-spacing:.04em; color:var(--ink-70)}
+  .up-list .row .tag{
+    margin-left:auto; font-family:var(--latin); font-size:9px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--ink-34);
+  }
+  .up-list .row.clay .date{color:var(--clay)}
+
+  .cta{padding:26px 26px 0; display:flex; flex-direction:column; gap:9px}
+  .btn{
+    border:0; cursor:pointer; padding:15px; border-radius:3px; width:100%;
+    font-family:var(--serif); font-size:13px; letter-spacing:.1em;
+    display:flex; align-items:center; justify-content:center; gap:9px;
+    transition:opacity .2s ease;
+  }
+  .btn:active{opacity:.7}
+  .btn.solid{background:var(--ink); color:#F7F4EE}
+  .btn.line{background:none; border:1px solid var(--ink-16); color:var(--ink-70)}
+
+  .colophon{
+    margin:32px 26px 8px; padding-top:14px; border-top:1px solid var(--ink-08);
+    display:flex; justify-content:space-between;
+    font-family:var(--latin); font-size:9px; letter-spacing:.26em; text-transform:uppercase; color:var(--ink-34);
+  }
+
+  /* 하단 네비 */
+  .tabbar{
+    position:absolute; left:0; right:0; bottom:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-around;
+    padding:11px 12px calc(13px + env(safe-area-inset-bottom));
+    background:linear-gradient(180deg, rgba(247,244,238,0) 0%, rgba(247,244,238,.92) 40%, #F7F4EE 100%);
+    border-top:1px solid var(--ink-08);
+  }
+  .tab{
+    background:none; border:0; cursor:pointer; padding:5px 10px 3px;
+    display:flex; flex-direction:column; align-items:center; gap:5px; color:var(--ink-34);
+    position:relative;
+  }
+  .tab svg{width:20px; height:20px; display:block}
+  .tab span{font-family:var(--serif); font-size:9.5px; letter-spacing:.1em}
+  .tab.active{color:var(--ink)}
+  .tab.active::after{
+    content:''; position:absolute; bottom:-1px; left:50%; transform:translateX(-50%);
+    width:14px; height:2px; background:var(--clay); border-radius:2px;
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- ───────── 스플래시 ───────── -->
+  <div class="splash" id="splash">
+    <button class="skip" id="skip" aria-label="건너뛰기">SKIP</button>
+
+    <div class="ink-mark">
+      <svg viewBox="0 0 200 200" aria-hidden="true">
+        <defs>
+          <mask id="inkCrescent">
+            <rect width="200" height="200" fill="#000"/>
+            <circle cx="100" cy="100" r="56" fill="#fff"/>
+            <circle cx="123" cy="86" r="52" fill="#000"/>
+          </mask>
+        </defs>
+        <circle class="ring-draw" cx="100" cy="100" r="88" fill="none" stroke="rgba(35,61,50,.22)" stroke-width="1"/>
+        <circle cx="100" cy="100" r="56" fill="#233D32" mask="url(#inkCrescent)"/>
+        <circle cx="100" cy="12" r="2" fill="#C86D51"/>
+      </svg>
+    </div>
+
+    <div class="splash-copy">
+      <div class="splash-logo">달의 기록</div>
+      <div class="splash-rule"></div>
+      <div class="splash-line">달마다 달라지는 나의 리듬</div>
+    </div>
+    <div class="splash-foot">Vol. 11 · 2026</div>
+  </div>
+
+  <!-- ───────── 홈 ───────── -->
+  <div class="screen home" id="home">
+
+    <div class="topbar">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="10.2" fill="none" stroke="#233D32" stroke-width="1.1" opacity=".4"/>
+          <path d="M15.9 3.6A9 9 0 1 0 15.9 20.4 7.4 7.4 0 1 1 15.9 3.6Z" fill="#233D32"/>
+        </svg>
+        <b>달의 기록</b>
+      </div>
+      <div class="vol">Vol. 11 / Nov 2026</div>
+    </div>
+
+    <section class="cover">
+      <div class="cover-eyebrow">Thursday, 19 November 2026</div>
+      <h1 class="cover-title">아홉째 날,<br><em>봄의 문턱</em></h1>
+      <div class="cover-meta">
+        <span>Cycle 09 · 28 days</span>
+        <div class="rule"></div>
+        <span>심초록</span>
+      </div>
+      <p class="cover-lead">여포기가 시작된 지 사흘째예요. 몸의 온도가 조금씩 올라가고, 마음도 그만큼 가벼워지는 시기.</p>
+
+      <svg class="cover-moon" viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <mask id="coverCrescent">
+            <rect width="100" height="100" fill="#000"/>
+            <circle cx="50" cy="50" r="30" fill="#fff"/>
+            <circle cx="62" cy="40" r="28" fill="#000"/>
+          </mask>
+        </defs>
+        <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(35,61,50,.16)" stroke-width=".8"/>
+        <circle cx="50" cy="50" r="30" fill="#233D32" mask="url(#coverCrescent)" opacity=".9"/>
+      </svg>
+    </section>
+
+    <section class="rhythm">
+      <div class="rhythm-head">
+        <b>28일의 리듬</b>
+        <span>Energy curve</span>
+      </div>
+      <div class="chart">
+        <svg id="curveSvg" viewBox="0 0 300 112" preserveAspectRatio="none" aria-label="28일 에너지 곡선">
+          <defs>
+            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#C86D51" stop-opacity=".16"/>
+              <stop offset="100%" stop-color="#C86D51" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <line class="grid-line" x1="0" y1="26" x2="300" y2="26"/>
+          <line class="grid-line" x1="0" y1="62" x2="300" y2="62"/>
+          <line class="grid-line" x1="0" y1="98" x2="300" y2="98"/>
+          <path id="areaPath" class="area" d=""></path>
+          <path id="curvePath" class="curve" d=""></path>
+          <line id="nowLine" class="now-line" x1="0" y1="6" x2="0" y2="104"/>
+          <circle id="nowDot" cx="0" cy="0" r="4.2" fill="#C86D51"/>
+          <circle id="nowHalo" cx="0" cy="0" r="8.5" fill="none" stroke="#C86D51" stroke-opacity=".3"/>
+        </svg>
+      </div>
+      <div class="rhythm-foot">
+        <div><div class="k">9일째</div><div class="v">여포기</div></div>
+        <div><div class="k">다음 생리</div><div class="v">12.19</div></div>
+        <div><div class="k">주기</div><div class="v">28일</div></div>
+      </div>
+    </section>
+
+    <section class="today">
+      <div class="sec-label">
+        <span class="no">01</span>
+        <b>오늘의 한 줄</b>
+        <i></i>
+      </div>
+      <p class="quote">“오늘은 <b>하고 싶었던 말</b>을 꺼내기 좋은 날. 기운이 도는 만큼, 나에게도 조금 써보세요.”</p>
+      <div class="tags"><span>기운이 도는 날</span><span>집중</span><span>산책 추천</span></div>
+    </section>
+
+    <section class="upcoming">
+      <div class="sec-label">
+        <span class="no">02</span>
+        <b>다가오는 날</b>
+        <i></i>
+      </div>
+      <div class="up-list">
+        <div class="row"><span class="date">11.30</span><span class="name">가임기 시작</span><span class="tag">Fertile</span></div>
+        <div class="row"><span class="date">12.05</span><span class="name">배란 예정</span><span class="tag">Ovulation</span></div>
+        <div class="row"><span class="date">12.19</span><span class="name">생리 예정</span><span class="tag">Period</span></div>
+      </div>
+    </section>
+
+    <div class="cta">
+      <button class="btn solid">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 20h4.2L19 9.2a2.2 2.2 0 0 0-3.1-3.1L5 16.9V20Z"/>
+        </svg>
+        오늘 기록하기
+      </button>
+      <button class="btn line">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/>
+          <path d="M8.3 10.7 15.7 6.3M8.3 13.3l7.4 4.4"/>
+        </svg>
+        오늘 상태 공유
+      </button>
+    </div>
+
+    <div class="colophon">
+      <span>The Record of the Moon</span>
+      <span>P. 09</span>
+    </div>
+  </div>
+
+  <!-- ───────── 하단 네비 ───────── -->
+  <nav class="tabbar" aria-label="주요 메뉴">
+    <button class="tab active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+        <path d="M20.2 14.6A8.6 8.6 0 0 1 9.4 3.8a8.6 8.6 0 1 0 10.8 10.8Z"/>
+      </svg>
+      <span>홈</span>
+    </button>
+    <button class="tab">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+        <rect x="3.4" y="5.2" width="17.2" height="15.4" rx="2.6"/>
+        <path d="M3.4 9.8h17.2M8 3.4v3.4M16 3.4v3.4"/>
+      </svg>
+      <span>달력</span>
+    </button>
+    <button class="tab">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3.6 16.4 8 10.9l3.6 3.1 4-6.2 4.8 6.1"/>
+        <path d="M3.6 20.2h16.8"/>
+      </svg>
+      <span>그래프</span>
+    </button>
+    <button class="tab">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+        <circle cx="12" cy="8.4" r="3.6"/>
+        <path d="M5.4 20c.6-3.6 3.3-5.6 6.6-5.6s6 2 6.6 5.6"/>
+      </svg>
+      <span>마이</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+(function(){
+  if (window.self !== window.top) document.documentElement.classList.add('embedded');
+
+  /* ── 에너지 커브: 28일 리듬 ── */
+  var vals = [0.30,0.40,0.55,0.68,0.80,0.86,0.90,0.96,0.92,0.82,
+              0.72,0.60,0.50,0.42,0.36,0.34,0.40,0.48,0.54,0.58,
+              0.50,0.40,0.30,0.24,0.20,0.16,0.18,0.24];
+  var W = 300, H = 104, pad = 8;
+  var pts = vals.map(function(v,i){
+    return { x: pad + i * (W - pad*2) / (vals.length - 1), y: H - pad - v * (H - pad*2 - 6) };
+  });
+  function smooth(p){
+    var d = 'M' + p[0].x.toFixed(1) + ',' + p[0].y.toFixed(1);
+    for (var i=0; i<p.length-1; i++){
+      var p0 = p[i-1] || p[i], p1 = p[i], p2 = p[i+1], p3 = p[i+2] || p2;
+      var c1x = p1.x + (p2.x-p0.x)/6, c1y = p1.y + (p2.y-p0.y)/6;
+      var c2x = p2.x - (p3.x-p1.x)/6, c2y = p2.y - (p3.y-p1.y)/6;
+      d += ' C' + c1x.toFixed(1) + ',' + c1y.toFixed(1) + ' ' + c2x.toFixed(1) + ',' + c2y.toFixed(1)
+         + ' ' + p2.x.toFixed(1) + ',' + p2.y.toFixed(1);
+    }
+    return d;
+  }
+  var d = smooth(pts);
+  document.getElementById('curvePath').setAttribute('d', d);
+  document.getElementById('areaPath').setAttribute('d', d + ' L' + pts[pts.length-1].x.toFixed(1) + ',' + H + ' L' + pts[0].x.toFixed(1) + ',' + H + ' Z');
+
+  var idx = 8; /* 9일째 */
+  var dot = pts[idx];
+  document.getElementById('nowDot').setAttribute('cx', dot.x);
+  document.getElementById('nowDot').setAttribute('cy', dot.y);
+  document.getElementById('nowHalo').setAttribute('cx', dot.x);
+  document.getElementById('nowHalo').setAttribute('cy', dot.y);
+  var line = document.getElementById('nowLine');
+  line.setAttribute('x1', dot.x); line.setAttribute('x2', dot.x);
+
+  /* ── 스플래시 ── */
+  var splash = document.getElementById('splash');
+  var home = document.getElementById('home');
+  var timer = null;
+
+  function enterHome(){
+    if (timer) { clearTimeout(timer); timer = null; }
+    splash.classList.add('gone');
+    home.classList.add('in');
+  }
+  window.replaySplash = function(){
+    if (timer) clearTimeout(timer);
+    splash.innerHTML = splash.innerHTML;
+    splash.classList.remove('gone');
+    home.classList.remove('in');
+    splash.querySelector('.skip').addEventListener('click', enterHome);
+    timer = setTimeout(enterHome, 3100);
+  };
+  window.showHome = function(){
+    if (timer) { clearTimeout(timer); timer = null; }
+    splash.classList.add('gone'); home.classList.add('in');
+  };
+  document.getElementById('skip').addEventListener('click', enterHome);
+  timer = setTimeout(enterHome, 3100);
+})();
+</script>
+</body>
+</html>
