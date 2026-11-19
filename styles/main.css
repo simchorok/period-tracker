@@ -957,10 +957,10 @@
 
   .share-source {
     margin-top: 20px;
-    font-size: 10.5px;
-    letter-spacing: 0.1em;
+    font-size: 11px;
+    letter-spacing: 0.08em;
     color: var(--accent-soft);
-    opacity: 0.72;
+    opacity: 0.9;
   }
   .share-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
   .share-tag {
