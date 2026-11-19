@@ -1,6 +1,12 @@
 /* 달의 기록 — 인증: 카카오 로그인, 로그아웃, 앱 진입, 프로필(닉네임), 탈퇴 */
   let currentUser = null;
 
+  // 공유 링크(?share=...)로 들어온 경우 — 로그인 여부와 관계없이 전용 뷰만 보여준다
+  const SHARE_MODE = (() => {
+    try { return new URLSearchParams(location.search).has('share'); }
+    catch (e) { return false; }
+  })();
+
   // ── 인증 ──
   async function signInWithKakao() {
     await sb.auth.signInWithOAuth({
@@ -40,6 +46,8 @@
 
   // ── 인증 상태 감지 ──
   sb.auth.onAuthStateChange((event, session) => {
+    // 로그인 화면/메인 앱을 띄우기 전에 공유 뷰를 먼저 확정한다
+    if (SHARE_MODE) return;
     if (session?.user) {
       showApp(session.user);
     } else {

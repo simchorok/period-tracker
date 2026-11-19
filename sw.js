@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dal-ui-girok-v5';
+const CACHE_NAME = 'dal-ui-girok-v6';
 const ASSETS = [
   '/period-tracker/',
   '/period-tracker/index.html',
@@ -10,6 +10,7 @@ const ASSETS = [
   '/period-tracker/js/questions.js',
   '/period-tracker/js/ui.js',
   '/period-tracker/js/report.js',
+  '/period-tracker/js/share.js',
   '/period-tracker/js/app.js',
 ];
 

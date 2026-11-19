@@ -13,6 +13,19 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="description" content="달마다 달라지는 몸과 마음의 리듬을 기록하는 앱, 달의 기록 🌙">
+<meta property="og:title" content="달의 기록">
+<meta property="og:description" content="달마다 달라지는 몸과 마음의 리듬을 기록해요. 오늘의 계절과 상태를 함께 나눠보세요 🌙">
+<meta property="og:image" content="https://simchorok.github.io/period-tracker/og-image.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:url" content="https://simchorok.github.io/period-tracker/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="달의 기록">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="달의 기록">
+<meta name="twitter:description" content="달마다 달라지는 몸과 마음의 리듬을 기록해요. 오늘의 계절과 상태를 함께 나눠보세요 🌙">
+<meta name="twitter:image" content="https://simchorok.github.io/period-tracker/og-image.png">
 <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
@@ -118,6 +131,7 @@
       </div>
     </div>
 
+    <button class="btn-share" id="btn-share" onclick="shareTodayStatus()">💌 오늘 상태 공유하기</button>
     <button class="btn-primary" onclick="openModal()">🩸 생리 기간 기록하기</button>
     <button class="btn-log" onclick="openLogModal()">✍️ 오늘의 상태 기록하기</button>
   </div>
@@ -468,12 +482,16 @@
 </div>
 
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- 공유 링크 전용 뷰 (?share=...) — 로그인 없이 URL만으로 렌더링 -->
+<div class="share-view" id="share-view"></div>
+
 <script defer src="js/config.js"></script>
 <script defer src="js/auth.js"></script>
 <script defer src="js/records.js"></script>
 <script defer src="js/questions.js"></script>
 <script defer src="js/ui.js"></script>
 <script defer src="js/report.js"></script>
+<script defer src="js/share.js"></script>
 <script defer src="js/app.js"></script>
 
 

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>달의 기록 — 공유 기능 단위 테스트</title>
+<style>
+  body { background:#0e0610; color:#f0e6ea; font-family: monospace; padding:24px; line-height:1.55; }
+  .ok { color:#5dca8a; } .ng { color:#e06c6c; } .sec { color:#e8a0b0; margin-top:14px; }
+  h1 { font-size:15px; color:#f5d6c8; }
+</style>
+</head>
+<body>
+<h1>달의 기록 · 상태 공유 단위 테스트</h1>
+<pre id="out">running…</pre>
+<script>
+window.__errors = [];
+window.addEventListener('error', e => window.__errors.push('error: ' + (e.message || e.error)));
+window.addEventListener('unhandledrejection', e => window.__errors.push('rejection: ' + ((e.reason && e.reason.message) || e.reason)));
+
+const out = document.getElementById('out');
+const lines = [];
+let pass = 0, fail = 0;
+function log(html) { lines.push(html); }
+function check(name, cond, extra) {
+  if (cond) { pass++; log(`  <span class="ok">✓</span> ${name}`); }
+  else { fail++; log(`  <span class="ng">✗</span> ${name}${extra !== undefined ? ' → ' + escape(String(JSON.stringify(extra))) : ''}`); }
+}
+function eq(name, actual, expected) { check(name, JSON.stringify(actual) === JSON.stringify(expected), { actual, expected }); }
+function escape(s) { return s.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
+
+function elStub() {
+  return { addEventListener(){}, classList:{add(){},remove(){},toggle(){},contains(){return false;}},
+    style:{}, dataset:{}, textContent:'', innerHTML:'', value:'', parentElement:null,
+    appendChild(){}, setAttribute(){}, getAttribute(){return null;}, focus(){}, select(){} };
+}
+
+async function buildSandbox() {
+  const files = ['js/config.js', 'js/records.js', 'js/ui.js', 'js/share.js'];
+  const parts = [];
+  for (const f of files) {
+    const res = await fetch('../' + f + '?t=' + Date.now());
+    if (!res.ok) throw new Error('fetch 실패 ' + f + ' ' + res.status);
+    parts.push(`/* ==== ${f} ==== */\n` + await res.text());
+  }
+  const store = new Map();
+  const sandboxDoc = {
+    getElementById: () => elStub(),
+    querySelector: () => null,
+    querySelectorAll: () => [],
+    addEventListener(){}, createElement: () => elStub(),
+    body: { appendChild(){}, classList:{add(){},remove(){}} },
+    head: { appendChild(){} },
+  };
+  const sandboxWindow = { supabase: { createClient: () => ({ auth:{onAuthStateChange(){}}, from:()=>({}) }) } };
+  const sandboxLocal = {
+    getItem: k => (store.has(k) ? store.get(k) : null),
+    setItem: (k, v) => store.set(k, String(v)),
+    removeItem: k => store.delete(k),
+    clear: () => store.clear(),
+  };
+  const sandboxLoc = { origin: 'https://simchorok.github.io', pathname: '/period-tracker/', search: '' };
+
+  const factory = new Function(
+    'document', 'window', 'localStorage', 'location', 'navigator', 'userNickname', 'KAKAO_JS_KEY', 'SHARE_MODE',
+    parts.join('\n;\n') + `
+    return {
+      buildShareSnapshot, buildShareUrl, pickShareTags, pickCareHints, sanitizeShareTags,
+      shareB64UrlEncode, shareB64UrlDecode, addDays, dateDiff, getCyclePhase, getTodayStr, calcAvgCycle,
+      setData(records, logs, nickname) {
+        localStorage.setItem('period_records_v2', JSON.stringify(records));
+        localStorage.setItem('period_logs_v1', JSON.stringify(logs));
+        userNickname = nickname || '';
+      },
+    };`
+  );
+  return factory(sandboxDoc, sandboxWindow, sandboxLocal, sandboxLoc, {}, '', '', false);
+}
+
+(async () => {
+  let S;
+  try { S = await buildSandbox(); }
+  catch (e) { out.innerHTML = '<span class="ng">샌드박스 로드 실패: ' + escape(String(e && e.message || e)) + '</span>'; window.__testResults = { pass: 0, fail: 1, error: String(e) }; return; }
+
+  const today = S.getTodayStr();
+  const addDays = S.addDays;
+  log(`기준일(today) = ${today}`);
+
+  /* 1 */
+  log('<span class="sec">[1] 프라이버시 필터 · 오늘 태그 우선</span>');
+  {
+    const last = addDays(today, -8);
+    S.setData(
+      [{ start: addDays(today, -36), end: addDays(today, -31) }, { start: last, end: addDays(last, 5) }],
+      { [today]: { mood: ['예민해요', '행복해요'], symptom: ['생리통', '냉이 많아요'], energy: ['좀 처져요'], etc: ['성관계', '피임'], periodIntensity: 3, memo: '비밀 메모' } },
+      '초록'
+    );
+    const s = S.buildShareSnapshot();
+    eq('tagSource = today', s.tagSource, 'today');
+    check('성관계/피임/냉이 많아요 제외', !['성관계', '피임', '냉이 많아요'].some(t => s.tags.includes(t)), s.tags);
+    eq('나머지 오늘 태그 유지', s.tags, ['예민해요', '행복해요', '생리통', '좀 처져요']);
+    check('메모·강도는 스냅샷에 없음', !JSON.stringify(s).includes('비밀 메모') && !('periodIntensity' in s));
+    eq('닉네임', s.nickname, '초록');
+    eq('cycleDay', s.cycleDay, 9);
+    eq('phaseKey', s.phaseKey, 'follicular');
+    eq('seasonName', s.seasonName, '봄 · 여포기');
+    eq('seasonEmoji', s.seasonEmoji, '🌱');
+    eq('케어 힌트 최대 2개 · 우선순위', s.care.map(c => c.title), ['따뜻하게', '한 템포 천천히']);
+  }
+
+  /* 2 */
+  log('<span class="sec">[2] 오늘 태그 없음 → 과거 사이클 반복 패턴</span>');
+  {
+    const r1 = addDays(today, -64), r2 = addDays(today, -36), r3 = addDays(today, -8);
+    S.setData(
+      [{ start: r1, end: addDays(r1, 5) }, { start: r2, end: addDays(r2, 5) }, { start: r3, end: addDays(r3, 5) }],
+      {
+        [addDays(r1, 8)]: { mood: ['예민해요'], symptom: ['두통'], energy: [] },
+        [addDays(r1, 9)]: { mood: ['예민해요'], symptom: [], energy: ['좀 처져요'] },
+        [addDays(r2, 8)]: { mood: ['예민해요'], symptom: ['두통'], energy: [] },
+        [addDays(r2, 9)]: { mood: ['예민해요'], symptom: [], energy: ['좀 처져요'] },
+        [addDays(r2, 20)]: { mood: ['우울해요'], symptom: ['복통'], energy: [] },
+      },
+      '초록'
+    );
+    const s = S.buildShareSnapshot();
+    eq('tagSource = pattern', s.tagSource, 'pattern');
+    eq('2회 이상 반복만 · 빈도순', s.tags, ['예민해요', '두통', '좀 처져요']);
+    check('다른 페이즈/1회성 태그 제외', !s.tags.includes('우울해요') && !s.tags.includes('복통'), s.tags);
+  }
+
+  /* 3 */
+  log('<span class="sec">[3] 태그 없음 → 페이즈 기본 힌트</span>');
+  {
+    const r1 = addDays(today, -36), r2 = addDays(today, -8);
+    S.setData([{ start: r1, end: addDays(r1, 5) }, { start: r2, end: addDays(r2, 5) }], {}, '');
+    const s = S.buildShareSnapshot();
+    eq('tagSource = none', s.tagSource, 'none');
+    eq('tags 비어 있음', s.tags, []);
+    eq('닉네임 기본값', s.nickname, '사용자');
+    eq('기본 케어 힌트 1개', s.care.length, 1);
+    eq('기본 힌트 내용', s.care[0].title, '가볍게 함께');
+  }
+
+  /* 4 */
+  log('<span class="sec">[4] 태그 개수 제한</span>');
+  {
+    const last = addDays(today, -8);
+    S.setData([{ start: last, end: addDays(last, 5) }],
+      { [today]: { mood: ['예민해요', '불안해요', '슬퍼요'], symptom: ['생리통', '두통'], energy: ['완전 방전', '활력 넘쳐요'] } }, '초록');
+    const s = S.buildShareSnapshot();
+    check('최대 5개', s.tags.length === 5, s.tags);
+    eq('앞에서부터 5개', s.tags, ['예민해요', '불안해요', '슬퍼요', '생리통', '두통']);
+  }
+
+  /* 5 */
+  log('<span class="sec">[5] 기록 없음</span>');
+  {
+    S.setData([], {}, '');
+    eq('스냅샷 null', S.buildShareSnapshot(), null);
+  }
+
+  /* 6 */
+  log('<span class="sec">[6] Base64URL 인코딩</span>');
+  {
+    const last = addDays(today, -8);
+    S.setData([{ start: last, end: addDays(last, 5) }],
+      { [today]: { mood: ['예민해요'], symptom: ['생리통'], energy: [] } }, '심초록🌙');
+    const s = S.buildShareSnapshot();
+    const url = S.buildShareUrl(s);
+    check('공유 URL 형식', /^https:\/\/simchorok\.github\.io\/period-tracker\/\?share=[A-Za-z0-9_-]+$/.test(url), url);
+    const payload = url.split('?share=')[1];
+    eq('한글 닉네임 왕복 복원', JSON.parse(S.shareB64UrlDecode(payload)), s);
+    check('URL 1000자 이내', url.length < 1000, url.length);
+  }
+
+  /* 7 — 케어 힌트 우선순위 */
+  log('<span class="sec">[7] 케어 힌트 우선순위 · 최대 2개</span>');
+  {
+    eq('온열 > 감정완충 > 활력', S.pickCareHints(['활력 넘쳐요', '불안해요', '생리통'], 'menstrual').map(c => c.title), ['따뜻하게', '한 템포 천천히']);
+    eq('그룹 하나만', S.pickCareHints(['식욕이 늘었어요'], 'luteal').map(c => c.title), ['간식 한 조각']);
+    eq('민감 태그만 있으면 기본 힌트', S.pickCareHints([], 'ovulation').map(c => c.title), ['즐거운 계획']);
+    eq('숨김 태그 필터', S.sanitizeShareTags(['성관계', '피임', '냉이 많아요', '두통', '두통']), ['두통']);
+  }
+
+  const errors = window.__errors;
+  log(`<span class="sec">[8] 페이지/샌드박스 오류</span>`);
+  check('JS 오류 0건', errors.length === 0, errors);
+  log(`\n결과: ${pass} 통과 / ${fail} 실패`);
+  out.innerHTML = lines.join('\n');
+  window.__testResults = { pass, fail, errors, today };
+})();
+</script>
+</body>
+</html>
