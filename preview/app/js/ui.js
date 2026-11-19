@@ -1,5 +1,10 @@
 /* 달의 기록 — 화면: 홈 궤도/달력/그래프/마이 렌더링, 탭 전환, 기록 목록·상세 */
 
+/* ── 공통: 숫자 + 단위 ── */
+function unitHtml(value, unit) {
+  return `${value}<span class="unit">${unit}</span>`;
+}
+
 /* ── 공통: 토스트 ── */
 function showToast(message) {
   let el = document.getElementById('share-toast');
@@ -112,7 +117,7 @@ function renderOrbit(opts) {
     const from = Math.max(0.2, s.from - 0.45);
     const to = Math.min(cycle + 0.6, s.to + 0.45);
     if (to - from < 0.9) return;
-    arcs += `<path d="${_orbitArc(ORBIT_R, from, to, cycle)}" fill="none" stroke="${c}" stroke-width="${isActive ? 3 : 2}" stroke-linecap="round" opacity="${isActive ? '.95' : '.28'}"/>`;
+    arcs += `<path d="${_orbitArc(ORBIT_R, from, to, cycle)}" fill="none" stroke="${c}" stroke-width="${isActive ? 3 : 2}" stroke-linecap="round" opacity="${isActive ? '.95' : '.34'}"/>`;
   });
   arcsG.innerHTML = arcs;
 
@@ -224,11 +229,11 @@ function renderMypage() {
     ? Math.round(records.reduce((s, r) => s + dateDiff(r.end, r.start) + 1, 0) / records.length)
     : 0;
 
-  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-  set('mypage-avg-cycle', records.length >= 2 ? `${cycle}일` : '—');
-  set('mypage-avg-dur', records.length ? `${avgDur}일` : '—');
-  set('mypage-total-records', `${records.length}회`);
-  set('mypage-total-logs', `${Object.keys(logs).length}일`);
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.innerHTML = v; };
+  set('mypage-avg-cycle', records.length >= 2 ? unitHtml(cycle, '일') : '—');
+  set('mypage-avg-dur', records.length ? unitHtml(avgDur, '일') : '—');
+  set('mypage-total-records', unitHtml(records.length, '회'));
+  set('mypage-total-logs', unitHtml(Object.keys(logs).length, '일'));
 }
 
 /* ── 달력 ── */
@@ -306,11 +311,18 @@ function renderCalendar() {
   }
 
   const sub = document.getElementById('calendar-sub');
-  if (sub && records.length) sub.textContent = `${calcAvgCycle(records)}일 주기 · 예상 생리 ${fmtDate(pred ? getNextPredictions(records).nextStart : todayStr)}`;
+  if (sub && records.length) {
+    const p = getNextPredictions(records);
+    sub.textContent = `${calcAvgCycle(records)}일 주기 · 예상 생리 ${p ? fmtDate(p.nextStart) : '—'}`;
+  }
 
+  // 오늘이 있는 달로 이동하되, 화면 제목과 범례는 가리지 않는다
   setTimeout(() => {
     const target = document.getElementById('cal-today-block');
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const scroller = document.getElementById('screens');
+    if (!target || !scroller) return;
+    const top = target.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+    scroller.scrollTo({ top: Math.max(0, top - 96), behavior: 'smooth' });
   }, 100);
 }
 
@@ -386,7 +398,8 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
     label.setAttribute('font-size', '9'); label.textContent = `${i + 1}`;
     svg.appendChild(label);
 
-    if (isLast || v === Math.max(...values) || v === Math.min(...values)) {
+    const spread = Math.max(...values) - Math.min(...values);
+    if (isLast || (spread >= 3 && (v === Math.max(...values) || v === Math.min(...values)))) {
       const vLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       vLabel.setAttribute('x', cx); vLabel.setAttribute('y', cy - 8);
       vLabel.setAttribute('text-anchor', 'middle');
@@ -411,13 +424,13 @@ function renderGraph() {
   if (cycles.length >= 1) {
     const avg = Math.round(cycles.reduce((s, v) => s + v, 0) / cycles.length);
     const mn = Math.min(...cycles), mx = Math.max(...cycles);
-    if (avgCycleEl) avgCycleEl.textContent = `${avg}일`;
+    if (avgCycleEl) avgCycleEl.innerHTML = unitHtml(avg, '일');
     drawLineChart('cycle-chart', cycles, avg, '#F2CE8C');
     const row = document.getElementById('cycle-stat-row');
     if (row) row.innerHTML = `
-      <div class="stat-pill"><div class="stat-pill-val">${mn}일</div><div class="stat-pill-label">최단 주기</div></div>
-      <div class="stat-pill"><div class="stat-pill-val">${mx}일</div><div class="stat-pill-label">최장 주기</div></div>
-      <div class="stat-pill"><div class="stat-pill-val">${cycles.length}회</div><div class="stat-pill-label">측정 횟수</div></div>`;
+      <div class="stat-pill"><div class="stat-pill-val">${unitHtml(mn, '일')}</div><div class="stat-pill-label">최단 주기</div></div>
+      <div class="stat-pill"><div class="stat-pill-val">${unitHtml(mx, '일')}</div><div class="stat-pill-label">최장 주기</div></div>
+      <div class="stat-pill"><div class="stat-pill-val">${unitHtml(cycles.length, '회')}</div><div class="stat-pill-label">측정 횟수</div></div>`;
   } else {
     if (avgCycleEl) avgCycleEl.textContent = '—';
     drawLineChart('cycle-chart', [], 0, '#F2CE8C');
@@ -431,13 +444,13 @@ function renderGraph() {
   if (durs.length >= 1) {
     const avg = Math.round(durs.reduce((s, v) => s + v, 0) / durs.length);
     const mn = Math.min(...durs), mx = Math.max(...durs);
-    if (avgDurEl) avgDurEl.textContent = `${avg}일`;
+    if (avgDurEl) avgDurEl.innerHTML = unitHtml(avg, '일');
     drawLineChart('dur-chart', durs, avg, '#A9E3C6');
     const row = document.getElementById('dur-stat-row');
     if (row) row.innerHTML = `
-      <div class="stat-pill"><div class="stat-pill-val">${mn}일</div><div class="stat-pill-label">최단 기간</div></div>
-      <div class="stat-pill"><div class="stat-pill-val">${mx}일</div><div class="stat-pill-label">최장 기간</div></div>
-      <div class="stat-pill"><div class="stat-pill-val">${durs.length}회</div><div class="stat-pill-label">기록 횟수</div></div>`;
+      <div class="stat-pill"><div class="stat-pill-val">${unitHtml(mn, '일')}</div><div class="stat-pill-label">최단 기간</div></div>
+      <div class="stat-pill"><div class="stat-pill-val">${unitHtml(mx, '일')}</div><div class="stat-pill-label">최장 기간</div></div>
+      <div class="stat-pill"><div class="stat-pill-val">${unitHtml(durs.length, '회')}</div><div class="stat-pill-label">기록 횟수</div></div>`;
   } else {
     if (avgDurEl) avgDurEl.textContent = '—';
     drawLineChart('dur-chart', [], 0, '#A9E3C6');

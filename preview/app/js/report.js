@@ -133,22 +133,22 @@ function renderReportSummary(records) {
 
   document.getElementById('report-summary').innerHTML = `
     <div class="report-summary-item">
-      <div class="report-summary-val">${dur}일</div>
+      <div class="report-summary-val">${unitHtml(dur, '일')}</div>
       <div class="report-summary-label">생리 기간</div>
       ${changeHtml(durChange)}
     </div>
     <div class="report-summary-item">
-      <div class="report-summary-val">${cycle ? cycle+'일' : '—'}</div>
+      <div class="report-summary-val">${cycle ? unitHtml(cycle, '일') : '—'}</div>
       <div class="report-summary-label">이번 주기</div>
       ${changeHtml(cycleChange)}
     </div>
     <div class="report-summary-item">
-      <div class="report-summary-val">${logCount}일</div>
+      <div class="report-summary-val">${unitHtml(logCount, '일')}</div>
       <div class="report-summary-label">상태 기록일수</div>
       <div class="report-summary-change same">이번 사이클</div>
     </div>
     <div class="report-summary-item">
-      <div class="report-summary-val">${records.length}회</div>
+      <div class="report-summary-val">${unitHtml(records.length, '회')}</div>
       <div class="report-summary-label">누적 기록</div>
       <div class="report-summary-change same">전체</div>
     </div>
@@ -444,6 +444,7 @@ async function generateAIAnalysis(records, targetRecord) {
 
   } catch(e) {
     console.error('AI 분석 오류:', e);
+    window.__lastAIError = String((e && (e.message || e.error_description)) || e);
     showAIError('분석 중 오류가 발생했어요.<br>다시 시도해주세요.<br><button class="report-ai-retry" onclick="retryAIAnalysis()">다시 시도</button>');
   }
 }
