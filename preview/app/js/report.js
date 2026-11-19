@@ -61,7 +61,7 @@ function openReport() {
     document.getElementById('report-title').textContent = `${parseInt(todayStr.slice(5,7))}월 사이클 리포트`;
     document.getElementById('report-sub').textContent = `${todayStr.slice(0,7).replace('-','/')} 월간 기록`;
     document.getElementById('report-summary').innerHTML =
-      '<div style="grid-column:1/-1;font-size:12px;color:rgba(244,239,232,.4);line-height:1.9;padding:6px 0;">생리 기록을 남기면 더 정확한 사이클 분석을 드릴 수 있어요.</div>';
+      '<div style="grid-column:1/-1;font-size:14.5px;color:rgba(244,239,232,.62);line-height:1.9;padding:6px 0;">생리 기록을 남기면 더 정확한 사이클 분석을 드릴 수 있어요.</div>';
     document.getElementById('report-phases').innerHTML = '';
     document.getElementById('report-forecast').innerHTML = '';
     document.getElementById('report-energy-chart').innerHTML = '';
@@ -189,7 +189,7 @@ function renderReportPhases(records, lastRecord) {
       </div>
     </div>`;
   }).join('') + (totalPhaseTags === 0
-    ? `<div style="margin-top:12px;font-size:11px;color:rgba(244,239,232,.36);text-align:center;line-height:1.8">상태 기록을 남기면 이 단계의 패턴을 함께 읽어드려요.</div>`
+    ? `<div style="margin-top:12px;font-size:13.5px;color:rgba(244,239,232,.58);text-align:center;line-height:1.8">상태 기록을 남기면 이 단계의 패턴을 함께 읽어드려요.</div>`
     : '');
 }
 
@@ -211,7 +211,7 @@ function renderReportEnergyChart(lastRecord) {
   const svg = document.getElementById('report-energy-chart');
   if (!svg) return;
   svg.innerHTML = '';
-  const W = 340, H = 80;
+  const W = 340, H = 88;
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svg.style.width = '100%';
 
@@ -220,11 +220,11 @@ function renderReportEnergyChart(lastRecord) {
     const fo = document.createElementNS('http://www.w3.org/2000/svg','foreignObject');
     fo.setAttribute('x','0'); fo.setAttribute('y','0');
     fo.setAttribute('width', W); fo.setAttribute('height', H);
-    fo.innerHTML = `<div xmlns="http://www.w3.org/2000/svg" style="display:flex;align-items:center;justify-content:center;height:${H}px;font-size:11px;color:rgba(244,239,232,.36);text-align:center;line-height:1.8;padding:0 12px">상태 기록을 남기면 에너지 흐름을 함께 그려드려요.</div>`;
+    fo.innerHTML = `<div xmlns="http://www.w3.org/2000/svg" style="display:flex;align-items:center;justify-content:center;height:${H}px;font-size:13.5px;color:rgba(244,239,232,.58);text-align:center;line-height:1.8;padding:0 12px">상태 기록을 남기면 에너지 흐름을 함께 그려드려요.</div>`;
     svg.appendChild(fo); return;
   }
 
-  const pad = { l: 34, r: 10, t: 8, b: 20 };
+  const pad = { l: 40, r: 10, t: 8, b: 20 };
   const xStep = (W - pad.l - pad.r) / Math.max(1, points.length - 1);
   const toX = i => pad.l + i * xStep;
   const toY = v => pad.t + (1 - (v - 1) / 3) * (H - pad.t - pad.b);
@@ -258,7 +258,7 @@ function renderReportEnergyChart(lastRecord) {
   labels.forEach((l, i) => {
     const t = document.createElementNS('http://www.w3.org/2000/svg','text');
     t.setAttribute('x', 2); t.setAttribute('y', toY(i + 1) + 3.5);
-    t.setAttribute('fill','rgba(244,239,232,.28)'); t.setAttribute('font-size','8');
+    t.setAttribute('fill','rgba(244,239,232,.56)'); t.setAttribute('font-size','11');
     t.textContent = l; svg.appendChild(t);
   });
 }
@@ -267,7 +267,7 @@ function renderReportForecast(records, lastRecord) {
   const el = document.getElementById('report-forecast');
   if (!el) return;
   if (records.length < 2) {
-    el.innerHTML = `<div style="text-align:center;padding:10px 0;font-size:11px;color:rgba(244,239,232,.36);line-height:1.9">상태 기록을 남기면 다음 사이클에 나타날 수 있는 패턴을 예고해드려요.</div>`;
+    el.innerHTML = `<div style="text-align:center;padding:10px 0;font-size:13.5px;color:rgba(244,239,232,.58);line-height:1.9">상태 기록을 남기면 다음 사이클에 나타날 수 있는 패턴을 예고해드려요.</div>`;
     return;
   }
 
@@ -300,7 +300,7 @@ function renderReportForecast(records, lastRecord) {
   });
 
   if (!forecasts.length) {
-    el.innerHTML = '<div style="text-align:center;padding:10px 0;font-size:11px;color:rgba(244,239,232,.36);line-height:1.9">상태 기록을 남기면 다음 사이클에 나타날 수 있는 패턴을 예고해드려요.</div>';
+    el.innerHTML = '<div style="text-align:center;padding:10px 0;font-size:13.5px;color:rgba(244,239,232,.58);line-height:1.9">상태 기록을 남기면 다음 사이클에 나타날 수 있는 패턴을 예고해드려요.</div>';
     return;
   }
 

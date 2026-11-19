@@ -345,7 +345,7 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
   if (!svg) return;
   svg.innerHTML = '';
   const W = svg.parentElement.offsetWidth || 300;
-  const H = 80;
+  const H = 88;
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svg.setAttribute('width', W);
   svg.setAttribute('height', H);
@@ -353,8 +353,8 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
   if (values.length < 2) {
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     text.setAttribute('x', W / 2); text.setAttribute('y', H / 2);
-    text.setAttribute('text-anchor', 'middle'); text.setAttribute('fill', 'rgba(244,239,232,.26)');
-    text.setAttribute('font-size', '11'); text.textContent = '기록이 2개 이상 필요해요';
+    text.setAttribute('text-anchor', 'middle'); text.setAttribute('fill', 'rgba(244,239,232,.5)');
+    text.setAttribute('font-size', '12.5'); text.textContent = '기록이 2개 이상 필요해요';
     svg.appendChild(text); return;
   }
 
@@ -396,8 +396,8 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
 
     const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     label.setAttribute('x', cx); label.setAttribute('y', H - 4);
-    label.setAttribute('text-anchor', 'middle'); label.setAttribute('fill', 'rgba(244,239,232,.24)');
-    label.setAttribute('font-size', '9'); label.textContent = `${i + 1}`;
+    label.setAttribute('text-anchor', 'middle'); label.setAttribute('fill', 'rgba(244,239,232,.5)');
+    label.setAttribute('font-size', '11.5'); label.textContent = `${i + 1}`;
     svg.appendChild(label);
 
     const spread = Math.max(...values) - Math.min(...values);
@@ -405,8 +405,8 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
       const vLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       vLabel.setAttribute('x', cx); vLabel.setAttribute('y', cy - 8);
       vLabel.setAttribute('text-anchor', 'middle');
-      vLabel.setAttribute('fill', isLast ? colorStroke : 'rgba(244,239,232,.55)');
-      vLabel.setAttribute('font-size', '10'); vLabel.setAttribute('font-weight', isLast ? '500' : '400');
+      vLabel.setAttribute('fill', isLast ? colorStroke : 'rgba(244,239,232,.7)');
+      vLabel.setAttribute('font-size', '12.5'); vLabel.setAttribute('font-weight', isLast ? '500' : '400');
       vLabel.textContent = v;
       svg.appendChild(vLabel);
     }

@@ -135,7 +135,7 @@ async function openQuestionModal() {
   } catch(e) {
     console.error('질문 생성 오류:', e);
     document.getElementById('question-loading').innerHTML =
-      '<div style="text-align:center;padding:20px;color:var(--ink-45);font-size:12.5px;line-height:1.9;">질문을 불러오지 못했어요.<br>잠시 후 다시 시도해주세요.</div>';
+      '<div style="text-align:center;padding:20px;color:rgba(244,239,232,.7);font-size:15px;line-height:1.9;">질문을 불러오지 못했어요.<br>잠시 후 다시 시도해주세요.</div>';
   } finally {
     _questionGenerating = false;
   }
