@@ -957,10 +957,10 @@
 
   .share-source {
     margin-top: 20px;
-    font-size: 10px;
-    letter-spacing: 0.16em;
-    color: var(--text-dim);
-    text-transform: none;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    color: var(--accent-soft);
+    opacity: 0.72;
   }
   .share-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
   .share-tag {
@@ -1010,7 +1010,7 @@
     transition: transform 0.15s;
   }
   .share-cta:active { transform: scale(0.98); }
-  .share-foot { font-size: 11px; color: var(--text-dim); letter-spacing: 0.06em; text-align: center; }
+  .share-foot { font-size: 11px; color: var(--text-muted); opacity: 0.65; letter-spacing: 0.06em; text-align: center; }
 
   .share-card-error { text-align: center; padding: 36px 22px; }
   .share-error-emoji { font-size: 34px; margin-bottom: 14px; opacity: 0.8; }

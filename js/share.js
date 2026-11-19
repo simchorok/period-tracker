@@ -208,10 +208,14 @@
 
   /* ── 클립보드 복사 ── */
   async function copyShareLink(url) {
+    // 권한 대기 등으로 응답이 멈추는 브라우저에서도 안내가 나가도록 시간 제한을 둔다
+    const settled = (promise, ms) => Promise.race([
+      promise.then(() => true).catch(() => false),
+      new Promise(resolve => setTimeout(() => resolve(false), ms)),
+    ]);
     try {
       if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(url);
-        return true;
+        if (await settled(navigator.clipboard.writeText(url), 1500)) return true;
       }
     } catch (e) { /* 아래 fallback */ }
     try {
