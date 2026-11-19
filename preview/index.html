@@ -244,6 +244,7 @@
   var view = document.getElementById('view');
   var panel = document.getElementById('panel');
   var open = document.getElementById('btn-open');
+  var BUILD = '20261119-4';   /* 시안 파일 수정 시 올리면 탭 전환 때마다 새로 불러옵니다 */
   var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
 
   function renderPanel(key){
@@ -262,8 +263,8 @@
   function select(tab){
     tabs.forEach(function(t){ t.setAttribute('aria-selected', String(t === tab)); });
     var src = tab.dataset.src;
-    view.src = src;
-    open.href = src;
+    view.src = src + '?v=' + BUILD;
+    open.href = src + '?v=' + BUILD;
     renderPanel(tab.dataset.key);
     try { history.replaceState(null, '', '?v=' + tab.dataset.key); } catch(e){}
   }
@@ -275,17 +276,15 @@
   function callIframe(fn){
     try {
       if (view.contentWindow && typeof view.contentWindow[fn] === 'function') view.contentWindow[fn]();
-      else view.src = view.src;
-    } catch(e){ view.src = view.src; }
+      else view.src = view.src.split('?')[0] + '?v=' + BUILD + '&r=' + Date.now();
+    } catch(e){ view.src = view.src.split('?')[0] + '?v=' + BUILD + '&r=' + Date.now(); }
   }
   document.getElementById('btn-splash').addEventListener('click', function(){ callIframe('replaySplash'); });
   document.getElementById('btn-home').addEventListener('click', function(){ callIframe('showHome'); });
 
   var initial = new URLSearchParams(location.search).get('v');
-  if (initial) {
-    var t = tabs.filter(function(x){ return x.dataset.key === initial; })[0];
-    if (t) select(t);
-  }
+  var startTab = tabs.filter(function(x){ return x.dataset.key === initial; })[0] || tabs[0];
+  select(startTab);
 
   document.addEventListener('keydown', function(e){
     var i = ['1','2','3'].indexOf(e.key);
