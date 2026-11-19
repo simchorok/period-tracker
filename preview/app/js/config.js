@@ -26,6 +26,24 @@ const SHARE_IMAGE_URL = 'https://simchorok.github.io/period-tracker/og-image.png
 // 비어 있으면 navigator.share(모바일 공유 시트) → 링크 복사 순서로 동작해요.
 const KAKAO_JS_KEY = '';
 
+// ── 임시 진단(제거 예정): ?diag 로 요청 헤더 존재 여부를 본다 ──
+if (new URLSearchParams(location.search).has('diag')) {
+  const _origFetch = window.fetch.bind(window);
+  window.__reqs = [];
+  window.fetch = function (input, init) {
+    try {
+      const hs = new Headers((init && init.headers) || (input instanceof Request ? input.headers : undefined));
+      window.__reqs.push({
+        url: String(input.url || input).slice(-64),
+        hasApiKey: hs.has('apikey'), apiKeyLen: (hs.get('apikey') || '').length, apiKeyHead: (hs.get('apikey') || '').slice(0, 14),
+        authLen: (hs.get('authorization') || '').length,
+        authHead: (hs.get('authorization') || '').slice(0, 20)
+      });
+    } catch (e) {}
+    return _origFetch(input, init);
+  };
+}
+
 // ── XSS 방지 ──
 function escapeHtml(str) {
   if (!str) return '';
