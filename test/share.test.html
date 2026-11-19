@@ -34,7 +34,8 @@ function elStub() {
     appendChild(){}, setAttribute(){}, getAttribute(){return null;}, focus(){}, select(){} };
 }
 
-async function buildSandbox() {
+async function buildSandbox(options) {
+  const opts = options || {};
   const files = ['js/config.js', 'js/records.js', 'js/ui.js', 'js/share.js'];
   const parts = [];
   for (const f of files) {
@@ -43,12 +44,20 @@ async function buildSandbox() {
     parts.push(`/* ==== ${f} ==== */\n` + await res.text());
   }
   const store = new Map();
+  const calls = [];
+  const viewEl = { id: 'share-view', innerHTML: '', classList: { add(c) { calls.push('share-view:add:' + c); }, remove() {}, toggle() {}, contains() { return false; } } };
+  function elFor(id) {
+    const e = elStub();
+    e.classList = { add: c => calls.push(id + ':add:' + c), remove: c => calls.push(id + ':remove:' + c), toggle() {}, contains() { return false; } };
+    if (id === 'share-view') e.innerHTML = viewEl.innerHTML;
+    return e;
+  }
   const sandboxDoc = {
-    getElementById: () => elStub(),
+    getElementById: id => (id === 'share-view' ? viewEl : elFor(id)),
     querySelector: () => null,
     querySelectorAll: () => [],
     addEventListener(){}, createElement: () => elStub(),
-    body: { appendChild(){}, classList:{add(){},remove(){}} },
+    body: { appendChild(){}, classList: { add: c => calls.push('body:add:' + c), remove() {} } },
     head: { appendChild(){} },
   };
   const sandboxWindow = { supabase: { createClient: () => ({ auth:{onAuthStateChange(){}}, from:()=>({}) }) } };
@@ -58,10 +67,10 @@ async function buildSandbox() {
     removeItem: k => store.delete(k),
     clear: () => store.clear(),
   };
-  const sandboxLoc = { origin: 'https://simchorok.github.io', pathname: '/period-tracker/', search: '' };
+  const sandboxLoc = { origin: 'https://simchorok.github.io', pathname: '/period-tracker/', search: opts.search || '' };
 
   const factory = new Function(
-    'document', 'window', 'localStorage', 'location', 'navigator', 'userNickname', 'KAKAO_JS_KEY', 'SHARE_MODE',
+    'document', 'window', 'localStorage', 'location', 'navigator', 'userNickname', 'SHARE_MODE',
     parts.join('\n;\n') + `
     return {
       buildShareSnapshot, buildShareUrl, pickShareTags, pickCareHints, sanitizeShareTags,
@@ -73,7 +82,10 @@ async function buildSandbox() {
       },
     };`
   );
-  return factory(sandboxDoc, sandboxWindow, sandboxLocal, sandboxLoc, {}, '', '', false);
+  const api = factory(sandboxDoc, sandboxWindow, sandboxLocal, sandboxLoc, {}, '', !!opts.search);
+  api.viewEl = viewEl;
+  api.calls = calls;
+  return api;
 }
 
 (async () => {
@@ -182,8 +194,30 @@ async function buildSandbox() {
     eq('숨김 태그 필터', S.sanitizeShareTags(['성관계', '피임', '냉이 많아요', '두통', '두통']), ['두통']);
   }
 
+  /* 8 — 비로그인 상태의 공유 뷰 렌더링 (세션·로그인 없음) */
+  log('<span class="sec">[8] 비로그인 공유 뷰 렌더링</span>');
+  try {
+    const last = addDays(today, -8);
+    S.setData([{ start: last, end: addDays(last, 5) }],
+      { [today]: { mood: ['예민해요'], symptom: ['생리통', '냉이 많아요'], energy: [], etc: ['성관계'] } }, '초록');
+    const payload = S.buildShareUrl(S.buildShareSnapshot()).split('?share=')[1];
+    const R = await buildSandbox({ search: '?share=' + payload });
+    const html = R.viewEl.innerHTML || '';
+    check('세션 없이 #share-view 렌더링', html.length > 300, html.length);
+    check('닉네임 표시', html.includes('초록님의 오늘'));
+    check('주기 일차·계절 표시', html.includes('9일째') && html.includes('봄 · 여포기'));
+    check('오늘 태그 라벨', html.includes('오늘의 상태'));
+    check('케어 힌트 표시', html.includes('이렇게 챙겨주면 좋아요') && html.includes('따뜻하게'));
+    check('CTA 버튼', html.includes('나도 달의 기록 시작하기'));
+    check('민감 태그 미노출', !html.includes('성관계') && !html.includes('냉이 많아요'));
+    check('로그인 화면 감춤', R.calls.includes('login-screen:remove:show') && !R.calls.includes('login-screen:add:show'), R.calls);
+    check('share-mode 클래스', R.calls.includes('body:add:share-mode'), R.calls);
+  } catch (e) {
+    check('비로그인 렌더링 예외 없음', false, String(e && e.message || e));
+  }
+
   const errors = window.__errors;
-  log(`<span class="sec">[8] 페이지/샌드박스 오류</span>`);
+  log(`<span class="sec">[9] 페이지/샌드박스 오류</span>`);
   check('JS 오류 0건', errors.length === 0, errors);
   log(`\n결과: ${pass} 통과 / ${fail} 실패`);
   out.innerHTML = lines.join('\n');
