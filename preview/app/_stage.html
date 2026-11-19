@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>stage check · 달의 기록 preview/app</title>
+<style>
+  html,body{margin:0;height:100%;background:#050308;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  iframe{width:390px;height:844px;border:0;display:block;background:#14101B}
+</style>
+</head>
+<body>
+<!-- 검증용 임시 프레임 (390×844). 배포 검증이 끝나면 삭제합니다. -->
+<iframe id="f" src="./index.html"></iframe>
+<script>
+  const p = new URLSearchParams(location.search);
+  const f = document.getElementById('f');
+  let applied = false;
+
+  f.addEventListener('load', () => {
+    if (applied) return;           // iframe 내부 이동에는 반응하지 않음
+    applied = true;
+    const w = f.contentWindow;
+    const open = p.get('open') || '';
+    const tab = p.get('tab') || 'home';
+
+    try {
+      // 스테이징 검증: DB 읽기/쓰기를 건너뛰고 이 브라우저에 캐시된 기록으로 화면만 그린다
+      w.loadRecordsFromDB = async () => [];
+      w.loadLogsFromDB = async () => ({});
+      w.showApp({
+        id: '00000000-0000-4000-8000-000000000000',
+        email: 'simhy1005@nate.com',
+        user_metadata: {}
+      });
+    } catch (e) {
+      document.title = 'ERR ' + e.message;
+    }
+
+    setTimeout(() => {
+      const d = w.document;
+      if (open === 'splash') {
+        const sp = d.getElementById('splash');
+        sp.style.display = ''; sp.classList.remove('gone');
+        return;
+      }
+      if (tab !== 'home') w.switchTab(tab);
+      if (open === 'log') w.openLogModal();
+      if (open === 'period') w.openModal();
+      if (open === 'sheet') w.openRecordSheet();
+      if (open === 'records') w.openRecordDetail('period');
+      if (open === 'report') w.openReport();
+      if (open === 'reportlist') w.openReportList();
+      if (open === 'question') d.getElementById('question-modal').classList.add('open');
+      // 스플래시는 치운 상태로 시작
+      const sp = d.getElementById('splash');
+      if (sp) { sp.classList.add('gone'); sp.style.display = 'none'; }
+    }, 600);
+  });
+</script>
+</body>
+</html>
