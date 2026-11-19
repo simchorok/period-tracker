@@ -322,7 +322,7 @@ textarea{resize:none}
   background:none; border:1px solid rgba(255,255,255,.16); border-radius:999px;
   padding:3px 9px; font-size:10.5px; color:var(--ink-45); cursor:pointer; flex:0 0 auto;
 }
-.profile-email{margin-top:6px; font-size:11px; line-height:1.7; color:var(--ink-28); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.profile-email{margin-top:6px; font-size:11.5px; line-height:1.7; color:rgba(244,239,232,.38); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 
 .nickname-input-row{display:none; gap:8px; margin-top:12px}
 .nickname-input-row.show{display:flex}
