@@ -158,6 +158,7 @@ textarea{resize:none}
 .phase-note{
   margin:6px auto 0; max-width:330px; text-align:center; padding:0 18px;
   font-family:var(--serif-2); font-size:16px; line-height:1.8; color:rgba(244,239,232,.82); letter-spacing:.01em;
+  word-break:keep-all; overflow-wrap:break-word;
 }
 
 .foot{flex:0 0 auto; padding:0 22px 26px; margin-top:auto}
@@ -281,16 +282,16 @@ textarea{resize:none}
 
 /* ═══════════════ 그래프 ═══════════════ */
 .graph-section{padding:0 20px}
-.section-title{font-size:14px; letter-spacing:.12em; color:rgba(244,239,232,.64); margin:6px 2px 12px;}
+.section-title{font-size:15px; letter-spacing:.1em; color:rgba(244,239,232,.66); margin:6px 2px 12px;}
 .graph-card{
   background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.07);
   border-radius:18px; padding:18px 16px 14px; margin-bottom:14px;
 }
 .graph-card-header{display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:6px}
-.graph-card-title{font-size:16px; color:rgba(244,239,232,.9); letter-spacing:.02em}
+.graph-card-title{font-size:17px; color:rgba(244,239,232,.9); letter-spacing:.02em}
 .graph-card-avg-label{font-size:13px; color:rgba(244,239,232,.56); margin-top:4px; letter-spacing:.06em}
 .graph-card-avg{font-family:var(--latin); font-size:30px; line-height:1.1; color:#FBF6EE; letter-spacing:.02em}
-.unit{font-family:var(--sans); font-size:13px; font-weight:400; letter-spacing:.04em; margin-left:3px; color:rgba(244,239,232,.66); vertical-align:baseline}
+.unit{font-family:var(--sans); font-size:15px; font-weight:400; letter-spacing:.02em; margin-left:4px; color:rgba(244,239,232,.72)}
 .chart-wrap{width:100%; overflow:hidden}
 .chart-wrap svg{display:block; width:100%; height:88px}
 .stat-row{display:flex; gap:8px; margin-top:12px}
@@ -449,7 +450,7 @@ textarea{resize:none}
   transition:background .18s ease, color .18s ease, border-color .18s ease;
 }
 .log-tag.selected{background:rgba(169,227,198,.16); border-color:rgba(169,227,198,.55); color:#DFF7EC}
-.star-row{display:flex; align-items:center; gap:8px}
+.star-row{display:flex; align-items:center; flex-wrap:wrap; gap:8px; row-gap:8px}
 .star-btn{
   width:38px; height:38px; border-radius:50%; padding:0; cursor:pointer;
   background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09);
@@ -458,7 +459,7 @@ textarea{resize:none}
 .star-btn svg{width:19px; height:19px; fill:transparent; stroke:rgba(217,160,139,.45); stroke-width:1.3}
 .star-btn.active{background:rgba(217,160,139,.14); border-color:rgba(217,160,139,.5)}
 .star-btn.active svg{fill:rgba(217,160,139,.85); stroke:rgba(217,160,139,.85)}
-.star-hint{margin-left:6px; font-size:13px; color:rgba(244,239,232,.56)}
+.star-hint{flex:0 0 100%; margin-left:2px; margin-top:2px; font-size:13px; color:rgba(244,239,232,.56)}
 .sleep-row{display:flex; align-items:flex-end; justify-content:space-between; gap:16px}
 .sleep-label{font-size:13px; color:rgba(244,239,232,.6); margin-bottom:8px; letter-spacing:.03em}
 .sleep-hours-input{
@@ -492,7 +493,7 @@ textarea{resize:none}
 .q-kicker{font-size:13px; letter-spacing:.2em; color:rgba(169,227,198,.85); text-transform:uppercase}
 .question-text{
   margin-top:16px; font-family:var(--serif-2); font-size:19px; line-height:1.8;
-  color:rgba(250,246,240,.96); letter-spacing:.01em;
+  color:rgba(250,246,240,.96); letter-spacing:.01em; word-break:keep-all; overflow-wrap:break-word;
 }
 .question-answer-input{
   width:100%; min-height:112px; margin-top:20px; border-radius:14px; padding:13px 14px;
@@ -526,12 +527,12 @@ textarea{resize:none}
 @keyframes rd{0%,100%{opacity:.25} 50%{opacity:1}}
 .report-ai-label{display:block; font-size:13px; letter-spacing:.1em; color:rgba(169,227,198,.85); margin-bottom:7px}
 .ai-block + .ai-block{margin-top:18px; padding-top:16px; border-top:1px solid rgba(255,255,255,.07)}
-.report-ai-text{font-size:15.5px; line-height:1.9; color:rgba(244,239,232,.86); letter-spacing:.01em; white-space:pre-wrap}
-.report-ai-encouragement{margin-top:16px; padding-top:14px; border-top:1px solid rgba(255,255,255,.07); font-family:var(--serif-2); font-size:15.5px; line-height:1.9; color:rgba(242,206,140,.9)}
+.report-ai-text{font-size:15.5px; line-height:1.9; color:rgba(244,239,232,.86); letter-spacing:.01em; white-space:pre-wrap; word-break:keep-all; overflow-wrap:break-word}
+.report-ai-encouragement{margin-top:16px; padding-top:14px; border-top:1px solid rgba(255,255,255,.07); font-family:var(--serif-2); font-size:15.5px; line-height:1.9; color:rgba(242,206,140,.9); word-break:keep-all; overflow-wrap:break-word}
 .report-ai-error{padding:8px 0 4px; font-size:14.5px; line-height:1.9; color:rgba(208,138,138,.9)}
 .report-ai-retry{margin-top:10px; background:none; border:1px solid rgba(208,138,138,.4); border-radius:999px; padding:7px 15px; font-size:13.5px; color:rgba(208,138,138,.95); cursor:pointer}
 .report-section{margin-top:24px}
-.report-section-title{font-size:14px; letter-spacing:.14em; color:rgba(244,239,232,.62); margin-bottom:12px; text-transform:uppercase}
+.report-section-title{font-size:15px; letter-spacing:.12em; color:rgba(244,239,232,.64); margin-bottom:12px; text-transform:uppercase}
 .report-summary-grid{display:grid; grid-template-columns:1fr 1fr; gap:9px}
 .report-summary-item{padding:14px 14px; border-radius:15px; background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.06)}
 .report-summary-val{font-family:var(--latin); font-size:24px; line-height:1.15; color:#FBF6EE}
@@ -539,7 +540,7 @@ textarea{resize:none}
 .report-summary-change{margin-top:6px; font-size:13px; letter-spacing:.02em}
 .report-summary-change.up{color:rgba(217,160,139,.9)}
 .report-summary-change.down{color:rgba(169,227,198,.85)}
-.report-summary-change.same{color:rgba(244,239,232,.24)}
+.report-summary-change.same{color:rgba(244,239,232,.5)}
 .report-card{padding:16px; border-radius:16px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06)}
 .report-phase-row{display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.05)}
 .report-phase-row:last-child{border-bottom:0}
@@ -553,7 +554,7 @@ textarea{resize:none}
 .report-forecast-item{display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.05)}
 .report-forecast-item:last-child{border-bottom:0}
 .report-forecast-badge{flex:0 0 auto; font-size:13px; letter-spacing:.04em; padding:5px 9px; border-radius:999px; border:1px solid rgba(255,255,255,.10); color:rgba(244,239,232,.72)}
-.report-forecast-text{font-size:15px; line-height:1.8; color:rgba(244,239,232,.82)}
+.report-forecast-text{font-size:15px; line-height:1.8; color:rgba(244,239,232,.82); word-break:keep-all; overflow-wrap:break-word}
 .report-forecast-text strong{font-weight:500; color:rgba(250,246,240,.9)}
 .report-feedback-section{margin-top:26px; padding:20px 16px 8px; border-radius:18px; background:rgba(255,255,255,.028); border:1px solid rgba(255,255,255,.06)}
 .report-feedback-title{font-family:var(--serif); font-size:17.5px; letter-spacing:.05em; color:rgba(250,246,240,.94); text-align:center}
