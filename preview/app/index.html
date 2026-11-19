@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#14101B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>달의 기록</title>
+<meta name="description" content="달마다 달라지는 몸과 마음의 리듬을 기록하는 앱, 달의 기록">
+<link rel="apple-touch-icon" href="../../icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Noto+Serif+KR:wght@400;600&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="styles/main.css">
+<script>
+  /* 공유 링크(?share=)로 들어오면 기존 라이브 공유 뷰로 넘긴다 — 본체의 공유 뷰와 동일한 화면을 유지하기 위함 */
+  (function () {
+    try {
+      var raw = new URLSearchParams(location.search).get('share');
+      if (raw) location.replace('https://simchorok.github.io/period-tracker/?share=' + raw);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<div class="glowbg" aria-hidden="true"></div>
+
+<div class="app-shell" id="app-shell">
+
+  <!-- ───────── 스플래시 ───────── -->
+  <div class="splash" id="splash">
+    <button class="skip" id="skip" aria-label="건너뛰기">SKIP</button>
+    <div class="splash-orbit">
+      <svg class="orbit-ring" viewBox="0 0 240 240" aria-hidden="true">
+        <circle class="ring" cx="120" cy="120" r="104" fill="none" stroke="rgba(255,255,255,.20)" stroke-width="1"/>
+        <circle cx="120" cy="120" r="120" fill="none" stroke="rgba(169,227,198,.20)" stroke-width="1" stroke-dasharray="1 7"/>
+        <circle cx="120" cy="120" r="88" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+        <circle cx="120" cy="16" r="3" fill="#A9E3C6"/>
+      </svg>
+      <svg class="splash-moon" viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <radialGradient id="spMoon" cx="36%" cy="30%" r="76%">
+            <stop offset="0%" stop-color="#FFFDF6"/>
+            <stop offset="55%" stop-color="#F6E6C6"/>
+            <stop offset="100%" stop-color="#C9AE83"/>
+          </radialGradient>
+        </defs>
+        <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,.14)" stroke-width=".7"/>
+        <path d="M50,8 A42,42 0 0 1 50,92 A18.5,42 0 0 1 50,8 Z" fill="url(#spMoon)"/>
+        <circle cx="63" cy="40" r="5" fill="rgba(120,96,60,.13)"/>
+        <circle cx="66" cy="64" r="3.2" fill="rgba(120,96,60,.11)"/>
+      </svg>
+    </div>
+    <div class="splash-copy">
+      <div class="splash-logo">달의 기록</div>
+      <div class="splash-sub">Moon cycle tracker</div>
+    </div>
+    <div class="splash-line">달마다 달라지는 나의 리듬</div>
+    <div class="splash-foot">Simchorok · 2026</div>
+  </div>
+
+  <!-- ───────── 로그인 ───────── -->
+  <div class="login" id="login-screen">
+    <div class="login-inner">
+      <svg class="login-moon" viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <radialGradient id="lgMoon" cx="36%" cy="30%" r="76%">
+            <stop offset="0%" stop-color="#FFFDF6"/>
+            <stop offset="55%" stop-color="#F6E6C6"/>
+            <stop offset="100%" stop-color="#C9AE83"/>
+          </radialGradient>
+        </defs>
+        <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,.10)" stroke-width=".6"/>
+        <path d="M50,6 A44,44 0 0 1 50,94 A19.4,44 0 0 1 50,6 Z" fill="url(#lgMoon)"/>
+      </svg>
+      <div class="login-title">달의 기록</div>
+      <div class="login-sub">나의 생리주기를 기록하고<br>몸과 감정의 패턴을 이해해요</div>
+      <button class="btn-kakao" onclick="signInWithKakao()">
+        <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path fill="#3C1E1E" d="M12 3C6.477 3 2 6.477 2 10.5c0 2.548 1.516 4.787 3.81 6.132l-.972 3.604a.3.3 0 0 0 .44.337L9.67 18.2A11.3 11.3 0 0 0 12 18c5.523 0 10-3.477 10-7.5S17.523 3 12 3z"/>
+        </svg>
+        카카오로 시작하기
+      </button>
+      <div class="login-privacy">로그인하면 데이터가 안전하게 저장돼요.<br>개인정보는 본인만 볼 수 있어요.</div>
+    </div>
+  </div>
+
+  <!-- ───────── 앱 ───────── -->
+  <div class="app" id="app-main">
+
+    <div class="screens" id="screens">
+
+      <!-- 홈 -->
+      <section class="screen active" id="tab-home" data-tab="home">
+        <header class="mark">
+          <div class="word">달의 기록</div>
+        </header>
+
+        <div class="stage">
+          <div class="orb" id="orb">
+            <svg class="ring-svg" id="orbit-svg" viewBox="0 0 360 360" role="img" aria-label="주기 궤도">
+              <defs>
+                <linearGradient id="progGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#D9C9A6"/>
+                  <stop offset="55%" stop-color="#BFEBD6"/>
+                  <stop offset="100%" stop-color="#A9E3C6"/>
+                </linearGradient>
+                <filter id="dotGlow" x="-200%" y="-200%" width="500%" height="500%">
+                  <feGaussianBlur stdDeviation="4" result="b"/>
+                  <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <radialGradient id="moonLit" cx="36%" cy="30%" r="76%">
+                  <stop offset="0%" stop-color="#FFFDF6"/>
+                  <stop offset="52%" stop-color="#F7E8C9"/>
+                  <stop offset="100%" stop-color="#CBB086"/>
+                </radialGradient>
+                <radialGradient id="moonShadeGrad" cx="50%" cy="50%" r="60%">
+                  <stop offset="0%" stop-color="#161020"/>
+                  <stop offset="100%" stop-color="#0C0812"/>
+                </radialGradient>
+                <clipPath id="moonClip"><circle cx="50" cy="50" r="42"/></clipPath>
+              </defs>
+              <circle cx="180" cy="180" r="177" fill="none" stroke="rgba(255,255,255,.035)" stroke-width="1"/>
+              <circle class="dash" cx="180" cy="180" r="168" fill="none" stroke="rgba(169,227,198,.16)" stroke-width="1" stroke-dasharray="1 9" stroke-linecap="round"/>
+              <circle cx="180" cy="180" r="158" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+              <g id="orbit-ticks"></g>
+              <g id="orbit-arcs"></g>
+              <g id="orbit-progress"></g>
+            </svg>
+
+            <div class="orb-center">
+              <svg class="orb-moon" id="orb-moon" viewBox="0 0 100 100" aria-hidden="true">
+                <circle cx="50" cy="50" r="42" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.10)" stroke-width=".7"/>
+                <g clip-path="url(#moonClip)">
+                  <circle cx="50" cy="50" r="42" fill="url(#moonLit)"/>
+                  <circle cx="63" cy="40" r="5" fill="rgba(105,84,52,.12)"/>
+                  <circle cx="66" cy="64" r="3.2" fill="rgba(105,84,52,.10)"/>
+                  <circle cx="40" cy="72" r="2.4" fill="rgba(105,84,52,.07)"/>
+                </g>
+                <g clip-path="url(#moonClip)" id="moon-shade"></g>
+              </svg>
+              <div class="orb-day"><span class="n" id="orb-day">—</span><span class="u" id="orb-day-unit">일째</span></div>
+              <div class="orb-season" id="orb-season">달의 기록</div>
+            </div>
+          </div>
+        </div>
+
+        <p class="phase-note" id="phase-note">생리 기록을 남기면 달이 차오르기 시작해요</p>
+
+        <footer class="foot">
+          <div class="hint" id="hint-pill"><i id="hint-dot"></i><span id="hint-text">기록을 시작해보세요</span></div>
+
+          <div class="quiet-list">
+            <button class="quiet-row" id="question-banner" onclick="openQuestionModal()">
+              <span class="q-dot" id="question-dot"></span>
+              <span class="q-label">오늘의 질문</span>
+              <span class="q-sub" id="question-sub">달이 하루를 궁금해해요</span>
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+            </button>
+            <button class="quiet-row" id="report-banner" onclick="openReport()">
+              <span class="q-dot gold"></span>
+              <span class="q-label">사이클 리포트</span>
+              <span class="q-sub" id="report-banner-title">지난 사이클 리포트가 도착했어요</span>
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+
+          <div class="actions">
+            <button class="btn solid" onclick="openRecordSheet()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#0F211B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 20h4.2L19 9.2a2.2 2.2 0 0 0-3.1-3.1L5 16.9V20Z"/>
+              </svg>
+              기록하기
+            </button>
+            <button class="btn ghost" onclick="shareTodayStatus()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/>
+                <path d="M8.3 10.7 15.7 6.3M8.3 13.3l7.4 4.4"/>
+              </svg>
+              공유
+            </button>
+          </div>
+        </footer>
+      </section>
+
+      <!-- 달력 -->
+      <section class="screen" id="tab-calendar" data-tab="calendar">
+        <header class="screen-head">
+          <div class="head-title">달력</div>
+          <div class="head-sub" id="calendar-sub">기록과 예측을 한눈에</div>
+        </header>
+        <div class="legend">
+          <div class="legend-item"><span class="lg-dot period"></span>생리</div>
+          <div class="legend-item"><span class="lg-dot predicted"></span>예상 생리</div>
+          <div class="legend-item"><span class="lg-dot ovulation"></span>배란일</div>
+          <div class="legend-item"><span class="lg-dot fertile"></span>가임기</div>
+        </div>
+        <div class="calendar-scroll-wrap" id="calendar-scroll-wrap"></div>
+      </section>
+
+      <!-- 그래프 -->
+      <section class="screen" id="tab-graph" data-tab="graph">
+        <header class="screen-head">
+          <div class="head-title">주기</div>
+          <div class="head-sub">쌓인 기록이 만드는 나의 리듬</div>
+        </header>
+
+        <div class="quiet-list flush">
+          <button class="quiet-row card" onclick="openReport()">
+            <span class="q-dot gold"></span>
+            <span class="q-label">이번 사이클 리포트</span>
+            <span class="q-sub">AI 분석 보기</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+          </button>
+          <button class="quiet-row card" onclick="openReportList()">
+            <span class="q-dot"></span>
+            <span class="q-label">지난 리포트</span>
+            <span class="q-sub">모아보기</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <div class="graph-section">
+          <div class="section-title">주기 히스토리</div>
+          <div class="graph-card">
+            <div class="graph-card-header">
+              <div>
+                <div class="graph-card-title">생리 주기</div>
+                <div class="graph-card-avg-label">평균</div>
+              </div>
+              <div class="graph-card-avg" id="avg-cycle-num">—</div>
+            </div>
+            <div class="chart-wrap"><svg id="cycle-chart" height="80"></svg></div>
+            <div class="stat-row" id="cycle-stat-row"></div>
+          </div>
+
+          <div class="graph-card">
+            <div class="graph-card-header">
+              <div>
+                <div class="graph-card-title">생리 기간</div>
+                <div class="graph-card-avg-label">평균</div>
+              </div>
+              <div class="graph-card-avg" id="avg-dur-num">—</div>
+            </div>
+            <div class="chart-wrap"><svg id="dur-chart" height="80"></svg></div>
+            <div class="stat-row" id="dur-stat-row"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 마이 -->
+      <section class="screen" id="tab-mypage" data-tab="mypage">
+        <header class="screen-head">
+          <div class="head-title">마이</div>
+        </header>
+
+        <div class="mypage">
+          <div class="profile-card">
+            <div class="profile-avatar-lg" id="mypage-avatar">·</div>
+            <div class="profile-body">
+              <div class="profile-name-row">
+                <div class="profile-nickname" id="mypage-nickname">닉네임 설정</div>
+                <button class="btn-edit-nickname" onclick="toggleNicknameEdit()">수정</button>
+              </div>
+              <div class="profile-email" id="mypage-email"></div>
+            </div>
+          </div>
+
+          <div class="nickname-input-row" id="nickname-input-row">
+            <input type="text" class="nickname-input" id="nickname-input" placeholder="닉네임 입력" maxlength="10">
+            <button class="btn-save-nickname" onclick="saveNickname()">저장</button>
+          </div>
+
+          <div class="mypage-stats">
+            <div class="mypage-stat-card">
+              <div class="mypage-stat-val" id="mypage-avg-cycle">—</div>
+              <div class="mypage-stat-label">평균 주기</div>
+            </div>
+            <div class="mypage-stat-card">
+              <div class="mypage-stat-val" id="mypage-avg-dur">—</div>
+              <div class="mypage-stat-label">평균 생리 기간</div>
+            </div>
+            <div class="mypage-stat-card">
+              <div class="mypage-stat-val" id="mypage-total-records">—</div>
+              <div class="mypage-stat-label">생리 기록</div>
+              <button class="stat-link" onclick="openRecordDetail('period')">전체보기</button>
+            </div>
+            <div class="mypage-stat-card">
+              <div class="mypage-stat-val" id="mypage-total-logs">—</div>
+              <div class="mypage-stat-label">상태 기록</div>
+              <button class="stat-link" onclick="openRecordDetail('log')">전체보기</button>
+            </div>
+          </div>
+
+          <div class="quiet-list flush">
+            <button class="quiet-row card" onclick="openReportList()">
+              <span class="q-dot gold"></span>
+              <span class="q-label">월간 사이클 리포트</span>
+              <span class="q-sub">지난 리포트</span>
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+
+          <div class="mypage-foot">
+            <button class="btn-line" onclick="signOut()">로그아웃</button>
+            <button class="btn-line danger" onclick="deleteAccount()">탈퇴하기</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <nav class="tabbar" aria-label="주요 메뉴">
+      <button class="tab active" id="nav-home" onclick="switchTab('home')" aria-label="홈" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <path d="M20.2 14.6A8.6 8.6 0 0 1 9.4 3.8a8.6 8.6 0 1 0 10.8 10.8Z"/>
+        </svg>
+      </button>
+      <button class="tab" id="nav-calendar" onclick="switchTab('calendar')" aria-label="달력">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <rect x="3.4" y="5.2" width="17.2" height="15.4" rx="2.6"/>
+          <path d="M3.4 9.8h17.2M8 3.4v3.4M16 3.4v3.4"/>
+        </svg>
+      </button>
+      <button class="tab" id="nav-graph" onclick="switchTab('graph')" aria-label="그래프">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3.6 16.4 8 10.9l3.6 3.1 4-6.2 4.8 6.1"/>
+          <path d="M3.6 20.2h16.8"/>
+        </svg>
+      </button>
+      <button class="tab" id="nav-mypage" onclick="switchTab('mypage')" aria-label="마이">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="8.4" r="3.6"/>
+          <path d="M5.4 20c.6-3.6 3.3-5.6 6.6-5.6s6 2 6.6 5.6"/>
+        </svg>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ───────── 기록 선택 시트 ───────── -->
+  <div class="sheet-backdrop" id="record-sheet" onclick="closeRecordSheetOutside(event)">
+    <div class="sheet">
+      <div class="sheet-grip"></div>
+      <div class="sheet-title">오늘 남길 기록</div>
+      <div class="sheet-sub">가볍게 한 가지만 남겨도 달이 이어서 읽어요</div>
+      <div class="sheet-list">
+        <button class="sheet-row" onclick="closeRecordSheet();openLogModal()">
+          <span class="sheet-row-mark"></span>
+          <span class="sheet-row-body">
+            <span class="sheet-row-title">오늘의 상태</span>
+            <span class="sheet-row-sub">기분 · 몸 · 수면 · 메모</span>
+          </span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+        </button>
+        <button class="sheet-row" onclick="closeRecordSheet();openModal()">
+          <span class="sheet-row-mark coral"></span>
+          <span class="sheet-row-body">
+            <span class="sheet-row-title">생리 기간</span>
+            <span class="sheet-row-sub">시작일과 종료일</span>
+          </span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+      <button class="sheet-cancel" onclick="closeRecordSheet()">닫기</button>
+    </div>
+  </div>
+
+  <!-- ───────── 생리 기간 기록 ───────── -->
+  <div class="modal-backdrop" id="modal" onclick="closeModalOutside(event)">
+    <div class="modal">
+      <div class="modal-title" id="modal-title">생리 기간 기록</div>
+      <div class="field">
+        <label for="date-start">시작일</label>
+        <input type="date" id="date-start">
+      </div>
+      <div class="field">
+        <label for="date-end">종료일 <span class="field-hint">기본 6일, 수정 가능</span></label>
+        <input type="date" id="date-end">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">취소</button>
+        <button class="btn-save" id="modal-save-btn" onclick="saveRecord()">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────── 상태 기록 ───────── -->
+  <div class="log-backdrop" id="log-modal" onclick="closeLogModalOutside(event)">
+    <div class="log-modal">
+      <div class="log-head">
+        <div>
+          <div class="modal-title" id="log-modal-title">오늘의 상태</div>
+          <div class="log-modal-date" id="log-modal-date"></div>
+        </div>
+        <button class="icon-close" onclick="closeLogModal()" aria-label="닫기">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+
+      <div class="log-scroll">
+        <div class="log-section">
+          <div class="log-section-title">기분</div>
+          <div class="log-tags" id="log-mood">
+            <span class="log-tag" data-val="행복해요">행복해요</span>
+            <span class="log-tag" data-val="평온해요">평온해요</span>
+            <span class="log-tag" data-val="자신감 넘쳐요">자신감 넘쳐요</span>
+            <span class="log-tag" data-val="집중이 잘 돼요">집중이 잘 돼요</span>
+            <span class="log-tag" data-val="예민해요">예민해요</span>
+            <span class="log-tag" data-val="감정이 오락가락해요">감정이 오락가락해요</span>
+            <span class="log-tag" data-val="불안해요">불안해요</span>
+            <span class="log-tag" data-val="무기력해요">무기력해요</span>
+            <span class="log-tag" data-val="슬퍼요">슬퍼요</span>
+            <span class="log-tag" data-val="갑자기 눈물이 나요">갑자기 눈물이 나요</span>
+            <span class="log-tag" data-val="우울해요">우울해요</span>
+          </div>
+        </div>
+
+        <div class="log-section">
+          <div class="log-section-title">생리 강도</div>
+          <div class="star-row" id="period-intensity">
+            <button class="star-btn" data-val="1" onclick="selectStar(1)" aria-label="1">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c2.6 3.6 5.2 6.4 5.2 9.6a5.2 5.2 0 1 1-10.4 0c0-3.2 2.6-6 5.2-9.6Z"/></svg>
+            </button>
+            <button class="star-btn" data-val="2" onclick="selectStar(2)" aria-label="2">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c2.6 3.6 5.2 6.4 5.2 9.6a5.2 5.2 0 1 1-10.4 0c0-3.2 2.6-6 5.2-9.6Z"/></svg>
+            </button>
+            <button class="star-btn" data-val="3" onclick="selectStar(3)" aria-label="3">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c2.6 3.6 5.2 6.4 5.2 9.6a5.2 5.2 0 1 1-10.4 0c0-3.2 2.6-6 5.2-9.6Z"/></svg>
+            </button>
+            <button class="star-btn" data-val="4" onclick="selectStar(4)" aria-label="4">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c2.6 3.6 5.2 6.4 5.2 9.6a5.2 5.2 0 1 1-10.4 0c0-3.2 2.6-6 5.2-9.6Z"/></svg>
+            </button>
+            <button class="star-btn" data-val="5" onclick="selectStar(5)" aria-label="5">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c2.6 3.6 5.2 6.4 5.2 9.6a5.2 5.2 0 1 1-10.4 0c0-3.2 2.6-6 5.2-9.6Z"/></svg>
+            </button>
+            <span class="star-hint">해당 없으면 비워두세요</span>
+          </div>
+        </div>
+
+        <div class="log-section">
+          <div class="log-section-title">신체 불편함</div>
+          <div class="log-tags" id="log-symptom">
+            <span class="log-tag" data-val="생리통">생리통</span>
+            <span class="log-tag" data-val="복통">복통</span>
+            <span class="log-tag" data-val="두통">두통</span>
+            <span class="log-tag" data-val="소화가 안돼요">소화가 안돼요</span>
+            <span class="log-tag" data-val="허리통증">허리통증</span>
+            <span class="log-tag" data-val="유방통">유방통</span>
+            <span class="log-tag" data-val="두드러기/여드름">두드러기/여드름</span>
+            <span class="log-tag" data-val="메스꺼움">메스꺼움</span>
+            <span class="log-tag" data-val="기력이 없어요">기력이 없어요</span>
+            <span class="log-tag" data-val="온 몸이 쑤셔요">온 몸이 쑤셔요</span>
+            <span class="log-tag" data-val="식욕이 늘었어요">식욕이 늘었어요</span>
+            <span class="log-tag" data-val="입맛이 없어요">입맛이 없어요</span>
+            <span class="log-tag" data-val="냉이 많아요">냉이 많아요</span>
+            <span class="log-tag" data-val="어지러워요">어지러워요</span>
+          </div>
+        </div>
+
+        <div class="log-section">
+          <div class="log-section-title">수면</div>
+          <div class="sleep-row">
+            <div>
+              <div class="sleep-label">수면의 질</div>
+              <div class="log-tags" id="log-sleep-quality">
+                <span class="log-tag" data-val="푹 잤어요">푹 잤어요</span>
+                <span class="log-tag" data-val="피곤해요">피곤해요</span>
+              </div>
+            </div>
+            <div>
+              <div class="sleep-label">수면 시간</div>
+              <input type="number" id="sleep-hours" class="sleep-hours-input" min="0" max="24" step="0.5" placeholder="예: 7.5">
+            </div>
+          </div>
+        </div>
+
+        <div class="log-section">
+          <div class="log-section-title">에너지</div>
+          <div class="log-tags" id="log-energy">
+            <span class="log-tag" data-val="활력 넘쳐요">활력 넘쳐요</span>
+            <span class="log-tag" data-val="보통이에요">보통이에요</span>
+            <span class="log-tag" data-val="좀 처져요">좀 처져요</span>
+            <span class="log-tag" data-val="완전 방전">완전 방전</span>
+          </div>
+        </div>
+
+        <div class="log-section">
+          <div class="log-section-title">기타</div>
+          <div class="log-tags" id="log-etc">
+            <span class="log-tag" data-val="성관계">성관계</span>
+            <span class="log-tag" data-val="피임">피임</span>
+            <span class="log-tag" data-val="술 마심">술 마심</span>
+            <span class="log-tag" data-val="운동함">운동함</span>
+          </div>
+        </div>
+
+        <div class="log-section">
+          <div class="log-section-title">메모 <span class="log-opt">선택</span></div>
+          <textarea id="log-memo" class="log-memo-input" placeholder="오늘 하루를 자유롭게 적어보세요. 다음 리포트 분석에 반영돼요." maxlength="500"></textarea>
+          <div class="log-memo-count"><span id="log-memo-count">0</span>/500</div>
+        </div>
+      </div>
+
+      <div class="log-modal-actions">
+        <button class="btn-cancel" onclick="closeLogModal()">취소</button>
+        <button class="btn-save" onclick="saveLog()">기록 완성하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────── 오늘의 질문 ───────── -->
+  <div class="question-backdrop" id="question-modal">
+    <div class="question-modal">
+      <button class="icon-close q-close" onclick="closeQuestionModal()" aria-label="닫기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <div id="question-loading">
+        <svg class="q-moon" viewBox="0 0 100 100" aria-hidden="true">
+          <defs>
+            <radialGradient id="qMoon" cx="36%" cy="30%" r="76%">
+              <stop offset="0%" stop-color="#FFFDF6"/>
+              <stop offset="55%" stop-color="#F6E6C6"/>
+              <stop offset="100%" stop-color="#C9AE83"/>
+            </radialGradient>
+          </defs>
+          <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,.12)" stroke-width=".7"/>
+          <path d="M50,10 A40,40 0 0 1 50,90 A17.6,40 0 0 1 50,10 Z" fill="url(#qMoon)"/>
+        </svg>
+        <div class="q-loading-text">잠시, 오늘의 감정을 살펴보고 있어요</div>
+      </div>
+      <div id="question-content" style="display:none;">
+        <div class="q-kicker">오늘의 질문</div>
+        <div class="question-text" id="question-text"></div>
+        <textarea class="question-answer-input" id="question-answer" placeholder="짧아도 괜찮아요. 생각나는 대로 적어주세요." maxlength="500"></textarea>
+        <div class="question-answer-hint">여기 적은 내용이 다음 리포트 분석에 반영돼요.</div>
+        <button class="btn-save q-save" id="question-save-btn" onclick="saveQuestionAnswer()">저장할게요</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────── 월간 사이클 리포트 ───────── -->
+  <div class="report-backdrop" id="report-backdrop" onclick="closeReportOutside(event)">
+    <div class="report-sheet" id="report-sheet">
+      <div class="report-header">
+        <div>
+          <div class="report-header-label">MONTHLY CYCLE REPORT</div>
+          <div class="report-header-title" id="report-title">사이클 리포트</div>
+          <div class="report-header-sub" id="report-sub"></div>
+        </div>
+        <button class="icon-close" onclick="closeReport()" aria-label="닫기">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+
+      <div class="report-ai-section">
+        <div class="report-ai-badge">AI 분석</div>
+        <div id="report-ai-content">
+          <div class="report-ai-loading">
+            <span class="rdot"></span><span class="rdot"></span><span class="rdot"></span>
+            <span>AI가 이번 사이클을 분석 중이에요, 잠시만요</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="report-section">
+        <div class="report-section-title">이번 사이클 요약</div>
+        <div class="report-summary-grid" id="report-summary"></div>
+      </div>
+
+      <div class="report-section">
+        <div class="report-section-title">사이클 단계별 패턴</div>
+        <div class="report-card" id="report-phases"></div>
+      </div>
+
+      <div class="report-section">
+        <div class="report-section-title">에너지 흐름</div>
+        <div class="report-card">
+          <svg id="report-energy-chart" class="report-energy-chart" height="80"></svg>
+        </div>
+      </div>
+
+      <div class="report-section">
+        <div class="report-section-title">다음 사이클 예고</div>
+        <div class="report-card" id="report-forecast"></div>
+      </div>
+
+      <div class="report-feedback-section" id="report-feedback-section">
+        <div class="report-feedback-title">이 리포트가 도움이 됐나요?</div>
+        <div class="report-feedback-sub">별점을 남기면 리포트가 저장돼요</div>
+        <div class="report-stars" id="report-stars">
+          <button class="report-star-btn" data-val="1" onclick="selectReportStar(1)" aria-label="1점">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.6 2.6 5.4 5.9.8-4.3 4.1 1.1 5.8L12 16.9 6.7 19.7l1.1-5.8L3.5 9.8l5.9-.8Z"/></svg>
+          </button>
+          <button class="report-star-btn" data-val="2" onclick="selectReportStar(2)" aria-label="2점">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.6 2.6 5.4 5.9.8-4.3 4.1 1.1 5.8L12 16.9 6.7 19.7l1.1-5.8L3.5 9.8l5.9-.8Z"/></svg>
+          </button>
+          <button class="report-star-btn" data-val="3" onclick="selectReportStar(3)" aria-label="3점">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.6 2.6 5.4 5.9.8-4.3 4.1 1.1 5.8L12 16.9 6.7 19.7l1.1-5.8L3.5 9.8l5.9-.8Z"/></svg>
+          </button>
+          <button class="report-star-btn" data-val="4" onclick="selectReportStar(4)" aria-label="4점">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.6 2.6 5.4 5.9.8-4.3 4.1 1.1 5.8L12 16.9 6.7 19.7l1.1-5.8L3.5 9.8l5.9-.8Z"/></svg>
+          </button>
+          <button class="report-star-btn" data-val="5" onclick="selectReportStar(5)" aria-label="5점">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.6 2.6 5.4 5.9.8-4.3 4.1 1.1 5.8L12 16.9 6.7 19.7l1.1-5.8L3.5 9.8l5.9-.8Z"/></svg>
+          </button>
+        </div>
+        <textarea class="report-feedback-textarea" id="report-feedback-text"
+          placeholder="이번 리포트에 대한 솔직한 의견을 남겨주세요 (선택)"
+          maxlength="500" oninput="onFeedbackInput()"></textarea>
+        <div class="report-feedback-count"><span id="feedback-char-count">0</span>/500자</div>
+        <div class="report-feedback-guide" id="feedback-guide">별점을 선택하면 리포트가 저장돼요</div>
+        <button class="report-save-btn" id="report-save-btn" onclick="saveReportFeedback()" disabled>리포트 완성하기</button>
+        <div class="report-saved-badge" id="report-saved-badge">저장됐어요. 소중한 피드백 고마워요</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────── 지난 리포트 목록 ───────── -->
+  <div class="report-backdrop" id="report-list-backdrop" onclick="closeReportListOutside(event)">
+    <div class="report-sheet" id="report-list-sheet">
+      <div class="report-header">
+        <div>
+          <div class="report-header-label">MONTHLY CYCLE REPORT</div>
+          <div class="report-header-title">지난 리포트</div>
+          <div class="report-header-sub">생리가 끝난 다음 날 도착해요</div>
+        </div>
+        <button class="icon-close" onclick="closeReportList()" aria-label="닫기">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <div class="report-list-content" id="report-list-content"></div>
+    </div>
+  </div>
+
+  <!-- ───────── 기록 상세 ───────── -->
+  <div class="modal-backdrop" id="record-detail-modal" onclick="closeRecordDetail(event)">
+    <div class="modal record-detail">
+      <div class="modal-title" id="record-detail-title">기록 상세</div>
+      <div class="record-detail-content" id="record-detail-content"></div>
+      <div class="modal-actions">
+        <button class="btn-cancel wide" onclick="document.getElementById('record-detail-modal').classList.remove('open')">닫기</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="js/config.js"></script>
+<script defer src="js/auth.js"></script>
+<script defer src="js/records.js"></script>
+<script defer src="js/questions.js"></script>
+<script defer src="js/ui.js"></script>
+<script defer src="js/report.js"></script>
+<script defer src="js/share.js"></script>
+<script defer src="js/app.js"></script>
+</body>
+</html>
