@@ -111,8 +111,8 @@
   }
   .orb{position:relative; width:100%; max-width:358px; aspect-ratio:1/1}
   .orb svg.ring-svg{width:100%; height:100%; display:block; overflow:visible}
-  .orb .dash{transform-origin:180px 180px; animation:spin 140s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
+  .orb .dash{animation:orbitDrift 120s linear infinite}
+  @keyframes orbitDrift{to{stroke-dashoffset:-1056}}
   .orb .halo{animation:halo 4.2s ease-in-out infinite}
   @keyframes halo{0%,100%{opacity:.13} 50%{opacity:.26}}
 
