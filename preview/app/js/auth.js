@@ -51,6 +51,23 @@ function showLoginScreen() {
 
 let _loadedUserId = null;
 
+/* 만료된 토큰으로 데이터를 읽으면 게이트웨이가 401을 돌려준다.
+   데이터를 불러오기 전에 세션이 유효한지 확인하고, 만료됐으면 새로 고친다. */
+async function ensureFreshSession() {
+  try {
+    const { data } = await sb.auth.getSession();
+    const s = data?.session;
+    if (!s) return;
+    const expMs = (s.expires_at || 0) * 1000;
+    if (expMs && expMs < Date.now() + 60000) {
+      const r = await sb.auth.refreshSession();
+      if (r.error) console.warn('[auth] 세션 갱신 실패:', r.error.message);
+    }
+  } catch (e) {
+    console.warn('[auth] 세션 확인 실패:', e);
+  }
+}
+
 async function showApp(user) {
   if (!user) return;
 
@@ -62,6 +79,8 @@ async function showApp(user) {
   document.getElementById('app-main').classList.add('show');
 
   if (isSameUser) return;
+
+  await ensureFreshSession();
 
   // 마지막 접속일 업데이트
   sb.from('user_profiles')
