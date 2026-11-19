@@ -17,7 +17,6 @@
     --ink-45:rgba(244,239,232,.45);
     --ink-28:rgba(244,239,232,.28);
     --line:rgba(255,255,255,.09);
-    --card:linear-gradient(180deg, rgba(255,255,255,.062), rgba(255,255,255,.024));
     --spring:#A9E3C6;
     --summer:#F2CE8C;
     --autumn:#D9A08B;
@@ -44,9 +43,9 @@
   /* 배경 광원 */
   .glowbg{position:absolute; inset:0; pointer-events:none; z-index:0;
     background:
-      radial-gradient(58% 32% at 50% 22%, rgba(169,227,198,.13), transparent 70%),
-      radial-gradient(90% 50% at 50% 108%, rgba(166,184,222,.10), transparent 72%),
-      linear-gradient(180deg,#171120 0%, #14101B 52%, #100C16 100%);
+      radial-gradient(56% 30% at 50% 34%, rgba(169,227,198,.12), transparent 72%),
+      radial-gradient(94% 52% at 50% 110%, rgba(166,184,222,.10), transparent 74%),
+      linear-gradient(180deg,#171120 0%, #14101B 54%, #100C16 100%);
   }
 
   .screen{position:absolute; inset:0; z-index:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:98px}
@@ -95,123 +94,105 @@
   @keyframes up{to{opacity:1; transform:translateY(0)}}
 
   /* ── 홈 ── */
-  .home{opacity:0; transition:opacity 1s ease .15s}
+  .home{opacity:0; transition:opacity 1s ease .15s; display:flex; flex-direction:column}
   .home.in{opacity:1}
 
-  .topbar{display:flex; align-items:center; justify-content:space-between; padding:20px 24px 6px}
-  .tb-left{display:flex; align-items:center; gap:11px}
-  .avatar{
-    width:36px; height:36px; border-radius:50%; display:grid; place-items:center;
-    background:linear-gradient(150deg, rgba(169,227,198,.22), rgba(166,184,222,.16));
-    border:1px solid rgba(255,255,255,.12);
-  }
-  .avatar svg{width:18px; height:18px}
-  .tb-name{font-size:13px; font-weight:500; letter-spacing:.01em}
-  .tb-date{font-size:10px; color:var(--ink-45); margin-top:3px; letter-spacing:.06em}
-  .tb-btn{
-    width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:rgba(255,255,255,.03);
-    display:grid; place-items:center; cursor:pointer;
+  /* 아주 조용한 상단 — 워드마크 하나 */
+  .mark{flex:0 0 auto; padding:30px 0 2px; text-align:center}
+  .mark .word{
+    font-family:var(--serif); font-size:13px; font-weight:400;
+    letter-spacing:.46em; text-indent:.46em; color:rgba(244,239,232,.66);
   }
 
-  /* 궤도 */
-  .orb{position:relative; margin:4px auto 0; width:100%; max-width:314px; aspect-ratio:1/1}
+  /* 중앙 궤도 — 화면의 주인공 */
+  .stage{
+    flex:1 1 auto; min-height:0; display:flex; align-items:center; justify-content:center;
+    padding:2px 16px 0;
+  }
+  .orb{position:relative; width:100%; max-width:358px; aspect-ratio:1/1}
   .orb svg.ring-svg{width:100%; height:100%; display:block; overflow:visible}
+  .orb .dash{transform-origin:180px 180px; animation:spin 140s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .orb .halo{animation:halo 4.2s ease-in-out infinite}
+  @keyframes halo{0%,100%{opacity:.13} 50%{opacity:.26}}
+
   .orb-center{
     position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
     pointer-events:none;
   }
-  .orb-moon{width:94px; height:94px; display:block; filter:drop-shadow(0 0 24px rgba(242,206,140,.22))}
-  .orb-day{display:flex; align-items:baseline; justify-content:center; gap:5px; margin-top:6px}
-  .orb-day .n{font-family:var(--latin); font-weight:300; font-size:38px; line-height:.86; letter-spacing:-.02em; color:#FBF6EE}
-  .orb-day .u{font-size:11px; color:var(--ink-70); letter-spacing:.06em}
+  .orb-moon{width:110px; height:110px; display:block; filter:drop-shadow(0 0 30px rgba(242,206,140,.26))}
+  .orb-day{display:flex; align-items:baseline; justify-content:center; gap:6px; margin-top:10px}
+  .orb-day .n{font-family:var(--latin); font-weight:300; font-size:46px; line-height:.84; letter-spacing:-.03em; color:#FBF6EE}
+  .orb-day .u{font-size:11px; color:var(--ink-45); letter-spacing:.10em}
   .orb-season{
-    margin-top:8px; font-size:11px; letter-spacing:.28em; text-indent:.28em;
+    margin-top:12px; font-size:11px; letter-spacing:.34em; text-indent:.34em;
     color:var(--spring); text-transform:uppercase;
   }
-  .orb-caption{
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    font-size:10px; letter-spacing:.1em; color:var(--ink-45); margin-top:0;
+
+  /* 짧은 힌트 하나 */
+  .hint{
+    width:max-content; margin:0 auto; display:flex; align-items:center; gap:8px;
+    padding:8px 15px; border-radius:999px;
+    border:1px solid rgba(255,255,255,.07); background:rgba(255,255,255,.022);
+    font-size:10px; letter-spacing:.12em; color:var(--ink-45);
   }
-  .orb-caption i{width:14px; height:1px; background:var(--line)}
+  .hint i{width:4px; height:4px; border-radius:50%; background:var(--winter); display:block; opacity:.85}
 
-  .legend{display:flex; justify-content:center; gap:14px; margin:6px 0 0; padding:0 16px}
-  .legend span{display:flex; align-items:center; gap:5px; font-size:10px; letter-spacing:.06em; color:var(--ink-45)}
-  .legend i{width:5px; height:5px; border-radius:50%; display:block}
-  .legend span.on{color:var(--ink)}
-  .legend span.on i{box-shadow:0 0 8px currentColor}
-
-  /* 인사이트 카드 */
-  .insight{
-    margin:16px 18px 0; padding:16px 16px 15px; border-radius:18px;
-    background:var(--card); border:1px solid var(--line);
-    backdrop-filter:blur(6px);
-  }
-  .ins-head{display:flex; align-items:center; gap:8px}
-  .ins-head svg{width:14px; height:14px}
-  .ins-head b{font-size:10px; font-weight:500; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-45)}
-  .ins-text{margin:9px 0 0; font-family:var(--serif); font-size:14px; line-height:1.8; color:#EBE5DC}
-  .ins-text em{font-style:normal; color:var(--spring)}
-  .ins-tags{display:flex; gap:6px; margin-top:11px; flex-wrap:wrap}
-  .ins-tags span{
-    font-size:9.5px; letter-spacing:.04em; color:var(--ink-70); padding:4px 10px; border-radius:999px;
-    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.07);
-  }
-
-  /* 예정 */
-  .sched{margin:14px 18px 0; border-radius:18px; background:rgba(255,255,255,.028); border:1px solid var(--line); overflow:hidden}
-  .sched-row{display:flex; align-items:center; gap:12px; padding:12px 15px}
-  .sched-row + .sched-row{border-top:1px solid rgba(255,255,255,.06)}
-  .sched-row .ic{width:15px; height:15px; opacity:.8}
-  .sched-row .k{font-size:11.5px; color:var(--ink-45); letter-spacing:.03em}
-  .sched-row .v{margin-left:auto; font-family:var(--latin); font-size:15px; color:#F4EFE8; letter-spacing:.02em}
-  .sched-row .v small{font-family:var(--sans); font-size:9.5px; color:var(--ink-28); margin-left:5px; letter-spacing:.02em}
-
-  .actions{display:flex; gap:9px; margin:14px 18px 0}
+  /* 하단 액션 */
+  .foot{flex:0 0 auto; padding:0 22px 30px}
+  .actions{display:flex; gap:10px; margin-top:20px}
   .btn{
-    flex:1; border:0; cursor:pointer; border-radius:14px; padding:15px 10px;
-    display:flex; align-items:center; justify-content:center; gap:7px;
-    font-family:var(--sans); font-size:12.5px; font-weight:500; letter-spacing:.02em;
+    flex:1; border:0; cursor:pointer; border-radius:16px; height:52px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    font-family:var(--sans); font-size:12.5px; font-weight:500; letter-spacing:.04em;
     transition:transform .15s ease, opacity .15s ease;
   }
-  .btn:active{transform:scale(.985); opacity:.8}
-  .btn.solid{background:linear-gradient(135deg,#BFEBD6,#9FDCC1); color:#10221C}
-  .btn.ghost{background:rgba(255,255,255,.055); color:#E8E2D9; border:1px solid var(--line)}
-
-  .foot-note{margin:16px 20px 4px; text-align:center; font-size:8.5px; letter-spacing:.34em; text-transform:uppercase; color:rgba(244,239,232,.16)}
+  .btn:active{transform:scale(.985); opacity:.82}
+  .btn.solid{background:linear-gradient(135deg,#C4EFDB,#9FDCC1); color:#0F211B}
+  .btn.ghost{background:rgba(255,255,255,.045); color:rgba(244,239,232,.82); border:1px solid rgba(255,255,255,.09)}
+  .btn svg{width:15px; height:15px; flex:0 0 auto}
 
   /* 하단 네비 */
   .tabbar{
     position:absolute; left:0; right:0; bottom:0; z-index:20;
     display:flex; align-items:center; justify-content:space-around;
-    padding:11px 10px calc(13px + env(safe-area-inset-bottom));
-    background:linear-gradient(180deg, rgba(20,16,27,0) 0%, rgba(20,16,27,.9) 45%, #100C16 100%);
-    border-top:1px solid rgba(255,255,255,.06);
+    padding:12px 10px calc(15px + env(safe-area-inset-bottom));
+    background:linear-gradient(180deg, rgba(20,16,27,0) 0%, rgba(20,16,27,.92) 45%, #100C16 100%);
+    border-top:1px solid rgba(255,255,255,.05);
   }
-  .tab{background:none; border:0; cursor:pointer; padding:4px 10px; display:flex; flex-direction:column; align-items:center; gap:5px; color:rgba(244,239,232,.34); position:relative}
+  .tab{background:none; border:0; cursor:pointer; padding:4px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; color:rgba(244,239,232,.30); position:relative}
   .tab svg{width:20px; height:20px; display:block}
-  .tab span{font-size:9.5px; letter-spacing:.02em}
-  .tab.active{color:var(--ink)}
+  .tab span{font-size:9px; letter-spacing:.06em}
+  .tab.active{color:rgba(244,239,232,.92)}
   .tab.active::before{
-    content:''; position:absolute; top:-11px; left:50%; transform:translateX(-50%);
-    width:22px; height:2px; border-radius:2px; background:linear-gradient(90deg,transparent,var(--spring),transparent);
-    box-shadow:0 0 10px rgba(169,227,198,.6);
+    content:''; position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+    width:20px; height:2px; border-radius:2px; background:linear-gradient(90deg,transparent,var(--spring),transparent);
+    box-shadow:0 0 10px rgba(169,227,198,.55);
   }
 
-  /* 낮은 화면에서는 궤도를 줄이고 카드 간격을 좀힌다 */
+  @media (prefers-reduced-motion: reduce){
+    .orb .dash{animation:none}
+    .orb .halo{animation:none; opacity:.18}
+  }
+
+  /* 낮은 화면에서는 궤도만 살짝 줄인다 */
   @media (max-height: 830px){
-    .orb{max-width:262px; margin-top:0}
-    .orb-moon{width:78px; height:78px}
+    .mark{padding-top:22px}
+    .orb{max-width:300px}
+    .orb-moon{width:94px; height:94px}
+    .orb-day .n{font-size:38px}
+    .orb-season{font-size:10px; margin-top:9px}
+    .foot{padding-bottom:22px}
+    .actions{margin-top:16px}
+    .btn{height:48px; border-radius:14px}
+  }
+  @media (max-height: 700px){
+    .mark{padding-top:16px}
+    .orb{max-width:264px}
+    .orb-moon{width:80px; height:80px}
     .orb-day .n{font-size:32px}
-    .orb-season{font-size:10px; margin-top:5px}
-    .legend{margin-top:4px}
-    .insight{margin:12px 16px 0; padding:13px 14px 12px}
-    .ins-text{font-size:13px; margin-top:7px; line-height:1.72}
-    .ins-tags{margin-top:9px}
-    .sched{margin:10px 16px 0}
-    .sched-row{padding:10px 14px}
-    .actions{margin:10px 16px 0}
-    .btn{padding:13px 10px}
-    .foot-note{display:none}
+    .foot{padding-bottom:16px}
+    .actions{margin-top:12px}
   }
 </style>
 </head>
@@ -256,127 +237,71 @@
   <!-- ───────── 홈 ───────── -->
   <div class="screen home" id="home">
 
-    <div class="topbar">
-      <div class="tb-left">
-        <div class="avatar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#CFE9DC" stroke-width="1.2" stroke-linecap="round">
-            <path d="M19.6 15.1A8.1 8.1 0 0 1 8.9 4.4a8.1 8.1 0 1 0 10.7 10.7Z"/>
-          </svg>
-        </div>
-        <div>
-          <div class="tb-name">심초록</div>
-          <div class="tb-date">11월 19일 목요일</div>
-        </div>
-      </div>
-      <button class="tb-btn" aria-label="알림">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(244,239,232,.6)" stroke-width="1.3" stroke-linecap="round">
-          <path d="M18 15.4V10a6 6 0 1 0-12 0v5.4L4.4 18h15.2L18 15.4Z"/>
-          <path d="M10 21h4"/>
-        </svg>
-      </button>
-    </div>
+    <header class="mark">
+      <div class="word">달의 기록</div>
+    </header>
 
-    <div class="orb">
-      <svg class="ring-svg" id="orbitSvg" viewBox="0 0 342 342" aria-label="28일 주기 궤도">
-        <defs>
-          <linearGradient id="progGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#D9C9A6"/>
-            <stop offset="55%" stop-color="#BFEBD6"/>
-            <stop offset="100%" stop-color="#A9E3C6"/>
-          </linearGradient>
-          <filter id="dotGlow" x="-200%" y="-200%" width="500%" height="500%">
-            <feGaussianBlur stdDeviation="4" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-        <circle cx="171" cy="171" r="150" fill="none" stroke="rgba(255,255,255,.05)" stroke-width=".8"/>
-        <g id="orbitTicks"></g>
-        <g id="orbitArcs"></g>
-        <g id="orbitProgress"></g>
-      </svg>
-
-      <div class="orb-center">
-        <svg class="orb-moon" viewBox="0 0 100 100" aria-hidden="true">
+    <div class="stage">
+      <div class="orb">
+        <svg class="ring-svg" id="orbitSvg" viewBox="0 0 360 360" role="img" aria-label="28일 주기 궤도, 9일째 여포기">
           <defs>
-            <radialGradient id="moonLit" cx="36%" cy="30%" r="76%">
-              <stop offset="0%" stop-color="#FFFDF6"/>
-              <stop offset="52%" stop-color="#F7E8C9"/>
-              <stop offset="100%" stop-color="#CBB086"/>
-            </radialGradient>
+            <linearGradient id="progGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#D9C9A6"/>
+              <stop offset="55%" stop-color="#BFEBD6"/>
+              <stop offset="100%" stop-color="#A9E3C6"/>
+            </linearGradient>
+            <filter id="dotGlow" x="-200%" y="-200%" width="500%" height="500%">
+              <feGaussianBlur stdDeviation="4" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
           </defs>
-          <circle cx="50" cy="50" r="42" fill="rgba(255,255,255,.035)" stroke="rgba(255,255,255,.10)" stroke-width=".7"/>
-          <path d="M50,8 A42,42 0 0 1 50,92 A18.5,42 0 0 1 50,8 Z" fill="url(#moonLit)"/>
-          <circle cx="63" cy="40" r="5" fill="rgba(105,84,52,.12)"/>
-          <circle cx="66" cy="64" r="3.2" fill="rgba(105,84,52,.10)"/>
-          <circle cx="40" cy="72" r="2.4" fill="rgba(105,84,52,.07)"/>
+          <circle cx="180" cy="180" r="177" fill="none" stroke="rgba(255,255,255,.035)" stroke-width="1"/>
+          <circle class="dash" cx="180" cy="180" r="168" fill="none" stroke="rgba(169,227,198,.16)" stroke-width="1" stroke-dasharray="1 9" stroke-linecap="round"/>
+          <circle cx="180" cy="180" r="158" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+          <g id="orbitTicks"></g>
+          <g id="orbitArcs"></g>
+          <g id="orbitProgress"></g>
         </svg>
-        <div class="orb-day"><span class="n">9</span><span class="u">일째</span></div>
-        <div class="orb-season">여포기</div>
+
+        <div class="orb-center">
+          <svg class="orb-moon" viewBox="0 0 100 100" aria-hidden="true">
+            <defs>
+              <radialGradient id="moonLit" cx="36%" cy="30%" r="76%">
+                <stop offset="0%" stop-color="#FFFDF6"/>
+                <stop offset="52%" stop-color="#F7E8C9"/>
+                <stop offset="100%" stop-color="#CBB086"/>
+              </radialGradient>
+            </defs>
+            <circle cx="50" cy="50" r="42" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.10)" stroke-width=".7"/>
+            <path d="M50,8 A42,42 0 0 1 50,92 A18.5,42 0 0 1 50,8 Z" fill="url(#moonLit)"/>
+            <circle cx="63" cy="40" r="5" fill="rgba(105,84,52,.12)"/>
+            <circle cx="66" cy="64" r="3.2" fill="rgba(105,84,52,.10)"/>
+            <circle cx="40" cy="72" r="2.4" fill="rgba(105,84,52,.07)"/>
+          </svg>
+          <div class="orb-day"><span class="n">9</span><span class="u">일째</span></div>
+          <div class="orb-season">여포기</div>
+        </div>
       </div>
     </div>
 
-    <div class="orb-caption"><i></i><span>28일 주기 · 봄의 계절</span><i></i></div>
-
-    <div class="legend">
-      <span><i style="background:var(--winter)"></i>겨울</span>
-      <span class="on"><i style="background:var(--spring)"></i>봄</span>
-      <span><i style="background:var(--summer)"></i>여름</span>
-      <span><i style="background:var(--autumn)"></i>가을</span>
-    </div>
-
-    <div class="insight">
-      <div class="ins-head">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#A9E3C6" stroke-width="1.3" stroke-linecap="round">
-          <path d="M12 3.6v2.2M12 18.2v2.2M3.6 12h2.2M18.2 12h2.2M6.4 6.4l1.6 1.6M16 16l1.6 1.6M17.6 6.4 16 8M8 16l-1.6 1.6"/>
-          <circle cx="12" cy="12" r="3.4"/>
-        </svg>
-        <b>오늘의 결</b>
+    <footer class="foot">
+      <div class="hint"><i></i>다음 생리 D-19</div>
+      <div class="actions">
+        <button class="btn solid">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0F211B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 20h4.2L19 9.2a2.2 2.2 0 0 0-3.1-3.1L5 16.9V20Z"/>
+          </svg>
+          기록하기
+        </button>
+        <button class="btn ghost">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/>
+            <path d="M8.3 10.7 15.7 6.3M8.3 13.3l7.4 4.4"/>
+          </svg>
+          공유
+        </button>
       </div>
-      <p class="ins-text">기운이 다시 차오르는 <em>봄의 구간</em>이에요. 몸이 가볍고 집중이 잘 되는 날, 미뤄둔 일을 꺼내보기 좋아요.</p>
-      <div class="ins-tags"><span>에너지 상승</span><span>집중</span><span>가벼운 운동</span></div>
-    </div>
-
-    <div class="sched">
-      <div class="sched-row">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#F2CE8C" stroke-width="1.3" stroke-linecap="round">
-          <circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.4M12 19v2.4M2.6 12h2.4M19 12h2.4"/>
-        </svg>
-        <span class="k">배란 예정</span>
-        <span class="v">12.05<small>16일 후</small></span>
-      </div>
-      <div class="sched-row">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#A9E3C6" stroke-width="1.3" stroke-linecap="round">
-          <path d="M12 20.4S4.6 15.9 4.6 10.6A4.4 4.4 0 0 1 12 7.8a4.4 4.4 0 0 1 7.4 2.8c0 5.3-7.4 9.8-7.4 9.8Z"/>
-        </svg>
-        <span class="k">가임기</span>
-        <span class="v">11.30 – 12.06</span>
-      </div>
-      <div class="sched-row">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#A6B8DE" stroke-width="1.3" stroke-linecap="round">
-          <path d="M12 3.2c3.4 4 5.4 6.7 5.4 9.2a5.4 5.4 0 0 1-10.8 0c0-2.5 2-5.2 5.4-9.2Z"/>
-        </svg>
-        <span class="k">다음 생리</span>
-        <span class="v">12.19<small>30일 후</small></span>
-      </div>
-    </div>
-
-    <div class="actions">
-      <button class="btn solid">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10221C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 20h4.2L19 9.2a2.2 2.2 0 0 0-3.1-3.1L5 16.9V20Z"/>
-        </svg>
-        오늘 기록
-      </button>
-      <button class="btn ghost">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/>
-          <path d="M8.3 10.7 15.7 6.3M8.3 13.3l7.4 4.4"/>
-        </svg>
-        상태 공유
-      </button>
-    </div>
-
-    <div class="foot-note">The record of the moon</div>
+    </footer>
   </div>
 
   <!-- ───────── 하단 네비 ───────── -->
@@ -416,7 +341,7 @@
   if (window.self !== window.top) document.documentElement.classList.add('embedded');
 
   /* ── 28일 궤도 ── */
-  var CX = 171, CY = 171, R = 132, N = 28;
+  var CX = 180, CY = 180, R = 138, N = 28;
   var DAY = 9;
   function pol(r, deg){ var a = (deg - 90) * Math.PI / 180; return [CX + r * Math.cos(a), CY + r * Math.sin(a)]; }
   function pt(r, day){ return pol(r, (day - 1) * 360 / N); }
@@ -434,7 +359,7 @@
     var r1 = major ? R - 10 : R - 6, r2 = R + (major ? 10 : 6);
     var a = pt(r1, d), b = pt(r2, d);
     ticks += '<line x1="' + a[0].toFixed(1) + '" y1="' + a[1].toFixed(1) + '" x2="' + b[0].toFixed(1) + '" y2="' + b[1].toFixed(1) +
-             '" stroke="' + (d <= DAY ? 'rgba(255,255,255,.30)' : 'rgba(255,255,255,.13)') + '" stroke-width="' + (major ? 1.4 : 1) + '" stroke-linecap="round"/>';
+             '" stroke="' + (d <= DAY ? 'rgba(255,255,255,.30)' : 'rgba(255,255,255,.12)') + '" stroke-width="' + (major ? 1.4 : 1) + '" stroke-linecap="round"/>';
   }
   document.getElementById('orbitTicks').innerHTML = ticks;
 
@@ -451,16 +376,16 @@
     if (to <= from) return;
     var active = DAY >= s.from && DAY < s.to;
     arcs += '<path d="' + arcPath(R, from, to) + '" fill="none" stroke="' + s.color +
-            '" stroke-width="' + (active ? 3 : 2) + '" stroke-linecap="round" opacity="' + (active ? '.95' : '.34') + '"/>';
+            '" stroke-width="' + (active ? 3 : 2) + '" stroke-linecap="round" opacity="' + (active ? '.95' : '.30') + '"/>';
   });
   document.getElementById('orbitArcs').innerHTML = arcs;
 
   /* 오늘까지 지나온 아크 */
-  var prog = '<path d="' + arcPath(R, 1, DAY) + '" fill="none" stroke="url(#progGrad)" stroke-width="3.2" stroke-linecap="round" opacity=".9" filter="url(#dotGlow)"/>';
+  var prog = '<path d="' + arcPath(R, 1, DAY) + '" fill="none" stroke="url(#progGrad)" stroke-width="3" stroke-linecap="round" opacity=".9" filter="url(#dotGlow)"/>';
   var m = pt(R, DAY);
-  prog += '<circle cx="' + m[0].toFixed(1) + '" cy="' + m[1].toFixed(1) + '" r="9" fill="#A9E3C6" opacity=".16"/>';
-  prog += '<circle cx="' + m[0].toFixed(1) + '" cy="' + m[1].toFixed(1) + '" r="4.4" fill="#FBF6EE" filter="url(#dotGlow)"/>';
-  prog += '<circle cx="' + m[0].toFixed(1) + '" cy="' + m[1].toFixed(1) + '" r="1.9" fill="#A9E3C6"/>';
+  prog += '<circle class="halo" cx="' + m[0].toFixed(1) + '" cy="' + m[1].toFixed(1) + '" r="11" fill="#A9E3C6" opacity=".16"/>';
+  prog += '<circle cx="' + m[0].toFixed(1) + '" cy="' + m[1].toFixed(1) + '" r="4.2" fill="#FBF6EE" filter="url(#dotGlow)"/>';
+  prog += '<circle cx="' + m[0].toFixed(1) + '" cy="' + m[1].toFixed(1) + '" r="1.8" fill="#A9E3C6"/>';
   document.getElementById('orbitProgress').innerHTML = prog;
 
   /* ── 스플래시 ── */
