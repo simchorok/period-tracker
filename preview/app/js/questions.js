@@ -115,6 +115,7 @@ async function openQuestionModal() {
     const session = (await sb.auth.getSession()).data.session;
     if (!session?.access_token) throw new Error('세션 없음');
 
+    // 인증 헤더는 supabase-js가 현재 세션으로 자동으로 붙인다
     const { data, error } = await sb.functions.invoke('generate-question', {
       body: {
         user_id: currentUser.id,
@@ -122,7 +123,6 @@ async function openQuestionModal() {
         top_tag: currentQuestionTag,
         cycle_phase: cyclePhase,
       },
-      headers: { Authorization: `Bearer ${session.access_token}` },
     });
 
     if (error) throw error;

@@ -409,6 +409,8 @@ async function generateAIAnalysis(records, targetRecord) {
       return;
     }
 
+    // 인증 헤더는 supabase-js가 현재 세션으로 자동으로 붙인다.
+    // (직접 Authorization을 넣으면 최신 SDK에서 apikey가 빠져 게이트웨이가 401을 돌려준다)
     const { data, error } = await sb.functions.invoke('analyze-cycle', {
       body: {
         user_id: currentUser.id,
@@ -416,7 +418,6 @@ async function generateAIAnalysis(records, targetRecord) {
         period_start_date: targetRecord.start ?? null,
         case_type: caseType,
       },
-      headers: { Authorization: `Bearer ${session.access_token}` },
     });
 
     if (error) {
@@ -444,10 +445,6 @@ async function generateAIAnalysis(records, targetRecord) {
 
   } catch(e) {
     console.error('AI 분석 오류:', e);
-    window.__lastAIError = { msg: String((e && (e.message || e.error_description)) || e), status: e && e.context ? e.context.status : null, body: null };
-    try {
-      if (e && e.context && e.context.clone) window.__lastAIError.body = (await e.context.clone().text()).slice(0, 400);
-    } catch (err) {}
     showAIError('분석 중 오류가 발생했어요.<br>다시 시도해주세요.<br><button class="report-ai-retry" onclick="retryAIAnalysis()">다시 시도</button>');
   }
 }
