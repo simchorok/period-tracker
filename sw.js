@@ -1,8 +1,16 @@
-const CACHE_NAME = 'dal-ui-girok-v4';
+const CACHE_NAME = 'dal-ui-girok-v5';
 const ASSETS = [
   '/period-tracker/',
   '/period-tracker/index.html',
   '/period-tracker/manifest.json',
+  '/period-tracker/styles/main.css',
+  '/period-tracker/js/config.js',
+  '/period-tracker/js/auth.js',
+  '/period-tracker/js/records.js',
+  '/period-tracker/js/questions.js',
+  '/period-tracker/js/ui.js',
+  '/period-tracker/js/report.js',
+  '/period-tracker/js/app.js',
 ];
 
 self.addEventListener('install', e => {
