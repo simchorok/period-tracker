@@ -254,6 +254,23 @@
   .tab span{font-family:var(--serif); font-size:9.5px; letter-spacing:.12em}
   .tab.active{color:var(--gold)}
   .tab.active svg{filter:drop-shadow(0 0 6px rgba(216,183,124,.5))}
+
+  /* 낮은 화면(미리보기 프레임·작은 폰)에서도 주요 정보가 한 뷰에 */
+  @media (max-height: 800px){
+    .hero{padding-top:14px}
+    .hero-num{font-size:60px}
+    .hero-phase{font-size:18px; margin-top:8px}
+    .hero-moon svg{width:62px; height:62px}
+    .cycle-block{margin-top:12px; padding-top:11px}
+    .note{padding-top:18px}
+    .note-text{font-size:15px; margin-top:10px}
+    .note-foot{display:none}
+    .dates{padding-top:20px}
+    .sec-head{margin-bottom:10px}
+    .date-list li{padding:10px 0}
+    .actions{padding-top:14px}
+    .signature{display:none}
+  }
 </style>
 </head>
 <body>
