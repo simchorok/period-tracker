@@ -307,6 +307,10 @@
     try {
       const data = JSON.parse(shareB64UrlDecode(raw));
       if (!data || typeof data !== 'object' || !data.seasonName) return null;
+      data.nickname = String(data.nickname || '사용자');
+      data.cycleDay = Number.isFinite(Number(data.cycleDay)) ? Number(data.cycleDay) : 1;
+      data.seasonEmoji = data.seasonEmoji || '🌙';
+      data.seasonName = String(data.seasonName);
       data.tags = sanitizeShareTags(Array.isArray(data.tags) ? data.tags : []).slice(0, 5);
       data.care = (Array.isArray(data.care) ? data.care : []).slice(0, 2)
         .filter(c => c && c.text)
@@ -349,6 +353,9 @@
     const tagsHtml = snap.tags.length
       ? `<div class="share-tags">${snap.tags.map(t => `<span class="share-tag">${escapeHtml(t)}</span>`).join('')}</div>`
       : `<div class="share-tags-empty">오늘은 따로 남긴 상태가 없어요</div>`;
+    const sourceHtml = snap.tags.length
+      ? `<div class="share-source">${escapeHtml(SHARE_SOURCE_LABEL[snap.tagSource] || SHARE_SOURCE_LABEL.none)}</div>`
+      : '';
 
     const careHtml = snap.care.map(c => `
       <div class="share-care-item">
@@ -377,7 +384,7 @@
             <span class="share-season-emoji">${escapeHtml(snap.seasonEmoji || '🌙')}</span>
             <span>${escapeHtml(snap.seasonName)}</span>
           </div>
-          <div class="share-source">${escapeHtml(SHARE_SOURCE_LABEL[snap.tagSource] || SHARE_SOURCE_LABEL.none)}</div>
+          ${sourceHtml}
           ${tagsHtml}
           <div class="share-care">
             <div class="share-care-head">💌 이렇게 챙겨주면 좋아요</div>
