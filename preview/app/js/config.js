@@ -33,11 +33,20 @@ if (new URLSearchParams(location.search).has('diag')) {
   window.fetch = function (input, init) {
     try {
       const hs = new Headers((init && init.headers) || (input instanceof Request ? input.headers : undefined));
+      let claims = null;
+      try {
+        const tok = (hs.get('authorization') || '').replace(/^Bearer\s+/, '');
+        const seg = tok.split('.')[1];
+        if (seg) {
+          const p = JSON.parse(atob(seg.replace(/-/g, '+').replace(/_/g, '/')));
+          claims = { iss: p.iss, aud: p.aud, role: p.role, exp: p.exp, sub: (p.sub || '').slice(0, 8), alg: JSON.parse(atob(tok.split('.')[0].replace(/-/g, '+').replace(/_/g, '/'))).alg };
+        }
+      } catch (e) {}
       window.__reqs.push({
         url: String(input.url || input).slice(-64),
         hasApiKey: hs.has('apikey'), apiKeyLen: (hs.get('apikey') || '').length, apiKeyHead: (hs.get('apikey') || '').slice(0, 14),
         authLen: (hs.get('authorization') || '').length,
-        authHead: (hs.get('authorization') || '').slice(0, 20)
+        claims
       });
     } catch (e) {}
     return _origFetch(input, init).then(res => {
