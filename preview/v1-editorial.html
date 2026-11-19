@@ -46,7 +46,7 @@
   .screen{
     position:absolute; inset:0; overflow-y:auto; overflow-x:hidden;
     -webkit-overflow-scrolling:touch; scrollbar-width:none;
-    padding-bottom:92px;
+    padding-bottom:86px;
   }
   .screen::-webkit-scrollbar{display:none}
 
@@ -117,7 +117,7 @@
   .home{opacity:0; transition:opacity 1s ease .2s}
   .home.in{opacity:1}
 
-  .masthead{padding:20px 26px 0}
+  .masthead{padding:18px 24px 0}
   .mh-row{display:flex; align-items:center; justify-content:space-between}
   .mh-eyebrow{
     font-family:var(--latin); font-size:10px; letter-spacing:.30em; text-transform:uppercase;
@@ -130,9 +130,9 @@
     width:34px; height:34px; border-radius:50%; border:1px solid var(--hair); background:none;
     display:grid; place-items:center; cursor:pointer;
   }
-  .mh-rule{height:1px; background:var(--hair); margin-top:16px}
+  .mh-rule{height:1px; background:var(--hair); margin-top:13px}
 
-  .hero{position:relative; padding:26px 26px 24px}
+  .hero{position:relative; padding:20px 24px 0}
   .label{
     font-family:var(--latin); font-size:9.5px; letter-spacing:.32em; text-transform:uppercase;
     color:rgba(216,183,124,.72);
@@ -140,14 +140,14 @@
   .hero-grid{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-top:10px}
   .hero-day{display:flex; align-items:baseline; gap:8px}
   .hero-num{
-    font-family:var(--latin); font-weight:300; font-size:84px; line-height:.82;
+    font-family:var(--latin); font-weight:300; font-size:72px; line-height:.84;
     letter-spacing:-.03em; color:#F4EFE4;
   }
   .hero-unit{font-family:var(--serif); font-size:15px; color:rgba(237,232,222,.62); letter-spacing:.06em}
   .hero-phase{
-    margin-top:14px; font-family:var(--serif); font-size:21px; letter-spacing:.14em; color:var(--gold);
+    margin-top:11px; font-family:var(--serif); font-size:20px; letter-spacing:.14em; color:var(--gold);
   }
-  .hero-sub{margin-top:7px; font-size:11.5px; letter-spacing:.03em; color:rgba(237,232,222,.44)}
+  .hero-sub{margin-top:6px; font-size:11px; letter-spacing:.03em; color:rgba(237,232,222,.44)}
   .hero-moon{flex:0 0 auto; text-align:center; padding-top:6px}
   .hero-moon svg{width:74px; height:74px; display:block}
   .hero-moon-cap{
@@ -155,23 +155,31 @@
     text-transform:uppercase; color:rgba(237,232,222,.34); line-height:1.6;
   }
 
+  /* 이번 사이클 (히어로 하단) */
+  .cycle-block{margin-top:20px; padding-top:15px; border-top:1px solid var(--hair)}
+  .cycle-top{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:12px}
+  .cycle-top span:first-child{font-family:var(--serif); font-size:11.5px; letter-spacing:.14em; color:rgba(237,232,222,.72)}
+  .cycle-top span:last-child{font-family:var(--latin); font-size:10px; letter-spacing:.18em; color:rgba(237,232,222,.34)}
+  .cycle-top b{font-weight:500; color:var(--gold)}
+
   /* 오늘의 문장 */
-  .note{padding:0 26px}
+  .note{padding:24px 24px 0}
   .note-inner{
-    border-top:1px solid var(--hair); border-bottom:1px solid var(--hair);
-    padding:22px 0 24px; position:relative;
+    padding:18px 0 20px; position:relative;
   }
+  .note-inner::before{content:''; position:absolute; left:0; right:0; top:0; height:1px; background:var(--hair)}
+  .note-inner::after{content:''; position:absolute; left:0; right:0; bottom:0; height:1px; background:var(--hair)}
   .note-head{display:flex; align-items:center; gap:10px}
   .note-title{font-family:var(--serif); font-size:11.5px; letter-spacing:.16em; color:rgba(237,232,222,.62)}
   .note-no{font-family:var(--latin); font-size:10px; letter-spacing:.2em; color:rgba(216,183,124,.6)}
   .note-line{flex:1; height:1px; background:var(--hair-soft)}
   .note-text{
-    margin:16px 0 0; font-family:var(--serif); font-size:16.5px; line-height:1.86;
+    margin:14px 0 0; font-family:var(--serif); font-size:16px; line-height:1.8;
     letter-spacing:-.005em; color:#E3DDD1;
   }
   .note-text em{font-style:normal; color:var(--gold)}
   .note-foot{
-    margin-top:16px; display:flex; align-items:center; justify-content:space-between;
+    margin-top:14px; display:flex; align-items:center; justify-content:space-between;
     font-family:var(--latin); font-size:10px; letter-spacing:.2em; text-transform:uppercase;
     color:rgba(237,232,222,.3);
   }
@@ -181,8 +189,7 @@
     color:rgba(237,232,222,.55); border:1px solid var(--hair); border-radius:999px; padding:3px 9px;
   }
 
-  /* 이번 사이클 */
-  .cycle{padding:30px 26px 0}
+  /* 이번 사이클 — 구분선 */
   .sec-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:18px}
   .sec-title{font-family:var(--serif); font-size:13px; letter-spacing:.14em; color:rgba(237,232,222,.8)}
   .sec-meta{font-family:var(--latin); font-size:10px; letter-spacing:.2em; color:rgba(237,232,222,.32); text-transform:uppercase}
@@ -195,18 +202,11 @@
     font-family:var(--serif); font-size:10px; letter-spacing:.06em; color:rgba(237,232,222,.30);
   }
   .cycle-legend span.now{color:var(--gold)}
-  .cycle-day{
-    margin-top:22px; display:flex; align-items:center; gap:10px;
-    font-family:var(--latin); font-size:10px; letter-spacing:.18em;
-    color:rgba(237,232,222,.35); text-transform:uppercase;
-  }
-  .cycle-day b{color:var(--gold); font-weight:500}
-
   /* 다가오는 날 */
-  .dates{padding:30px 26px 0}
+  .dates{padding:26px 24px 0}
   .date-list{list-style:none; margin:0; padding:0; border-top:1px solid var(--hair)}
   .date-list li{
-    display:flex; align-items:center; gap:14px; padding:15px 0;
+    display:flex; align-items:center; gap:14px; padding:13px 0;
     border-bottom:1px solid var(--hair-soft);
   }
   .date-list .d{
@@ -221,7 +221,7 @@
   .date-list li.soft .dot{background:rgba(175,185,206,.5)}
 
   /* 액션 */
-  .actions{display:flex; gap:10px; padding:26px 26px 0}
+  .actions{display:flex; gap:10px; padding:22px 24px 0}
   .btn{
     flex:1; display:flex; align-items:center; justify-content:center; gap:9px;
     padding:15px 12px; border-radius:3px; cursor:pointer;
@@ -233,7 +233,7 @@
   .btn:active{opacity:.65}
 
   .signature{
-    padding:30px 26px 12px; text-align:center;
+    padding:20px 24px 8px; text-align:center;
     font-family:var(--latin); font-size:9px; letter-spacing:.34em; text-transform:uppercase;
     color:rgba(237,232,222,.18);
   }
@@ -338,6 +338,22 @@
           <div class="hero-moon-cap">Waxing<br>Gibbous</div>
         </div>
       </div>
+
+      <div class="cycle-block">
+        <div class="cycle-top">
+          <span>이번 사이클</span>
+          <span>다음 생리 <b>12.19</b> · D-30</span>
+        </div>
+        <div class="cycle-bar">
+          <i class="done" style="flex:21.4"></i>
+          <i class="on" style="flex:26.6"></i>
+          <i style="flex:15"></i>
+          <i style="flex:37"></i>
+        </div>
+        <div class="cycle-legend">
+          <span>겨울</span><span class="now">봄</span><span>여름</span><span>가을</span>
+        </div>
+      </div>
     </section>
 
     <section class="note">
@@ -347,29 +363,12 @@
           <span class="note-title">오늘의 문장</span>
           <span class="note-line"></span>
         </div>
-        <p class="note-text">몸이 다시 가벼워지는 시기예요. 어제보다 말이 잘 나오고, 미뤄둔 일을 꺼내기 좋은 날.<em> 오늘의 컨디션은 오늘만의 것</em>이니, 천천히 곁을 살펴보세요.</p>
+        <p class="note-text">몸이 다시 가벼워지는 시기예요. 어제보다 말이 잘 나오고, 미뤄둔 일을 꺼내기 좋은 <em>날</em>.</p>
         <div class="note-foot">
           <span>Follicular · Spring</span>
           <span class="note-chips"><span class="chip">에너지 상승</span><span class="chip">집중</span><span class="chip">회복</span></span>
         </div>
       </div>
-    </section>
-
-    <section class="cycle">
-      <div class="sec-head">
-        <span class="sec-title">이번 사이클</span>
-        <span class="sec-meta">Day 09 / 28</span>
-      </div>
-      <div class="cycle-bar">
-        <i class="done" style="flex:21.4"></i>
-        <i class="on" style="flex:26.6"></i>
-        <i style="flex:15"></i>
-        <i style="flex:37"></i>
-      </div>
-      <div class="cycle-legend">
-        <span>겨울</span><span class="now">봄</span><span>여름</span><span>가을</span>
-      </div>
-      <div class="cycle-day"><b>12월 19일</b> 다음 생리까지 30일</div>
     </section>
 
     <section class="dates">
@@ -378,9 +377,8 @@
         <span class="sec-meta">November – December</span>
       </div>
       <ul class="date-list">
-        <li class="soft"><span class="dot"></span><span class="d">11.30</span><span class="n">가임기 시작</span><span class="s">Fertile</span></li>
+        <li class="soft"><span class="dot"></span><span class="d">11.30</span><span class="n">가임기 시작</span><span class="s">– 12.06</span></li>
         <li class="soft"><span class="dot"></span><span class="d">12.05</span><span class="n">배란 예정</span><span class="s">Ovulation</span></li>
-        <li class="soft"><span class="dot"></span><span class="d">12.06</span><span class="n">가임기 종료</span><span class="s">Fertile</span></li>
         <li><span class="dot"></span><span class="d">12.19</span><span class="n">생리 예정</span><span class="s">Period</span></li>
       </ul>
     </section>

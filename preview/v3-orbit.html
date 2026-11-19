@@ -114,14 +114,14 @@
   }
 
   /* 궤도 */
-  .orb{position:relative; margin:6px auto 0; width:100%; max-width:342px; aspect-ratio:1/1}
+  .orb{position:relative; margin:4px auto 0; width:100%; max-width:314px; aspect-ratio:1/1}
   .orb svg{width:100%; height:100%; display:block; overflow:visible}
   .orb-center{
     position:absolute; left:50%; top:50%; transform:translate(-50%,-52%);
     text-align:center; pointer-events:none;
   }
   .orb-day{display:flex; align-items:baseline; justify-content:center; gap:4px; margin-top:6px}
-  .orb-day .n{font-family:var(--latin); font-weight:300; font-size:42px; line-height:.86; letter-spacing:-.02em; color:#FBF6EE}
+  .orb-day .n{font-family:var(--latin); font-weight:300; font-size:38px; line-height:.86; letter-spacing:-.02em; color:#FBF6EE}
   .orb-day .u{font-size:11px; color:var(--ink-70); letter-spacing:.06em}
   .orb-season{
     margin-top:8px; font-size:11px; letter-spacing:.28em; text-indent:.28em;
@@ -129,11 +129,11 @@
   }
   .orb-caption{
     display:flex; align-items:center; justify-content:center; gap:8px;
-    font-size:10px; letter-spacing:.1em; color:var(--ink-45); margin-top:2px;
+    font-size:10px; letter-spacing:.1em; color:var(--ink-45); margin-top:0;
   }
   .orb-caption i{width:14px; height:1px; background:var(--line)}
 
-  .legend{display:flex; justify-content:center; gap:14px; margin:2px 0 0; padding:0 16px}
+  .legend{display:flex; justify-content:center; gap:14px; margin:6px 0 0; padding:0 16px}
   .legend span{display:flex; align-items:center; gap:5px; font-size:10px; letter-spacing:.06em; color:var(--ink-45)}
   .legend i{width:5px; height:5px; border-radius:50%; display:block}
   .legend span.on{color:var(--ink)}
@@ -141,31 +141,31 @@
 
   /* 인사이트 카드 */
   .insight{
-    margin:20px 20px 0; padding:18px 18px 17px; border-radius:18px;
+    margin:16px 18px 0; padding:16px 16px 15px; border-radius:18px;
     background:var(--card); border:1px solid var(--line);
     backdrop-filter:blur(6px);
   }
   .ins-head{display:flex; align-items:center; gap:8px}
   .ins-head svg{width:14px; height:14px}
   .ins-head b{font-size:10px; font-weight:500; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-45)}
-  .ins-text{margin:10px 0 0; font-family:var(--serif); font-size:14.5px; line-height:1.85; color:#EBE5DC}
+  .ins-text{margin:9px 0 0; font-family:var(--serif); font-size:14px; line-height:1.8; color:#EBE5DC}
   .ins-text em{font-style:normal; color:var(--spring)}
-  .ins-tags{display:flex; gap:6px; margin-top:13px; flex-wrap:wrap}
+  .ins-tags{display:flex; gap:6px; margin-top:11px; flex-wrap:wrap}
   .ins-tags span{
     font-size:9.5px; letter-spacing:.04em; color:var(--ink-70); padding:4px 10px; border-radius:999px;
     background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.07);
   }
 
   /* 예정 */
-  .sched{margin:20px 20px 0; border-radius:18px; background:rgba(255,255,255,.028); border:1px solid var(--line); overflow:hidden}
-  .sched-row{display:flex; align-items:center; gap:12px; padding:14px 16px}
+  .sched{margin:14px 18px 0; border-radius:18px; background:rgba(255,255,255,.028); border:1px solid var(--line); overflow:hidden}
+  .sched-row{display:flex; align-items:center; gap:12px; padding:12px 15px}
   .sched-row + .sched-row{border-top:1px solid rgba(255,255,255,.06)}
   .sched-row .ic{width:15px; height:15px; opacity:.8}
   .sched-row .k{font-size:11.5px; color:var(--ink-45); letter-spacing:.03em}
   .sched-row .v{margin-left:auto; font-family:var(--latin); font-size:15px; color:#F4EFE8; letter-spacing:.02em}
   .sched-row .v small{font-family:var(--sans); font-size:9.5px; color:var(--ink-28); margin-left:5px; letter-spacing:.02em}
 
-  .actions{display:flex; gap:9px; margin:18px 20px 0}
+  .actions{display:flex; gap:9px; margin:14px 18px 0}
   .btn{
     flex:1; border:0; cursor:pointer; border-radius:14px; padding:15px 10px;
     display:flex; align-items:center; justify-content:center; gap:7px;
@@ -176,7 +176,7 @@
   .btn.solid{background:linear-gradient(135deg,#BFEBD6,#9FDCC1); color:#10221C}
   .btn.ghost{background:rgba(255,255,255,.055); color:#E8E2D9; border:1px solid var(--line)}
 
-  .foot-note{margin:22px 20px 6px; text-align:center; font-size:8.5px; letter-spacing:.34em; text-transform:uppercase; color:rgba(244,239,232,.16)}
+  .foot-note{margin:16px 20px 4px; text-align:center; font-size:8.5px; letter-spacing:.34em; text-transform:uppercase; color:rgba(244,239,232,.16)}
 
   /* 하단 네비 */
   .tabbar{
