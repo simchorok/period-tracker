@@ -50,7 +50,7 @@ textarea{resize:none}
 .aurora{
   position:fixed; inset:0; z-index:0; overflow:hidden;
   background:
-    linear-gradient(180deg, rgba(15,10,20,.30) 0%, rgba(15,10,20,.14) 12%, rgba(15,10,20,0) 30%),
+    linear-gradient(180deg, rgba(15,10,20,.36) 0%, rgba(15,10,20,.16) 11%, rgba(15,10,20,0) 27%),
     radial-gradient(70% 42% at 16% -6%, rgba(156,190,150,.40), transparent 72%),
     radial-gradient(60% 36% at 90% -4%, rgba(224,154,144,.32), transparent 74%),
     linear-gradient(180deg,#484151 0%, #453950 16%, #382A44 40%, #241831 66%, #170F1E 87%, #120C17 100%);
@@ -200,10 +200,10 @@ textarea{resize:none}
 @keyframes halo{0%,100%{opacity:.16} 50%{opacity:.32}}
 
 .orb-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none}
-.moon-orb{position:relative; width:156px; height:156px; display:grid; place-items:center; margin-top:-8px}
-.moon-orb .moon-img{position:relative; width:100%; height:100%; display:block; transform:scale(1.08); filter:brightness(.97) saturate(1.06)}
+.moon-orb{position:relative; width:176px; height:176px; display:grid; place-items:center; margin-top:-10px}
+.moon-orb .moon-img{position:relative; width:100%; height:100%; display:block; transform:scale(1.06); filter:brightness(.97) saturate(1.06)}
 .moon-orb .moon-bloom{
-  position:absolute; width:222px; height:222px; border-radius:50%;
+  position:absolute; width:244px; height:244px; border-radius:50%;
   background:radial-gradient(circle at 50% 50%, rgba(255,150,105,.34), rgba(190,140,205,.22) 46%, rgba(120,90,170,0) 72%);
   filter:blur(12px);
   transition:background .6s ease;
@@ -213,8 +213,8 @@ textarea{resize:none}
 .orb.phase-summer .moon-bloom{background:radial-gradient(circle at 50% 50%, rgba(255,190,130,.36), rgba(240,150,150,.20) 46%, transparent 72%)}
 .orb.phase-autumn .moon-bloom{background:radial-gradient(circle at 50% 50%, rgba(240,160,150,.32), rgba(190,140,190,.20) 46%, transparent 72%)}
 
-.orb-day{display:flex; align-items:baseline; justify-content:center; gap:5px; margin-top:2px}
-.orb-day .n{font-family:var(--sans); font-weight:800; font-size:56px; line-height:.92; letter-spacing:-.045em; color:#FFFCF8}
+.orb-day{display:flex; align-items:baseline; justify-content:center; gap:5px; margin-top:-2px}
+.orb-day .n{font-family:var(--sans); font-weight:800; font-size:58px; line-height:.92; letter-spacing:-.045em; color:#FFFCF8}
 .orb-day .u{font-size:17px; font-weight:700; letter-spacing:.02em; color:rgba(248,242,237,.74)}
 .orb-season{
   margin-top:6px;

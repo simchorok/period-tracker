@@ -109,8 +109,8 @@ function renderOrbit(opts) {
   for (let d = 1; d <= cycle; d++) {
     const isToday = (day > 0 && d === day);
     const isWeek = (d % 7 === 1);
-    const r1 = ORBIT_R - 8;
-    const r2 = isToday ? ORBIT_R - 52 : (isWeek ? ORBIT_R - 32 : ORBIT_R - 24);
+    const r1 = ORBIT_R - 10;
+    const r2 = isToday ? ORBIT_R - 40 : (isWeek ? ORBIT_R - 26 : ORBIT_R - 20);
     const a = _orbitPt(r1, d, cycle), b = _orbitPt(r2, d, cycle);
     const stroke = isToday
       ? 'url(#progGrad)'
