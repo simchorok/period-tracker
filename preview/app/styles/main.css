@@ -50,16 +50,16 @@ textarea{resize:none}
 .aurora{
   position:fixed; inset:0; z-index:0; overflow:hidden;
   background:
-    linear-gradient(180deg, rgba(15,10,20,.46) 0%, rgba(15,10,20,.22) 10%, rgba(15,10,20,.05) 22%, rgba(15,10,20,0) 34%),
-    radial-gradient(64% 40% at 18% -8%, rgba(150,180,148,.30), transparent 70%),
-    radial-gradient(58% 34% at 88% -6%, rgba(214,150,142,.26), transparent 72%),
-    linear-gradient(180deg,#433E4C 0%, #3E3449 16%, #34263F 40%, #221630 66%, #160E1D 87%, #120C17 100%);
+    linear-gradient(180deg, rgba(15,10,20,.30) 0%, rgba(15,10,20,.14) 12%, rgba(15,10,20,0) 30%),
+    radial-gradient(70% 42% at 16% -6%, rgba(156,190,150,.40), transparent 72%),
+    radial-gradient(60% 36% at 90% -4%, rgba(224,154,144,.32), transparent 74%),
+    linear-gradient(180deg,#484151 0%, #453950 16%, #382A44 40%, #241831 66%, #170F1E 87%, #120C17 100%);
 }
 .aurora .blob{position:absolute; border-radius:50%; filter:blur(62px); mix-blend-mode:screen; pointer-events:none}
-.aurora .b1{width:420px; height:330px; left:-150px; top:-160px;
-  background:radial-gradient(circle at 50% 50%, rgba(150,182,146,.62), rgba(150,182,146,0) 72%)}
-.aurora .b2{width:340px; height:290px; right:-130px; top:-130px;
-  background:radial-gradient(circle at 50% 50%, rgba(216,150,140,.52), rgba(216,150,140,0) 72%)}
+.aurora .b1{width:500px; height:360px; left:-170px; top:-190px;
+  background:radial-gradient(circle at 50% 50%, rgba(150,186,144,.66), rgba(150,186,144,0) 72%)}
+.aurora .b2{width:400px; height:320px; right:-150px; top:-160px;
+  background:radial-gradient(circle at 50% 50%, rgba(216,144,134,.56), rgba(216,144,134,0) 72%)}
 .aurora .b3{width:470px; height:410px; left:50%; margin-left:-235px; top:130px;
   background:radial-gradient(circle at 50% 50%, rgba(150,110,172,.44), rgba(150,110,172,0) 72%)}
 .aurora .b4{width:400px; height:330px; left:50%; margin-left:-200px; bottom:-160px;
