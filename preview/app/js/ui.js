@@ -50,8 +50,8 @@ function getCyclePhase(dayOfCycle, cycleLength) {
   return 'autumn';
 }
 
-/* ── 홈: 궤도 그리기 ── */
-const ORBIT_CX = 180, ORBIT_CY = 180, ORBIT_R = 138;
+/* ── 홈: 방사형 다이얼 그리기 ── */
+const ORBIT_CX = 180, ORBIT_CY = 180, ORBIT_R = 150;
 
 function _orbitPt(r, day, N) {
   const deg = (day - 1) * 360 / N;
@@ -97,47 +97,35 @@ function renderOrbit(opts) {
   const progG = document.getElementById('orbit-progress');
   if (!ticksG || !arcsG || !progG) return;
 
-  // 눈금
+  // 눈금 — 하루에 하나, 오늘 눈금만 코랄로 길게
   let ticks = '';
   for (let d = 1; d <= cycle; d++) {
-    const major = (d === 1 || d === day);
-    const r1 = major ? ORBIT_R - 10 : ORBIT_R - 6;
-    const r2 = ORBIT_R + (major ? 10 : 6);
+    const isToday = (day > 0 && d === day);
+    const isWeek = (d % 7 === 1);
+    const r1 = ORBIT_R - 8;
+    const r2 = isToday ? ORBIT_R - 22 : (isWeek ? ORBIT_R - 16 : ORBIT_R - 12);
     const a = _orbitPt(r1, d, cycle), b = _orbitPt(r2, d, cycle);
-    ticks += `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${day > 0 && d <= day ? 'rgba(255,255,255,.28)' : 'rgba(255,255,255,.11)'}" stroke-width="${major ? 1.4 : 1}" stroke-linecap="round"/>`;
+    const stroke = isToday
+      ? 'url(#progGrad)'
+      : (day > 0 && d <= day ? 'rgba(255,255,255,.34)' : 'rgba(255,255,255,.15)');
+    ticks += `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${stroke}" stroke-width="${isToday ? 2.8 : (isWeek ? 1.6 : 1.1)}" stroke-linecap="round"/>`;
   }
   ticksG.innerHTML = ticks;
 
-  // 사계절 아크
-  const active = phaseKey;
-  let arcs = '';
-  seasonBounds(cycle).forEach(s => {
-    const c = CYCLE_PHASES[s.key].color;
-    const isActive = s.key === active;
-    const from = Math.max(0.2, s.from - 0.45);
-    const to = Math.min(cycle + 0.6, s.to + 0.45);
-    if (to - from < 0.9) return;
-    arcs += `<path d="${_orbitArc(ORBIT_R, from, to, cycle)}" fill="none" stroke="${c}" stroke-width="${isActive ? 3 : 2}" stroke-linecap="round" opacity="${isActive ? '.92' : '.42'}"/>`;
-  });
-  arcsG.innerHTML = arcs;
+  // 사계절 아크는 다이얼에서는 쓰지 않는다
+  arcsG.innerHTML = '';
 
-  // 오늘까지 지나온 아크
+  // 오늘까지 지나온 진행 링
   let prog = '';
   const endDay = Math.max(0, Math.min(day, cycle));
-  if (endDay > 1) {
-    prog += `<path d="${_orbitArc(ORBIT_R, 1, endDay, cycle)}" fill="none" stroke="url(#progGrad)" stroke-width="3" stroke-linecap="round" opacity=".9" filter="url(#dotGlow)"/>`;
-  }
   if (endDay >= 1) {
+    prog += `<path d="${_orbitArc(ORBIT_R, 1, endDay, cycle)}" fill="none" stroke="url(#progGrad)" stroke-width="7" stroke-linecap="round"/>`;
     const m = _orbitPt(ORBIT_R, endDay, cycle);
-    prog += `<circle class="halo" cx="${m[0].toFixed(1)}" cy="${m[1].toFixed(1)}" r="11" fill="${phaseKey ? CYCLE_PHASES[phaseKey].color : '#A9E3C6'}" opacity=".16"/>`;
-    prog += `<circle cx="${m[0].toFixed(1)}" cy="${m[1].toFixed(1)}" r="4.2" fill="#FBF6EE" filter="url(#dotGlow)"/>`;
-    prog += `<circle cx="${m[0].toFixed(1)}" cy="${m[1].toFixed(1)}" r="1.8" fill="${phaseKey ? CYCLE_PHASES[phaseKey].color : '#A9E3C6'}"/>`;
+    prog += `<circle class="halo" cx="${m[0].toFixed(1)}" cy="${m[1].toFixed(1)}" r="13" fill="${phaseKey ? CYCLE_PHASES[phaseKey].color : '#FFB27E'}" opacity=".22"/>`;
+    prog += `<circle cx="${m[0].toFixed(1)}" cy="${m[1].toFixed(1)}" r="5.4" fill="#FFF3E6" filter="url(#dotGlow)"/>`;
+    prog += `<circle cx="${m[0].toFixed(1)}" cy="${m[1].toFixed(1)}" r="2.6" fill="#FF8A5F"/>`;
   }
   progG.innerHTML = prog;
-
-  // 달 위상
-  const shade = document.getElementById('moon-shade');
-  if (shade) shade.innerHTML = phaseKey ? (MOON_SHADE[phaseKey] || '') : MOON_SHADE.winter;
 
   const svg = document.getElementById('orbit-svg');
   if (svg) {
@@ -158,8 +146,11 @@ async function updateStatus() {
   const hintDot = document.getElementById('hint-dot');
   const noteEl = document.getElementById('phase-note');
 
+  const orbEl = document.getElementById('orb');
+
   if (!records.length) {
     renderOrbit({ cycle: 28, day: 0, phaseKey: null });
+    if (orbEl) orbEl.className = 'orb';
     if (dayEl) dayEl.textContent = '—';
     if (unitEl) unitEl.textContent = '일째';
     if (seasonEl) { seasonEl.textContent = '달의 기록'; seasonEl.className = 'orb-season'; }
@@ -178,6 +169,7 @@ async function updateStatus() {
     const inPeriod = todayStr >= last.start && todayStr <= last.end;
 
     renderOrbit({ cycle, day: dayOfCycle, phaseKey });
+    if (orbEl) orbEl.className = 'orb phase-' + phaseKey;
 
     if (dayEl) dayEl.textContent = dayOfCycle;
     if (unitEl) unitEl.textContent = '일째';
@@ -201,8 +193,35 @@ async function updateStatus() {
     }
   }
 
+  renderHomeBadges();
+
   if (typeof checkReportBanner === 'function') await checkReportBanner();
   if (typeof checkQuestionBanner === 'function') await checkQuestionBanner();
+}
+
+/* ── 홈 상단 뱃지 ── */
+function renderHomeBadges() {
+  const records = loadRecords();
+  const logs = loadLogs();
+  const ddayEl = document.getElementById('badge-dday');
+  const cycleEl = document.getElementById('badge-cycle');
+  const logsEl = document.getElementById('badge-logs');
+
+  if (cycleEl) cycleEl.textContent = records.length >= 2 ? calcAvgCycle(records) : '—';
+
+  const logCount = Object.keys(logs).length;
+  if (logsEl) logsEl.textContent = logCount ? logCount : '—';
+
+  if (ddayEl) {
+    if (!records.length) {
+      ddayEl.textContent = '—';
+    } else {
+      const pred = getNextPredictions(records);
+      const diff = pred ? dateDiff(pred.nextStart, getTodayStr()) : null;
+      ddayEl.textContent = diff === null ? '—'
+        : (diff > 0 ? `D-${diff}` : (diff === 0 ? 'D-DAY' : `D+${Math.abs(diff)}`));
+    }
+  }
 }
 
 /* ── 마이페이지 렌더 ── */

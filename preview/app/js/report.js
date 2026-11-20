@@ -114,8 +114,11 @@ function renderReportSummary(records) {
   const prevDur = prev ? dateDiff(prev.end, prev.start) + 1 : null;
   const prevCycle = records.length >= 3 ? dateDiff(records[1].start, records[2].start) : null;
 
+  // 지난 리포트를 열 때 순서가 어긋나 주기가 음수로 나오는 경우를 막는다
+  const safeCycle = (cycle !== null && cycle > 0) ? cycle : null;
+
   const durChange = prevDur ? dur - prevDur : null;
-  const cycleChange = (cycle && prevCycle) ? cycle - prevCycle : null;
+  const cycleChange = (safeCycle && prevCycle && prevCycle > 0) ? safeCycle - prevCycle : null;
 
   const logs = loadLogs();
   let logCount = 0;
@@ -138,7 +141,7 @@ function renderReportSummary(records) {
       ${changeHtml(durChange)}
     </div>
     <div class="report-summary-item">
-      <div class="report-summary-val">${cycle ? unitHtml(cycle, '일') : '—'}</div>
+      <div class="report-summary-val">${safeCycle ? unitHtml(safeCycle, '일') : '—'}</div>
       <div class="report-summary-label">이번 주기</div>
       ${changeHtml(cycleChange)}
     </div>
@@ -370,11 +373,16 @@ function openReportByEndDate(endDate) {
   document.getElementById('report-title').textContent = `${y}년 ${parseInt(m)}월 사이클 리포트`;
   document.getElementById('report-sub').textContent =
     `${target.start.slice(5).replace('-','/')} ~ ${target.end.slice(5).replace('-','/')}`;
-  const reorderedRecords = [target, ...records.filter(r => r.start !== target.start)];
+  // 기록은 최신순 정렬. 대상 주기 바로 앞(과거) 주기를 다음 자리에 두어
+  // 요약 카드의 "이번 주기"가 음수(-23일)로 나오지 않게 한다.
+  const idx = records.findIndex(r => r.start === target.start);
+  const older = idx >= 0 ? records.slice(idx + 1) : records.filter(r => r.start !== target.start);
+  const newer = idx >= 0 ? records.slice(0, idx) : [];
+  const reorderedRecords = [target, ...older, ...newer];
   renderReportSummary(reorderedRecords);
   renderReportPhases(reorderedRecords, target);
   renderReportEnergyChart(target);
-  renderReportForecast(reorderedRecords, target);
+  renderReportForecast([target, ...older], target);
   document.getElementById('report-list-backdrop').classList.remove('open');
   document.getElementById('report-backdrop').classList.add('open');
   currentReportEndDate = target.end;
