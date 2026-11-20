@@ -61,7 +61,7 @@ function openReport() {
     document.getElementById('report-title').textContent = `${parseInt(todayStr.slice(5,7))}월 사이클 리포트`;
     document.getElementById('report-sub').textContent = `${todayStr.slice(0,7).replace('-','/')} 월간 기록`;
     document.getElementById('report-summary').innerHTML =
-      '<div style="grid-column:1/-1;font-size:14.5px;color:rgba(244,239,232,.62);line-height:1.9;padding:6px 0;">생리 기록을 남기면 더 정확한 사이클 분석을 드릴 수 있어요.</div>';
+      '<div class="rs-empty">생리 기록을 남기면 더 정확한 사이클 분석을 드릴 수 있어요.</div>';
     document.getElementById('report-phases').innerHTML = '';
     document.getElementById('report-forecast').innerHTML = '';
     document.getElementById('report-energy-chart').innerHTML = '';
@@ -129,32 +129,31 @@ function renderReportSummary(records) {
 
   const changeHtml = (val) => {
     if (val === null) return '';
-    if (val > 0) return `<div class="report-summary-change up">+${val}일</div>`;
-    if (val < 0) return `<div class="report-summary-change down">-${Math.abs(val)}일</div>`;
-    return `<div class="report-summary-change same">변화없음</div>`;
+    if (val > 0) return `<div class="rs-change up">+${val}일</div>`;
+    if (val < 0) return `<div class="rs-change down">-${Math.abs(val)}일</div>`;
+    return `<div class="rs-change same">변화없음</div>`;
   };
 
+  // 살짝 기울어지고 겹치는 비대칭 3카드 + 누적 기록 1줄
   document.getElementById('report-summary').innerHTML = `
-    <div class="report-summary-item">
-      <div class="report-summary-val">${unitHtml(dur, '일')}</div>
-      <div class="report-summary-label">생리 기간</div>
-      ${changeHtml(durChange)}
+    <div class="report-summary-stack">
+      <div class="rs-card c1">
+        <div class="rs-val">${unitHtml(dur, '일')}</div>
+        <div class="rs-label">생리 기간</div>
+        ${changeHtml(durChange)}
+      </div>
+      <div class="rs-card c2">
+        <div class="rs-val">${safeCycle ? unitHtml(safeCycle, '일') : '—'}</div>
+        <div class="rs-label">이번 주기</div>
+        ${changeHtml(cycleChange)}
+      </div>
+      <div class="rs-card c3">
+        <div class="rs-val">${unitHtml(logCount, '일')}</div>
+        <div class="rs-label">상태 기록일수</div>
+        <div class="rs-change same">이번 사이클</div>
+      </div>
     </div>
-    <div class="report-summary-item">
-      <div class="report-summary-val">${safeCycle ? unitHtml(safeCycle, '일') : '—'}</div>
-      <div class="report-summary-label">이번 주기</div>
-      ${changeHtml(cycleChange)}
-    </div>
-    <div class="report-summary-item">
-      <div class="report-summary-val">${unitHtml(logCount, '일')}</div>
-      <div class="report-summary-label">상태 기록일수</div>
-      <div class="report-summary-change same">이번 사이클</div>
-    </div>
-    <div class="report-summary-item">
-      <div class="report-summary-val">${unitHtml(records.length, '회')}</div>
-      <div class="report-summary-label">누적 기록</div>
-      <div class="report-summary-change same">전체</div>
-    </div>
+    <div class="rs-foot">누적 기록<b>${unitHtml(records.length, '회')}</b>전체</div>
   `;
 }
 

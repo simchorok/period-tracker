@@ -154,6 +154,8 @@ async function updateStatus() {
   const noteEl = document.getElementById('phase-note');
 
   const orbEl = document.getElementById('orb');
+  const heroTitle = document.getElementById('hero-title');
+  if (heroTitle) heroTitle.classList.toggle('is-empty', !records.length);
 
   if (!records.length) {
     renderOrbit({ cycle: 28, day: 0, phaseKey: null });

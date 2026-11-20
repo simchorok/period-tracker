@@ -196,10 +196,10 @@ textarea{resize:none}
 .screens::-webkit-scrollbar{display:none}
 .screen{display:none; min-height:100%; padding-bottom:122px}
 .screen.active{display:block}
-#tab-home.active{display:flex; flex-direction:column; padding:0 22px 112px}
+#tab-home.active{display:flex; flex-direction:column; padding:0 20px 112px}
 
 /* ── 홈 상단 ── */
-.home-top{flex:0 0 auto; padding:22px 0 0; text-align:center}
+.home-top{flex:0 0 auto; padding:20px 0 0; text-align:center}
 .brand{
   font-family:var(--serif); font-weight:700; font-size:18px;
   letter-spacing:.32em; text-indent:.32em; color:rgba(255,248,242,.92);
@@ -212,18 +212,59 @@ textarea{resize:none}
 .home-stats span + span::before{content:'·'; margin:0 9px; color:rgba(251,244,238,.24)}
 .home-stats b{font-size:13px; font-weight:700; color:rgba(251,244,238,.66); letter-spacing:0}
 
-/* ── 히어로: 아우라 오브 ── */
-.stage{flex:1 1 auto; min-height:0; display:flex; align-items:center; justify-content:center; padding:4px 0 0}
-.orb{position:relative; width:min(84vw, 322px); aspect-ratio:1/1; display:grid; place-items:center}
+/* ── 히어로: 아우라 오브 + 그 위로 겹쳐 올라오는 글라스 카드 ── */
+.hero{
+  position:relative; flex:1 1 auto; min-height:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:8px 0 0;
+}
+.orb{position:relative; width:min(91vw, 352px); aspect-ratio:1/1; display:grid; place-items:center}
+
+/* 반투명 다크 글라스 — iOS Safari 안전을 위해 backdrop-filter 대신
+   다단계 반투명 그라데이션 + 상단 하이라이트 라인으로 유리감을 낸다.
+   오브 뒤쪽의 피치·코랄·라벤더 빛이 카드 위로 은은히 비친다. */
+.glass-card{
+  position:relative; z-index:2; width:100%; margin-top:-130px;
+  padding:28px 20px 24px; text-align:center;
+  border-radius:32px;
+  background:
+    radial-gradient(124% 84% at 50% -14%, rgba(255,184,140,.36) 0%, rgba(255,168,124,.14) 38%, rgba(255,168,124,0) 66%),
+    radial-gradient(84% 70% at 12% -10%, rgba(255,122,100,.26) 0%, rgba(255,122,100,0) 62%),
+    radial-gradient(86% 72% at 89% -8%, rgba(182,154,242,.28) 0%, rgba(182,154,242,0) 64%),
+    linear-gradient(180deg, rgba(46,30,39,.82) 0%, rgba(30,20,28,.92) 46%, rgba(16,11,16,.97) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,240,228,.28),
+    inset 0 0 0 1px rgba(255,255,255,.05),
+    inset 0 -26px 40px -26px rgba(255,150,116,.42),
+    0 -16px 42px -16px rgba(255,150,116,.32),
+    0 36px 70px -30px rgba(0,0,0,.95);
+}
+/* 카드 아래로 은은하게 번지는 빛 — 빈 아래 공간을 빛으로 잇는다 */
+.glass-card::after{
+  content:''; position:absolute; z-index:-1; left:-10%; right:-10%; bottom:-78px; height:180px;
+  border-radius:50%; pointer-events:none;
+  background:
+    radial-gradient(46% 50% at 50% 40%, rgba(255,148,114,.26) 0%, rgba(255,148,114,.10) 46%, rgba(255,148,114,0) 78%),
+    radial-gradient(40% 46% at 80% 36%, rgba(176,148,240,.18) 0%, rgba(176,148,240,0) 76%),
+    radial-gradient(38% 44% at 18% 38%, rgba(255,126,104,.16) 0%, rgba(255,126,104,0) 76%);
+}
+.glass-card::before{
+  content:''; position:absolute; left:14%; right:14%; top:0; height:1.5px; border-radius:2px;
+  background:linear-gradient(90deg, rgba(255,196,156,0), rgba(255,216,188,.62) 26%, rgba(198,172,246,.52) 72%, rgba(255,196,156,0));
+  pointer-events:none;
+}
 
 /* ── 일수 · 단계 ── */
-.hero-copy{flex:0 0 auto; text-align:center; margin-top:4px}
-.orb-day{display:flex; align-items:baseline; justify-content:center; gap:6px}
-.orb-day .n{font-family:var(--sans); font-weight:800; font-size:58px; line-height:.92; letter-spacing:-.05em; color:#FFFBF7}
-.orb-day .u{font-size:17px; font-weight:700; letter-spacing:.02em; color:rgba(251,244,238,.58)}
+.hero-title{display:flex; align-items:baseline; justify-content:center; gap:8px; flex-wrap:wrap}
+.hero-title.is-empty .orb-day,
+.hero-title.is-empty .h-sep{display:none}
+.hero-title.is-empty .orb-season{font-size:24px; letter-spacing:.1em}
+.orb-day{display:inline-flex; align-items:baseline; gap:3px}
+.orb-day .n{font-family:var(--sans); font-weight:800; font-size:46px; line-height:.96; letter-spacing:-.045em; color:#FFFBF7}
+.orb-day .u{font-size:14.5px; font-weight:700; letter-spacing:.02em; color:rgba(251,244,238,.62)}
+.h-sep{font-size:19px; font-weight:600; color:rgba(251,244,238,.26); line-height:1}
 .orb-season{
-  margin-top:6px;
-  font-size:19px; font-weight:700; letter-spacing:.16em; text-indent:.16em;
+  font-size:22px; font-weight:800; letter-spacing:.05em;
   color:#FFD3B8;
 }
 .orb-season.winter{color:#C9C2EC}
@@ -233,8 +274,8 @@ textarea{resize:none}
 
 /* ── 한 줄 상태 ── */
 .status-line{
-  flex:0 0 auto; margin:14px auto 0; display:flex; align-items:center; gap:8px;
-  font-size:15px; font-weight:600; letter-spacing:.01em; color:rgba(251,244,238,.70);
+  margin:11px auto 0; display:flex; align-items:center; justify-content:center; gap:8px;
+  font-size:14.5px; font-weight:600; letter-spacing:.01em; color:rgba(251,244,238,.72);
   text-align:center;
 }
 .status-line i{width:6px; height:6px; border-radius:50%; background:var(--peach); display:block; flex:0 0 auto; box-shadow:0 0 9px rgba(255,193,153,.85)}
@@ -244,7 +285,11 @@ textarea{resize:none}
 .status-line i.autumn{background:var(--rose); box-shadow:0 0 9px rgba(240,138,160,.85)}
 
 /* ── 질문·리포트 한 줄 진입 ── */
-.quick-links{flex:0 0 auto; display:flex; align-items:center; justify-content:center; margin-top:20px}
+.quick-links{
+  display:flex; align-items:center; justify-content:center;
+  margin-top:16px; padding-top:13px;
+  border-top:1px solid rgba(255,255,255,.07);
+}
 .q-link{
   display:inline-flex; align-items:center; gap:6px;
   padding:7px 2px; border:0; background:none; cursor:pointer;
@@ -261,7 +306,7 @@ textarea{resize:none}
 #question-sub{display:none}
 
 /* ── 하단: 글로우 CTA ── */
-.home-foot{flex:0 0 auto; display:flex; align-items:center; gap:10px; margin-top:22px}
+.home-foot{flex:0 0 auto; display:flex; align-items:center; gap:10px; margin-top:14px}
 .cta{
   flex:1; height:60px; border-radius:999px; cursor:pointer;
   display:flex; align-items:center; justify-content:center; gap:9px;
@@ -583,6 +628,41 @@ textarea{resize:none}
 }
 .log-tag.selected{background:var(--warm-grad); color:var(--warm-ink); font-weight:700;
   box-shadow:0 10px 22px -14px rgba(255,132,110,.9)}
+
+/* ── 기분: 반원 아치 다이얼 ── */
+.mood-dial{position:relative; width:100%; height:202px}
+.mood-dial-bg{position:absolute; left:0; top:0; width:100%; height:202px; pointer-events:none}
+.mood-dial-bg path{fill:none; stroke-linecap:round}
+.mood-dial-bg .arc-rail{stroke:rgba(255,255,255,.17); stroke-width:1.3}
+.mood-dial-bg .arc-glow{stroke:rgba(255,186,146,.11); stroke-width:14}
+.mood-arc{position:relative; display:block; height:202px}
+.mood-arc .log-tag{
+  position:absolute; left:var(--lx); top:var(--ty);
+  width:56px; height:56px; padding:0 4px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  font-size:10px; font-weight:700; line-height:1.32; letter-spacing:-.01em;
+  transform:translate(-50%,-50%);
+  background:linear-gradient(168deg, rgba(50,36,46,.95) 0%, rgba(31,22,30,.96) 58%, rgba(22,15,22,.97) 100%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.075), inset 0 1px 0 rgba(255,255,255,.11), 0 12px 22px -18px rgba(0,0,0,.95);
+}
+.mood-arc .lg-t{display:block; width:100%; word-break:keep-all; text-wrap:balance; overflow-wrap:anywhere}
+.mood-arc .log-tag.selected{
+  background:var(--warm-grad); color:var(--warm-ink);
+  box-shadow:0 14px 26px -12px rgba(255,132,110,.8), inset 0 1px 0 rgba(255,255,255,.4);
+}
+/* 가운데 칩 → 바깥 칩으로 이어지는 아치 위 11개 자리 (350px 기준, %는 좌우 폭에 대응) */
+.mood-arc .log-tag:nth-of-type(1){--lx:8.1%;  --ty:161px}
+.mood-arc .log-tag:nth-of-type(2){--lx:16.7%; --ty:102px}
+.mood-arc .log-tag:nth-of-type(3){--lx:31.7%; --ty:62px}
+.mood-arc .log-tag:nth-of-type(4){--lx:50%;   --ty:48px}
+.mood-arc .log-tag:nth-of-type(5){--lx:68.3%; --ty:62px}
+.mood-arc .log-tag:nth-of-type(6){--lx:83.3%; --ty:102px}
+.mood-arc .log-tag:nth-of-type(7){--lx:91.9%; --ty:161px}
+.mood-arc .log-tag:nth-of-type(8){--lx:25.7%; --ty:159px}
+.mood-arc .log-tag:nth-of-type(9){--lx:40.8%; --ty:112px}
+.mood-arc .log-tag:nth-of-type(10){--lx:59.2%; --ty:112px}
+.mood-arc .log-tag:nth-of-type(11){--lx:74.3%; --ty:159px}
+
 .star-row{display:flex; align-items:center; flex-wrap:wrap; gap:8px; row-gap:8px}
 .star-btn{
   width:42px; height:42px; border-radius:50%; padding:0; cursor:pointer;
@@ -673,18 +753,39 @@ textarea{resize:none}
 .report-ai-retry{margin-top:10px; background:rgba(255,255,255,.10); border:0; border-radius:999px; padding:8px 16px; font-size:13px; font-weight:600; color:#FFD6D6; cursor:pointer}
 .report-section{margin-top:26px}
 .report-section-title{font-size:13.5px; font-weight:700; letter-spacing:.08em; color:var(--ink-52); margin-bottom:13px}
-.report-summary-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-.report-summary-item{
-  padding:15px 14px; border-radius:18px;
-  background:var(--surface);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
+
+/* 이번 사이클 요약 — 살짝 기울어지고 겹치는 비대칭 3카드 배치 */
+.report-summary-stack{position:relative; display:flex; justify-content:center; align-items:flex-start; padding:14px 0 4px}
+.rs-card{
+  position:relative; flex:0 0 auto; width:104px; padding:15px 12px 14px;
+  border-radius:20px; text-align:left;
+  background:
+    radial-gradient(120% 90% at 50% -18%, rgba(255,176,136,.20), rgba(255,176,136,0) 64%),
+    linear-gradient(165deg, rgba(58,40,50,.84) 0%, rgba(38,27,35,.90) 52%, rgba(25,18,24,.94) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,240,228,.13), inset 0 0 0 1px rgba(255,255,255,.07), 0 22px 40px -24px rgba(0,0,0,.95);
+  transform-origin:50% 62%;
 }
-.report-summary-val{font-size:23px; font-weight:800; line-height:1.15; color:#FFFBF7; letter-spacing:-.02em}
-.report-summary-label{margin-top:7px; font-size:12.5px; font-weight:600; color:var(--ink-52)}
-.report-summary-change{margin-top:6px; font-size:12.5px; font-weight:600; letter-spacing:.01em}
-.report-summary-change.up{color:rgba(255,198,150,.95)}
-.report-summary-change.down{color:rgba(187,210,176,.95)}
-.report-summary-change.same{color:var(--ink-38)}
+.rs-card.c1{transform:rotate(-7deg) translateY(20px); z-index:1}
+.rs-card.c2{
+  width:112px; transform:rotate(1deg) translateY(-6px); z-index:3;
+  background:
+    radial-gradient(120% 90% at 28% 0%, rgba(255,186,146,.26), rgba(255,186,146,0) 62%),
+    radial-gradient(120% 90% at 92% 100%, rgba(184,156,242,.20), rgba(184,156,242,0) 62%),
+    linear-gradient(165deg, rgba(64,44,54,.88) 0%, rgba(42,30,40,.92) 54%, rgba(28,20,28,.95) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,240,228,.18), inset 0 0 0 1px rgba(255,255,255,.08), 0 26px 44px -22px rgba(0,0,0,.95);
+}
+.rs-card.c3{transform:rotate(5.5deg) translateY(12px); z-index:2}
+.rs-card + .rs-card{margin-left:-7px}
+.rs-val{font-size:22px; font-weight:800; letter-spacing:-.03em; color:#FFFBF7; line-height:1.12; white-space:nowrap}
+.rs-val .unit{font-size:12px; margin-left:2px; font-weight:700; color:rgba(251,244,238,.55)}
+.rs-label{margin-top:7px; font-size:12px; font-weight:700; color:rgba(251,244,238,.62); letter-spacing:.01em; white-space:nowrap}
+.rs-change{margin-top:5px; font-size:11.5px; font-weight:700; letter-spacing:.01em; white-space:nowrap}
+.rs-change.up{color:rgba(255,198,150,.95)}
+.rs-change.down{color:rgba(187,210,176,.95)}
+.rs-change.same{color:var(--ink-38)}
+.rs-foot{margin-top:21px; text-align:right; font-size:12px; font-weight:600; color:var(--ink-52); letter-spacing:.02em}
+.rs-foot b{font-weight:800; color:rgba(251,244,238,.84); margin:0 5px}
+.rs-empty{font-size:14px; font-weight:500; line-height:1.9; color:var(--ink-66); padding:6px 0}
 .report-card{
   padding:17px 16px; border-radius:20px;
   background:var(--surface);
@@ -785,29 +886,32 @@ textarea{resize:none}
 /* ── 낮은 화면 대응 ── */
 @media (max-height: 820px){
   #tab-home.active{padding-bottom:106px}
-  .home-top{padding-top:18px}
-  .home-stats{margin-top:10px}
-  .orb{width:min(78vw, 292px)}
-  .orb-day .n{font-size:54px}
-  .orb-season{font-size:18px}
-  .status-line{margin-top:12px; font-size:14.5px}
-  .quick-links{margin-top:16px}
-  .home-foot{margin-top:18px}
+  .home-top{padding-top:16px}
+  .home-stats{margin-top:9px}
+  .orb{width:min(82vw, 306px)}
+  .glass-card{margin-top:-96px; padding:17px 16px 11px}
+  .orb-day .n{font-size:38px}
+  .orb-season{font-size:20px}
+  .status-line{margin-top:8px; font-size:13.5px}
+  .quick-links{margin-top:11px; padding-top:10px}
+  .home-foot{margin-top:16px}
   .cta,.cta-icon{height:56px}
   .cta-icon{width:56px}
 }
 @media (max-height: 730px){
   #tab-home.active{padding-bottom:100px}
-  .home-top{padding-top:14px}
+  .home-top{padding-top:12px}
   .brand{font-size:17px}
-  .home-stats{font-size:12px; margin-top:8px}
-  .orb{width:min(70vw, 252px)}
-  .orb-day .n{font-size:46px}
-  .orb-season{font-size:16.5px; margin-top:4px}
-  .status-line{margin-top:9px; font-size:14px}
-  .quick-links{margin-top:12px}
+  .home-stats{font-size:12px; margin-top:7px}
+  .orb{width:min(72vw, 262px)}
+  .glass-card{margin-top:-80px; padding:14px 14px 9px; border-radius:26px}
+  .orb-day .n{font-size:33px}
+  .orb-day .u{font-size:13px}
+  .orb-season{font-size:18px}
+  .status-line{margin-top:7px; font-size:13px}
+  .quick-links{margin-top:9px; padding-top:9px}
   .q-link{font-size:13px; padding:6px 2px}
-  .home-foot{margin-top:14px}
+  .home-foot{margin-top:13px}
   .cta,.cta-icon{height:52px}
   .cta-icon{width:52px}
   .cta{font-size:16px}

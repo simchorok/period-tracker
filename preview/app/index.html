@@ -9,8 +9,8 @@
 <title>달의 기록</title>
 <meta name="description" content="달마다 달라지는 몸과 마음의 리듬을 기록하는 앱, 달의 기록">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=20261120l">
-<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png?v=20261120l">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=20261120v">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png?v=20261120v">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- 웹폰트는 화면을 막지 않도록 비동기로 불러온다(먼저 시스템 폰트로 그리고 도착하면 교체) -->
@@ -20,7 +20,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Noto+Serif+KR:wght@600;700&family=Gowun+Batang:wght@700&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 </noscript>
-<link rel="stylesheet" href="styles/main.css?v=20261120l">
+<link rel="stylesheet" href="styles/main.css?v=20261120v">
 <style>
   /* 첫 페인트 보장용 최소 스타일 — 외부 CSS가 늦거나 막혀도 화면이 완전히 비지 않게 한다 */
   html,body{margin:0;height:100%;background:#0A070C;color:#FBF4EE}
@@ -176,41 +176,41 @@
       <section class="screen active" id="tab-home" data-tab="home">
         <header class="home-top">
           <div class="brand">달의 기록</div>
+          <div class="home-stats">
+            <span>다음 생리 <b id="badge-dday">—</b></span>
+            <span>평균 <b id="badge-cycle">—</b>일</span>
+            <span>기록 <b id="badge-logs">—</b>일</span>
+          </div>
         </header>
 
-        <div class="home-stats">
-          <span>다음 생리 <b id="badge-dday">—</b></span>
-          <span>평균 <b id="badge-cycle">—</b>일</span>
-          <span>기록 <b id="badge-logs">—</b>일</span>
-        </div>
-
-        <div class="stage">
+        <!-- 오브제 위로 반투명 다크 글라스 카드가 하단 1/3쯤 겹쳐 올라오는 레이어드 배치 -->
+        <div class="hero">
           <div class="orb" id="orb">
             <div class="aura" aria-hidden="true">
               <span class="aura-halo"></span>
               <span class="aura-core"></span>
             </div>
           </div>
-        </div>
 
-        <div class="hero-copy">
-          <div class="orb-day">
-            <span class="n" id="orb-day">—</span><span class="u" id="orb-day-unit">일째</span>
+          <div class="glass-card">
+            <div class="hero-title" id="hero-title">
+              <span class="orb-day"><span class="n" id="orb-day">—</span><span class="u" id="orb-day-unit">일째</span></span>
+              <span class="h-sep" aria-hidden="true">·</span>
+              <span class="orb-season" id="orb-season">달의 기록</span>
+            </div>
+            <div class="status-line" id="hint-pill"><i id="hint-dot"></i><span id="hint-text">기록을 시작해보세요</span></div>
+            <p class="phase-note" id="phase-note" hidden>생리 기록을 남기면 달이 차오르기 시작해요</p>
+
+            <div class="quick-links">
+              <button class="q-link" id="question-banner" onclick="openQuestionModal()">
+                <span class="q-mark" id="question-dot"></span>오늘의 질문<span id="question-sub" hidden></span>
+              </button>
+              <span class="q-div" aria-hidden="true"></span>
+              <button class="q-link" id="report-banner" onclick="openReport()">
+                <span class="q-mark"></span><span id="report-banner-title">AI 리포트</span>
+              </button>
+            </div>
           </div>
-          <div class="orb-season" id="orb-season">달의 기록</div>
-        </div>
-
-        <div class="status-line" id="hint-pill"><i id="hint-dot"></i><span id="hint-text">기록을 시작해보세요</span></div>
-        <p class="phase-note" id="phase-note" hidden>생리 기록을 남기면 달이 차오르기 시작해요</p>
-
-        <div class="quick-links">
-          <button class="q-link" id="question-banner" onclick="openQuestionModal()">
-            <span class="q-mark" id="question-dot"></span>오늘의 질문<span id="question-sub" hidden></span>
-          </button>
-          <span class="q-div" aria-hidden="true"></span>
-          <button class="q-link" id="report-banner" onclick="openReport()">
-            <span class="q-mark"></span><span id="report-banner-title">AI 리포트</span>
-          </button>
         </div>
 
         <footer class="home-foot">
@@ -431,18 +431,25 @@
       <div class="log-scroll">
         <div class="log-section">
           <div class="log-section-title">기분</div>
-          <div class="log-tags" id="log-mood">
-            <span class="log-tag" data-val="행복해요">행복해요</span>
-            <span class="log-tag" data-val="평온해요">평온해요</span>
-            <span class="log-tag" data-val="자신감 넘쳐요">자신감 넘쳐요</span>
-            <span class="log-tag" data-val="집중이 잘 돼요">집중이 잘 돼요</span>
-            <span class="log-tag" data-val="예민해요">예민해요</span>
-            <span class="log-tag" data-val="감정이 오락가락해요">감정이 오락가락해요</span>
-            <span class="log-tag" data-val="불안해요">불안해요</span>
-            <span class="log-tag" data-val="무기력해요">무기력해요</span>
-            <span class="log-tag" data-val="슬퍼요">슬퍼요</span>
-            <span class="log-tag" data-val="갑자기 눈물이 나요">갑자기 눈물이 나요</span>
-            <span class="log-tag" data-val="우울해요">우울해요</span>
+          <div class="mood-dial">
+            <svg class="mood-dial-bg" viewBox="0 0 350 202" preserveAspectRatio="none" aria-hidden="true">
+              <path class="arc-rail" d="M28 161A152 152 0 0 1 322 161"/>
+              <path class="arc-glow" d="M28 161A152 152 0 0 1 322 161"/>
+              <path class="arc-rail" d="M94 153A94 94 0 0 1 256 153"/>
+            </svg>
+            <div class="log-tags mood-arc" id="log-mood">
+              <span class="log-tag" data-val="행복해요"><span class="lg-t">행복해요</span></span>
+              <span class="log-tag" data-val="평온해요"><span class="lg-t">평온해요</span></span>
+              <span class="log-tag" data-val="자신감 넘쳐요"><span class="lg-t">자신감 넘쳐요</span></span>
+              <span class="log-tag" data-val="집중이 잘 돼요"><span class="lg-t">집중이 잘 돼요</span></span>
+              <span class="log-tag" data-val="예민해요"><span class="lg-t">예민해요</span></span>
+              <span class="log-tag" data-val="감정이 오락가락해요"><span class="lg-t">감정이 오락가락<wbr>해요</span></span>
+              <span class="log-tag" data-val="불안해요"><span class="lg-t">불안해요</span></span>
+              <span class="log-tag" data-val="무기력해요"><span class="lg-t">무기력해요</span></span>
+              <span class="log-tag" data-val="슬퍼요"><span class="lg-t">슬퍼요</span></span>
+              <span class="log-tag" data-val="갑자기 눈물이 나요"><span class="lg-t">갑자기 눈물이 나요</span></span>
+              <span class="log-tag" data-val="우울해요"><span class="lg-t">우울해요</span></span>
+            </div>
           </div>
         </div>
 
@@ -590,7 +597,7 @@
 
       <div class="report-section">
         <div class="report-section-title">이번 사이클 요약</div>
-        <div class="report-summary-grid" id="report-summary"></div>
+        <div class="report-summary" id="report-summary"></div>
       </div>
 
       <div class="report-section">
@@ -672,13 +679,13 @@
 </div>
 
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="js/config.js?v=20261120l"></script>
-<script defer src="js/auth.js?v=20261120l"></script>
-<script defer src="js/records.js?v=20261120l"></script>
-<script defer src="js/questions.js?v=20261120l"></script>
-<script defer src="js/ui.js?v=20261120l"></script>
-<script defer src="js/report.js?v=20261120l"></script>
-<script defer src="js/share.js?v=20261120l"></script>
-<script defer src="js/app.js?v=20261120l"></script>
+<script defer src="js/config.js?v=20261120v"></script>
+<script defer src="js/auth.js?v=20261120v"></script>
+<script defer src="js/records.js?v=20261120v"></script>
+<script defer src="js/questions.js?v=20261120v"></script>
+<script defer src="js/ui.js?v=20261120v"></script>
+<script defer src="js/report.js?v=20261120v"></script>
+<script defer src="js/share.js?v=20261120v"></script>
+<script defer src="js/app.js?v=20261120v"></script>
 </body>
 </html>
