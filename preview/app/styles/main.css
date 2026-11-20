@@ -329,8 +329,8 @@ textarea{resize:none}
 .legend-item{display:flex; align-items:center; gap:7px; font-size:13.5px; font-weight:600; color:rgba(248,242,237,.74); letter-spacing:.01em}
 .lg-dot{width:8px; height:8px; border-radius:50%; display:block}
 .lg-dot.period{background:#E29A8E}
-.lg-dot.predicted{background:rgba(228,146,138,.42)}
-.lg-dot.ovulation{background:rgba(255,190,142,.62)}
+.lg-dot.predicted{background:rgba(236,165,149,.66)}
+.lg-dot.ovulation{background:rgba(255,190,142,.75)}
 .lg-dot.fertile{background:var(--sage); opacity:.8; width:5px; height:5px}
 
 .calendar-scroll-wrap{padding:12px 18px 0}
@@ -357,11 +357,11 @@ textarea{resize:none}
 .day-cell:active{background:rgba(255,255,255,.10)}
 .day-cell.period{background:linear-gradient(145deg,#ECA595,#D9827A); color:#3A1712; font-weight:800;
   box-shadow:0 8px 18px -12px rgba(226,140,128,.9)}
-.day-cell.predicted{background:linear-gradient(145deg, rgba(236,165,149,.36), rgba(214,127,120,.26)); color:#FFE6DE}
+.day-cell.predicted{background:linear-gradient(145deg, rgba(236,165,149,.66), rgba(212,124,117,.56)); color:#3A1712; font-weight:700}
 .day-cell.ovulation{background:linear-gradient(145deg,#FFC89A,#FFA871); color:#3A1E0D; font-weight:800}
 .day-cell.fertile{background:none; color:rgba(248,242,237,.88)}
 .day-cell.fertile::after{content:''; position:absolute; bottom:6px; width:4px; height:4px; border-radius:50%; background:rgba(195,214,191,.75)}
-.day-cell.ovulation-predicted{background:linear-gradient(145deg, rgba(255,200,154,.38), rgba(255,166,112,.26)); color:#FFEEDA}
+.day-cell.ovulation-predicted{background:linear-gradient(145deg, rgba(255,200,154,.66), rgba(255,166,112,.54)); color:#3A220D; font-weight:700}
 .day-cell.fertile-predicted{background:none; color:rgba(248,242,237,.72)}
 .day-cell.fertile-predicted::after{content:''; position:absolute; bottom:6px; width:4px; height:4px; border-radius:50%; background:rgba(195,214,191,.42)}
 .day-cell.today{color:#31130B; background:linear-gradient(135deg,#FFC08D,#FF8A5F); font-weight:800;
