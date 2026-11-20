@@ -128,7 +128,7 @@ function renderOrbit(opts) {
   if (endDay >= 1) {
     prog += `<path d="${_orbitArc(ORBIT_R, 1, endDay, cycle)}" fill="none" stroke="url(#progGrad)" stroke-width="12" stroke-linecap="round"/>`;
     const m = _orbitPt(ORBIT_R, endDay, cycle);
-    prog += `<circle class="halo" cx="${m[0].toFixed(1)}" cy="${m[1].toFixed(1)}" r="16" fill="${phaseKey ? CYCLE_PHASES[phaseKey].color : '#FFB27E'}" opacity=".22"/>`;
+    prog += `<circle class="halo" cx="${m[0].toFixed(1)}" cy="${m[1].toFixed(1)}" r="13" fill="${phaseKey ? CYCLE_PHASES[phaseKey].color : '#FFB27E'}" opacity=".18"/>`;
     prog += `<circle cx="${m[0].toFixed(1)}" cy="${m[1].toFixed(1)}" r="6.4" fill="#FFF3E6" filter="url(#dotGlow)"/>`;
     prog += `<circle cx="${m[0].toFixed(1)}" cy="${m[1].toFixed(1)}" r="2.6" fill="#FF8A5F"/>`;
   }
