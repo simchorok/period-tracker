@@ -316,8 +316,9 @@ textarea{resize:none}
 /* ═══════════════ 달력 ═══════════════ */
 .cal-top{
   position:sticky; top:0; z-index:6;
-  background:linear-gradient(180deg, rgba(38,27,46,.95) 0%, rgba(38,27,46,.88) 74%, rgba(38,27,46,0) 100%);
-  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  /* iOS 26 WebKit: 스크롤 컨테이너 안의 sticky 요소에 backdrop-filter를 걸면 화면이 통째로 비는
+     컴포지터 버그가 있어, 불투명 그라데이션 스크림으로만 처리한다. */
+  background:linear-gradient(180deg, rgba(38,27,46,.97) 0%, rgba(38,27,46,.93) 74%, rgba(38,27,46,0) 100%);
   padding-bottom:10px;
 }
 .legend{display:flex; flex-wrap:wrap; gap:14px; padding:14px 22px 2px}
