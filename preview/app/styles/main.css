@@ -50,9 +50,9 @@ textarea{resize:none}
 .aurora{
   position:fixed; inset:0; z-index:0; overflow:hidden;
   background:
-    radial-gradient(64% 40% at 18% -8%, rgba(150,180,148,.30), transparent 70%),
-    radial-gradient(58% 34% at 88% -6%, rgba(214,150,142,.24), transparent 72%),
-    linear-gradient(180deg,#4C4654 0%, #463A50 16%, #392A44 40%, #241830 66%, #170F1E 87%, #120C17 100%);
+    radial-gradient(64% 40% at 18% -8%, rgba(150,180,148,.26), transparent 70%),
+    radial-gradient(58% 34% at 88% -6%, rgba(214,150,142,.22), transparent 72%),
+    linear-gradient(180deg,#433E4C 0%, #3E3449 16%, #34263F 40%, #221630 66%, #160E1D 87%, #120C17 100%);
 }
 .aurora .blob{position:absolute; border-radius:50%; filter:blur(62px); mix-blend-mode:screen; pointer-events:none}
 .aurora .b1{width:420px; height:330px; left:-150px; top:-160px;
@@ -192,17 +192,17 @@ textarea{resize:none}
 
 /* ── 히어로: 방사형 다이얼 + 달 ── */
 .stage{flex:1 1 auto; min-height:0; display:flex; align-items:center; justify-content:center; padding:6px 0 0}
-.orb{position:relative; width:100%; max-width:296px; aspect-ratio:1/1}
+.orb{position:relative; width:100%; max-width:328px; aspect-ratio:1/1}
 .orb svg.ring-svg{width:100%; height:100%; display:block; overflow:visible}
 .orb .orbit-arcs{display:none}
 .orb .halo{animation:halo 4.6s ease-in-out infinite}
 @keyframes halo{0%,100%{opacity:.16} 50%{opacity:.32}}
 
 .orb-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none}
-.moon-orb{position:relative; width:124px; height:124px; display:grid; place-items:center; margin-top:-4px}
-.moon-orb .moon-img{position:relative; width:100%; height:100%; display:block; transform:scale(1.14)}
+.moon-orb{position:relative; width:148px; height:148px; display:grid; place-items:center; margin-top:-6px}
+.moon-orb .moon-img{position:relative; width:100%; height:100%; display:block; transform:scale(1.10)}
 .moon-orb .moon-bloom{
-  position:absolute; width:190px; height:190px; border-radius:50%;
+  position:absolute; width:212px; height:212px; border-radius:50%;
   background:radial-gradient(circle at 50% 50%, rgba(255,150,105,.34), rgba(190,140,205,.22) 46%, rgba(120,90,170,0) 72%);
   filter:blur(12px);
   transition:background .6s ease;
@@ -212,12 +212,12 @@ textarea{resize:none}
 .orb.phase-summer .moon-bloom{background:radial-gradient(circle at 50% 50%, rgba(255,190,130,.36), rgba(240,150,150,.20) 46%, transparent 72%)}
 .orb.phase-autumn .moon-bloom{background:radial-gradient(circle at 50% 50%, rgba(240,160,150,.32), rgba(190,140,190,.20) 46%, transparent 72%)}
 
-.orb-day{display:flex; align-items:baseline; justify-content:center; gap:5px; margin-top:10px}
-.orb-day .n{font-family:var(--sans); font-weight:800; font-size:54px; line-height:.92; letter-spacing:-.045em; color:#FFFCF8}
-.orb-day .u{font-size:16px; font-weight:700; letter-spacing:.02em; color:rgba(248,242,237,.74)}
+.orb-day{display:flex; align-items:baseline; justify-content:center; gap:5px; margin-top:6px}
+.orb-day .n{font-family:var(--sans); font-weight:800; font-size:58px; line-height:.92; letter-spacing:-.045em; color:#FFFCF8}
+.orb-day .u{font-size:17px; font-weight:700; letter-spacing:.02em; color:rgba(248,242,237,.74)}
 .orb-season{
-  margin-top:7px;
-  font-size:14.5px; font-weight:700; letter-spacing:.14em; text-indent:.14em;
+  margin-top:6px;
+  font-size:15px; font-weight:700; letter-spacing:.14em; text-indent:.14em;
   color:rgba(253,248,243,.92);
 }
 .orb-season.winter{color:#D6E0F6}
@@ -766,16 +766,17 @@ textarea{resize:none}
 .share-toast.show{opacity:1; transform:translate(-50%, 0)}
 
 /* ── 낮은 화면 대응 ── */
-@media (max-height: 860px){
+@media (max-height: 820px){
   #tab-home.active{padding-bottom:112px}
   .home-top{padding-top:16px}
   .badge-ring{width:54px; height:54px}
   .badge-val{font-size:15px}
-  .orb{max-width:272px}
-  .moon-orb{width:116px; height:116px}
-  .orb-day .n{font-size:58px}
-  .orb-day{margin-top:12px}
-  .orb-season{margin-top:10px; padding:6px 14px; font-size:13.5px}
+  .orb{max-width:300px}
+  .moon-orb{width:132px; height:132px}
+  .moon-orb .moon-bloom{width:186px; height:186px}
+  .orb-day .n{font-size:54px}
+  .orb-day{margin-top:4px}
+  .orb-season{margin-top:4px; font-size:14px}
   .home-foot{margin-top:16px}
   .cta,.cta-icon{height:56px}
 }
@@ -787,10 +788,11 @@ textarea{resize:none}
   .badge-ring{width:48px; height:48px}
   .badge-val{font-size:14px}
   .badge-label{font-size:12.5px}
-  .orb{max-width:232px}
-  .moon-orb{width:96px; height:96px}
-  .orb-day .n{font-size:50px}
-  .orb-season{font-size:13px}
+  .orb{max-width:264px}
+  .moon-orb{width:112px; height:112px}
+  .moon-orb .moon-bloom{width:158px; height:158px}
+  .orb-day .n{font-size:48px}
+  .orb-season{font-size:13.5px}
   .status-line{font-size:15px}
   .notice-row{margin-top:10px}
   .home-foot{margin-top:12px}
