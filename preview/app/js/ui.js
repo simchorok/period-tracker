@@ -102,13 +102,13 @@ function renderOrbit(opts) {
   for (let d = 1; d <= cycle; d++) {
     const isToday = (day > 0 && d === day);
     const isWeek = (d % 7 === 1);
-    const r1 = ORBIT_R - 8;
-    const r2 = isToday ? ORBIT_R - 22 : (isWeek ? ORBIT_R - 16 : ORBIT_R - 12);
+    const r1 = ORBIT_R - 11;
+    const r2 = isToday ? ORBIT_R - 46 : (isWeek ? ORBIT_R - 34 : ORBIT_R - 26);
     const a = _orbitPt(r1, d, cycle), b = _orbitPt(r2, d, cycle);
     const stroke = isToday
       ? 'url(#progGrad)'
-      : (day > 0 && d <= day ? 'rgba(255,255,255,.34)' : 'rgba(255,255,255,.15)');
-    ticks += `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${stroke}" stroke-width="${isToday ? 2.8 : (isWeek ? 1.6 : 1.1)}" stroke-linecap="round"/>`;
+      : (day > 0 && d <= day ? 'rgba(255,255,255,.42)' : 'rgba(255,255,255,.20)');
+    ticks += `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${stroke}" stroke-width="${isToday ? 3.4 : (isWeek ? 1.9 : 1.3)}" stroke-linecap="round"/>`;
   }
   ticksG.innerHTML = ticks;
 
@@ -119,10 +119,10 @@ function renderOrbit(opts) {
   let prog = '';
   const endDay = Math.max(0, Math.min(day, cycle));
   if (endDay >= 1) {
-    prog += `<path d="${_orbitArc(ORBIT_R, 1, endDay, cycle)}" fill="none" stroke="url(#progGrad)" stroke-width="7" stroke-linecap="round"/>`;
+    prog += `<path d="${_orbitArc(ORBIT_R, 1, endDay, cycle)}" fill="none" stroke="url(#progGrad)" stroke-width="12" stroke-linecap="round"/>`;
     const m = _orbitPt(ORBIT_R, endDay, cycle);
-    prog += `<circle class="halo" cx="${m[0].toFixed(1)}" cy="${m[1].toFixed(1)}" r="13" fill="${phaseKey ? CYCLE_PHASES[phaseKey].color : '#FFB27E'}" opacity=".22"/>`;
-    prog += `<circle cx="${m[0].toFixed(1)}" cy="${m[1].toFixed(1)}" r="5.4" fill="#FFF3E6" filter="url(#dotGlow)"/>`;
+    prog += `<circle class="halo" cx="${m[0].toFixed(1)}" cy="${m[1].toFixed(1)}" r="16" fill="${phaseKey ? CYCLE_PHASES[phaseKey].color : '#FFB27E'}" opacity=".22"/>`;
+    prog += `<circle cx="${m[0].toFixed(1)}" cy="${m[1].toFixed(1)}" r="6.4" fill="#FFF3E6" filter="url(#dotGlow)"/>`;
     prog += `<circle cx="${m[0].toFixed(1)}" cy="${m[1].toFixed(1)}" r="2.6" fill="#FF8A5F"/>`;
   }
   progG.innerHTML = prog;
