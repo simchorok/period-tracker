@@ -201,7 +201,7 @@ textarea{resize:none}
 
 .orb-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none}
 .moon-orb{position:relative; width:156px; height:156px; display:grid; place-items:center; margin-top:-8px}
-.moon-orb .moon-img{position:relative; width:100%; height:100%; display:block; transform:scale(1.08)}
+.moon-orb .moon-img{position:relative; width:100%; height:100%; display:block; transform:scale(1.08); filter:brightness(.97) saturate(1.06)}
 .moon-orb .moon-bloom{
   position:absolute; width:222px; height:222px; border-radius:50%;
   background:radial-gradient(circle at 50% 50%, rgba(255,150,105,.34), rgba(190,140,205,.22) 46%, rgba(120,90,170,0) 72%);
@@ -328,10 +328,10 @@ textarea{resize:none}
 .legend{display:flex; flex-wrap:wrap; gap:14px; padding:14px 22px 2px}
 .legend-item{display:flex; align-items:center; gap:7px; font-size:13.5px; font-weight:600; color:rgba(248,242,237,.74); letter-spacing:.01em}
 .lg-dot{width:8px; height:8px; border-radius:50%; display:block}
-.lg-dot.period{background:var(--rose)}
-.lg-dot.predicted{background:transparent; box-shadow:inset 0 0 0 1.5px rgba(228,176,164,.8)}
-.lg-dot.ovulation{background:var(--peach)}
-.lg-dot.fertile{background:transparent; box-shadow:inset 0 0 0 1.5px rgba(195,214,191,.7)}
+.lg-dot.period{background:#E29A8E}
+.lg-dot.predicted{background:rgba(228,146,138,.42)}
+.lg-dot.ovulation{background:rgba(255,190,142,.62)}
+.lg-dot.fertile{background:var(--sage); opacity:.8; width:5px; height:5px}
 
 .calendar-scroll-wrap{padding:12px 18px 0}
 .calendar-month-block{margin-bottom:26px}
@@ -340,9 +340,9 @@ textarea{resize:none}
   padding:0 4px 10px;
 }
 .calendar-grid{
-  background:var(--surface);
+  background:rgba(255,255,255,.055);
   border-radius:22px; padding:14px 10px 16px;
-  box-shadow:0 20px 40px -26px rgba(8,3,14,.95), inset 0 1px 0 rgba(255,255,255,.12);
+  box-shadow:0 22px 44px -30px rgba(8,3,14,.9), inset 0 1px 0 rgba(255,255,255,.10);
 }
 .day-labels{display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:8px}
 .day-label{text-align:center; font-size:13px; font-weight:700; letter-spacing:.02em; color:rgba(248,242,237,.62)}
@@ -355,17 +355,18 @@ textarea{resize:none}
 }
 .day-cell.empty{cursor:default}
 .day-cell:active{background:rgba(255,255,255,.10)}
-.day-cell.period{background:rgba(228,146,138,.26); color:#FFEFEA; font-weight:700}
-.day-cell.period::after{content:''; position:absolute; bottom:6px; width:3px; height:3px; border-radius:50%; background:var(--rose)}
-.day-cell.predicted{box-shadow:inset 0 0 0 1.5px rgba(228,176,164,.55); color:rgba(248,242,237,.72)}
-.day-cell.ovulation{background:rgba(255,190,142,.24); color:#FFF3E6; font-weight:700}
-.day-cell.ovulation::after{content:''; position:absolute; bottom:6px; width:3px; height:3px; border-radius:50%; background:var(--peach)}
-.day-cell.fertile{background:rgba(195,214,191,.14); color:rgba(248,242,237,.86)}
-.day-cell.ovulation-predicted{box-shadow:inset 0 0 0 1.5px rgba(255,190,142,.45); color:rgba(248,242,237,.72)}
-.day-cell.fertile-predicted{box-shadow:inset 0 0 0 1.5px rgba(195,214,191,.34); color:rgba(248,242,237,.7)}
+.day-cell.period{background:linear-gradient(145deg,#ECA595,#D9827A); color:#3A1712; font-weight:800;
+  box-shadow:0 8px 18px -12px rgba(226,140,128,.9)}
+.day-cell.predicted{background:rgba(228,146,138,.20); color:#FFDFD8}
+.day-cell.ovulation{background:linear-gradient(145deg,#FFC89A,#FFA871); color:#3A1E0D; font-weight:800}
+.day-cell.fertile{background:none; color:rgba(248,242,237,.88)}
+.day-cell.fertile::after{content:''; position:absolute; bottom:6px; width:4px; height:4px; border-radius:50%; background:rgba(195,214,191,.75)}
+.day-cell.ovulation-predicted{background:rgba(255,190,142,.18); color:#FFEBD8}
+.day-cell.fertile-predicted{background:none; color:rgba(248,242,237,.72)}
+.day-cell.fertile-predicted::after{content:''; position:absolute; bottom:6px; width:4px; height:4px; border-radius:50%; background:rgba(195,214,191,.42)}
 .day-cell.today{color:#31130B; background:linear-gradient(135deg,#FFC08D,#FF8A5F); font-weight:800;
-  box-shadow:0 8px 18px -8px rgba(255,122,80,.9)}
-.day-cell.today::after{background:#31130B}
+  box-shadow:0 10px 22px -10px rgba(255,122,80,.95)}
+.day-cell.today::after{background:transparent}
 
 /* ═══════════════ 그래프 ═══════════════ */
 .graph-section{padding:0 20px}

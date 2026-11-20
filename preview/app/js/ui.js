@@ -398,7 +398,7 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
   const d = values.map((v, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ');
   const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   path.setAttribute('d', d); path.setAttribute('fill', 'none');
-  path.setAttribute('stroke', colorStroke); path.setAttribute('stroke-width', '1.5');
+  path.setAttribute('stroke', colorStroke); path.setAttribute('stroke-width', '2.4');
   path.setAttribute('stroke-linecap', 'round'); path.setAttribute('stroke-linejoin', 'round');
   svg.appendChild(path);
 
@@ -408,15 +408,15 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
     const isLast = (i === values.length - 1);
 
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', isLast ? 4 : 3);
-    circle.setAttribute('fill', isLast ? colorStroke : '#161020');
-    circle.setAttribute('stroke', colorStroke); circle.setAttribute('stroke-width', '1.5');
+    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', isLast ? 4.6 : 3.4);
+    circle.setAttribute('fill', isLast ? colorStroke : '#2A1E33');
+    circle.setAttribute('stroke', colorStroke); circle.setAttribute('stroke-width', '1.8');
     svg.appendChild(circle);
 
     const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     label.setAttribute('x', cx); label.setAttribute('y', H - 4);
-    label.setAttribute('text-anchor', 'middle'); label.setAttribute('fill', 'rgba(244,239,232,.5)');
-    label.setAttribute('font-size', '12.5'); label.textContent = `${i + 1}`;
+    label.setAttribute('text-anchor', 'middle'); label.setAttribute('fill', 'rgba(248,242,237,.55)');
+    label.setAttribute('font-size', '12.5'); label.setAttribute('font-weight', '600'); label.textContent = `${i + 1}`;
     svg.appendChild(label);
 
     const spread = Math.max(...values) - Math.min(...values);
@@ -424,8 +424,8 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
       const vLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       vLabel.setAttribute('x', cx); vLabel.setAttribute('y', cy - 8);
       vLabel.setAttribute('text-anchor', 'middle');
-      vLabel.setAttribute('fill', isLast ? colorStroke : 'rgba(244,239,232,.7)');
-      vLabel.setAttribute('font-size', '13'); vLabel.setAttribute('font-weight', isLast ? '500' : '400');
+      vLabel.setAttribute('fill', isLast ? colorStroke : 'rgba(248,242,237,.78)');
+      vLabel.setAttribute('font-size', '13'); vLabel.setAttribute('font-weight', isLast ? '700' : '600');
       vLabel.textContent = v;
       svg.appendChild(vLabel);
     }
