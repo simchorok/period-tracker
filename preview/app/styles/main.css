@@ -118,16 +118,16 @@ textarea{resize:none}
     radial-gradient(50% 52% at 71% 53%, rgba(255,118,150,0.95) 0%, rgba(250,112,148,0.72) 32%, rgba(246,110,150,0.30) 56%, rgba(246,110,150,0.00) 78%),
     radial-gradient(40% 40% at 78% 20%, rgba(170,162,244,0.60) 0%, rgba(170,162,244,0.28) 42%, rgba(170,162,244,0.00) 74%),
     radial-gradient(56% 58% at 24% 58%, rgba(196,176,248,0.88) 0%, rgba(182,162,244,0.50) 34%, rgba(172,152,240,0.18) 58%, rgba(172,152,240,0.00) 80%),
-    radial-gradient(62% 56% at 46% 88%, rgba(158,116,240,0.62) 0%, rgba(152,110,234,0.30) 40%, rgba(152,110,234,0.00) 74%),
+    radial-gradient(62% 56% at 46% 88%, rgba(158,116,240,0.52) 0%, rgba(152,110,234,0.26) 40%, rgba(152,110,234,0.00) 74%),
     radial-gradient(circle at 46% 42%, #432A3C 0%, #301E2E 46%, #1E1420 84%, #160E16 100%);
   box-shadow:
     inset 0 0 60px rgba(28,12,24,.24),
-    inset 0 1px 1px rgba(255,240,232,.16),
+    inset 0 1px 1px rgba(255,240,232,.09),
     0 34px 80px -38px rgba(255,120,96,.55);
 }
 .aura .aura-core::after{
   content:''; position:absolute; inset:0; border-radius:50%;
-  box-shadow:inset 0 0 28px 0 rgba(255,226,214,.05), inset 0 -40px 70px rgba(30,14,26,.30);
+  box-shadow:inset 0 0 26px 0 rgba(255,226,214,.04), inset 0 -46px 76px rgba(30,14,26,.26);
   pointer-events:none;
 }
 .aura-splash{width:246px; height:246px}
@@ -345,8 +345,8 @@ textarea{resize:none}
   position:sticky; top:0; z-index:6;
   /* iOS 26 WebKit: 스크롤 컨테이너 안의 sticky 요소에 backdrop-filter를 걸면 화면이 통째로 비는
      컴포지터 버그가 있어, 불투명 그라데이션 스크림으로만 처리한다. */
-  background:linear-gradient(180deg, rgba(20,13,18,1) 0%, rgba(20,13,18,.99) 44%, rgba(20,13,18,.92) 64%, rgba(20,13,18,.62) 81%, rgba(20,13,18,.24) 92%, rgba(20,13,18,0) 100%);
-  padding-bottom:14px;
+  background:linear-gradient(180deg, #140D12 0%, #140D12 84%, rgba(20,13,18,.97) 90%, rgba(20,13,18,.72) 95%, rgba(20,13,18,0) 100%);
+  padding-bottom:16px;
 }
 .legend{display:flex; flex-wrap:wrap; gap:14px; padding:14px 22px 2px}
 .legend-item{display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:rgba(251,244,238,.66); letter-spacing:.01em}
