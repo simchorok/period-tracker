@@ -7,11 +7,12 @@ const SUPABASE_KEY = 'sb_publishable_ad3WJqIrRSfKrpQYFjyTHA_DzktkuUA';
 /* SDK(CDN)가 늦거나 막혀도 화면이 멈추지 않도록, 그때는 아무 것도 하지 않는 대체 클라이언트를 쓴다.
    (로그인 화면은 그대로 뜨고, 카카오 버튼을 누르면 새로고침으로 다시 시도한다) */
 function makeOfflineClient() {
-  const empty = () => Promise.resolve({ data: null, error: { message: 'offline' } });
+  const settled = () => Promise.resolve({ data: null, error: { message: 'offline' } });
   const chain = new Proxy(function () {}, {
     get(_t, prop) {
-      if (prop === 'then') return (resolve) => resolve({ data: null, error: { message: 'offline' } });
-      if (prop === 'catch' || prop === 'finally') return () => Promise.resolve({ data: null, error: { message: 'offline' } });
+      if (prop === 'then') return (onF, onR) => settled().then(onF, onR);
+      if (prop === 'catch') return (onR) => settled().catch(onR);
+      if (prop === 'finally') return (onF) => settled().finally(onF);
       return () => chain;
     },
     apply() { return chain; }
@@ -26,8 +27,8 @@ function makeOfflineClient() {
       },
       signInWithOAuth: () => Promise.resolve({ error: { message: 'offline' } }),
       signOut: () => Promise.resolve({ error: null }),
-      refreshSession: empty,
-      setSession: empty
+      refreshSession: settled,
+      setSession: settled
     },
     from: () => chain
   };
