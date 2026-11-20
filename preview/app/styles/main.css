@@ -208,7 +208,7 @@ textarea{resize:none}
   flex:0 0 auto; display:flex; justify-content:center; align-items:baseline;
   margin-top:12px; font-size:12.5px; font-weight:500; color:rgba(251,244,238,.42); letter-spacing:.01em;
 }
-.home-stats span{display:inline-flex; align-items:baseline; gap:4px}
+.home-stats span{display:inline-flex; align-items:baseline; gap:2px}
 .home-stats span + span::before{content:'·'; margin:0 9px; color:rgba(251,244,238,.24)}
 .home-stats b{font-size:13px; font-weight:700; color:rgba(251,244,238,.66); letter-spacing:0}
 
@@ -267,8 +267,8 @@ textarea{resize:none}
   display:flex; align-items:center; justify-content:center; gap:9px;
   border:1.2px solid transparent;
   background:
-    radial-gradient(120% 170% at 16% 122%, rgba(255,142,110,.46) 0%, rgba(255,142,110,0) 62%) padding-box,
-    radial-gradient(110% 160% at 86% -26%, rgba(180,156,238,.44) 0%, rgba(180,156,238,0) 64%) padding-box,
+    radial-gradient(120% 170% at 14% 124%, rgba(255,138,104,.58) 0%, rgba(255,138,104,0) 64%) padding-box,
+    radial-gradient(120% 170% at 88% -30%, rgba(184,158,242,.52) 0%, rgba(184,158,242,0) 66%) padding-box,
     linear-gradient(180deg, #2A1A23 0%, #180F16 100%) padding-box,
     linear-gradient(100deg, rgba(255,212,176,.95) 0%, rgba(255,146,152,.92) 30%, rgba(190,162,242,.94) 66%, rgba(255,206,180,.95) 100%) border-box;
   color:#FFF8F3; font-size:17px; font-weight:700; letter-spacing:.01em;
