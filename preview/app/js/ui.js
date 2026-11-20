@@ -369,22 +369,24 @@ function renderLogList() {
 function drawLineChart(svgId, values, avgVal, colorStroke) {
   const svg = document.getElementById(svgId);
   if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
   svg.innerHTML = '';
   const W = svg.parentElement.offsetWidth || 300;
-  const H = 92;
+  const H = 104;
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svg.setAttribute('width', W);
   svg.setAttribute('height', H);
 
   if (values.length < 2) {
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    const text = document.createElementNS(NS, 'text');
     text.setAttribute('x', W / 2); text.setAttribute('y', H / 2);
-    text.setAttribute('text-anchor', 'middle'); text.setAttribute('fill', 'rgba(244,239,232,.5)');
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('fill', 'rgba(251,244,238,.38)');
     text.setAttribute('font-size', '12.5'); text.textContent = '기록이 2개 이상 필요해요';
     svg.appendChild(text); return;
   }
 
-  const pad = { l: 16, r: 20, t: 14, b: 20 };
+  const pad = { l: 12, r: 26, t: 26, b: 14 };
   const minV = Math.min(...values) - 2, maxV = Math.max(...values) + 2;
   const range = maxV - minV || 1;
   const xStep = (W - pad.l - pad.r) / (values.length - 1);
@@ -392,47 +394,62 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
   const toX = i => pad.l + i * xStep;
   const toY = v => pad.t + (1 - (v - minV) / range) * (H - pad.t - pad.b);
 
+  // 선 아래를 은은하게 채우는 그라데이션
+  const gid = svgId + '-fill';
+  const defs = document.createElementNS(NS, 'defs');
+  const grad = document.createElementNS(NS, 'linearGradient');
+  grad.setAttribute('id', gid);
+  grad.setAttribute('x1', '0'); grad.setAttribute('y1', '0');
+  grad.setAttribute('x2', '0'); grad.setAttribute('y2', '1');
+  const s1 = document.createElementNS(NS, 'stop');
+  s1.setAttribute('offset', '0%'); s1.setAttribute('stop-color', colorStroke); s1.setAttribute('stop-opacity', '.28');
+  const s2 = document.createElementNS(NS, 'stop');
+  s2.setAttribute('offset', '100%'); s2.setAttribute('stop-color', colorStroke); s2.setAttribute('stop-opacity', '0');
+  grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad); svg.appendChild(defs);
+
+  const baseline = H - pad.b;
+  const lineD = values.map((v, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ');
+  const area = document.createElementNS(NS, 'path');
+  area.setAttribute('d', `${lineD} L${toX(values.length - 1).toFixed(1)},${baseline} L${toX(0).toFixed(1)},${baseline} Z`);
+  area.setAttribute('fill', `url(#${gid})`);
+  svg.appendChild(area);
+
   // 평균선
   const avgY = toY(avgVal);
-  const avgLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  avgLine.setAttribute('x1', pad.l); avgLine.setAttribute('x2', W - pad.r);
+  const avgLine = document.createElementNS(NS, 'line');
+  avgLine.setAttribute('x1', pad.l - 2); avgLine.setAttribute('x2', W - pad.r + 2);
   avgLine.setAttribute('y1', avgY); avgLine.setAttribute('y2', avgY);
-  avgLine.setAttribute('stroke', 'rgba(255,255,255,.12)'); avgLine.setAttribute('stroke-width', '1');
-  avgLine.setAttribute('stroke-dasharray', '4 3');
+  avgLine.setAttribute('stroke', 'rgba(251,244,238,.16)'); avgLine.setAttribute('stroke-width', '1');
+  avgLine.setAttribute('stroke-dasharray', '4 4');
   svg.appendChild(avgLine);
 
   // 라인
-  const d = values.map((v, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ');
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  path.setAttribute('d', d); path.setAttribute('fill', 'none');
-  path.setAttribute('stroke', colorStroke); path.setAttribute('stroke-width', '2.4');
+  const path = document.createElementNS(NS, 'path');
+  path.setAttribute('d', lineD); path.setAttribute('fill', 'none');
+  path.setAttribute('stroke', colorStroke); path.setAttribute('stroke-width', '2.6');
   path.setAttribute('stroke-linecap', 'round'); path.setAttribute('stroke-linejoin', 'round');
   svg.appendChild(path);
 
-  // 점 + 라벨
+  // 점 — 마지막 점만 강조하고 값 하나만 표시한다
   values.forEach((v, i) => {
     const cx = toX(i), cy = toY(v);
     const isLast = (i === values.length - 1);
 
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', isLast ? 4.6 : 3.4);
-    circle.setAttribute('fill', isLast ? colorStroke : '#2A1E33');
-    circle.setAttribute('stroke', colorStroke); circle.setAttribute('stroke-width', '1.8');
+    const circle = document.createElementNS(NS, 'circle');
+    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy);
+    circle.setAttribute('r', isLast ? 4.4 : 2.6);
+    circle.setAttribute('fill', isLast ? colorStroke : 'rgba(20,13,19,.95)');
+    circle.setAttribute('stroke', colorStroke);
+    circle.setAttribute('stroke-width', isLast ? '2' : '1.6');
+    circle.setAttribute('stroke-opacity', isLast ? '1' : '.55');
     svg.appendChild(circle);
 
-    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    label.setAttribute('x', cx); label.setAttribute('y', H - 4);
-    label.setAttribute('text-anchor', 'middle'); label.setAttribute('fill', 'rgba(248,242,237,.55)');
-    label.setAttribute('font-size', '12.5'); label.setAttribute('font-weight', '600'); label.textContent = `${i + 1}`;
-    svg.appendChild(label);
-
-    const spread = Math.max(...values) - Math.min(...values);
-    if (isLast || (spread >= 3 && (v === Math.max(...values) || v === Math.min(...values)))) {
-      const vLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      vLabel.setAttribute('x', cx); vLabel.setAttribute('y', cy - 8);
+    if (isLast) {
+      const vLabel = document.createElementNS(NS, 'text');
+      vLabel.setAttribute('x', Math.min(cx, W - 10)); vLabel.setAttribute('y', Math.max(cy - 12, 12));
       vLabel.setAttribute('text-anchor', 'middle');
-      vLabel.setAttribute('fill', isLast ? colorStroke : 'rgba(248,242,237,.78)');
-      vLabel.setAttribute('font-size', '13'); vLabel.setAttribute('font-weight', isLast ? '700' : '600');
+      vLabel.setAttribute('fill', colorStroke);
+      vLabel.setAttribute('font-size', '14'); vLabel.setAttribute('font-weight', '700');
       vLabel.textContent = v;
       svg.appendChild(vLabel);
     }
@@ -449,41 +466,33 @@ function renderGraph() {
     if (d > 10 && d < 60) cycles.push(d);
   }
   const avgCycleEl = document.getElementById('avg-cycle-num');
+  const cycleRow = document.getElementById('cycle-stat-row');
   if (cycles.length >= 1) {
     const avg = Math.round(cycles.reduce((s, v) => s + v, 0) / cycles.length);
     const mn = Math.min(...cycles), mx = Math.max(...cycles);
     if (avgCycleEl) avgCycleEl.innerHTML = unitHtml(avg, '일');
-    drawLineChart('cycle-chart', cycles, avg, '#FFB27E');
-    const row = document.getElementById('cycle-stat-row');
-    if (row) row.innerHTML = `
-      <div class="stat-pill"><div class="stat-pill-val">${unitHtml(mn, '일')}</div><div class="stat-pill-label">최단 주기</div></div>
-      <div class="stat-pill"><div class="stat-pill-val">${unitHtml(mx, '일')}</div><div class="stat-pill-label">최장 주기</div></div>
-      <div class="stat-pill"><div class="stat-pill-val">${unitHtml(cycles.length, '회')}</div><div class="stat-pill-label">측정 횟수</div></div>`;
+    drawLineChart('cycle-chart', cycles, avg, '#FFB48C');
+    if (cycleRow) cycleRow.textContent = `최단 ${mn}일 · 최장 ${mx}일 · ${cycles.length}회 기록`;
   } else {
     if (avgCycleEl) avgCycleEl.textContent = '—';
-    drawLineChart('cycle-chart', [], 0, '#FFB27E');
-    const row = document.getElementById('cycle-stat-row');
-    if (row) row.innerHTML = '';
+    drawLineChart('cycle-chart', [], 0, '#FFB48C');
+    if (cycleRow) cycleRow.textContent = '';
   }
 
   // 기간
   const durs = records.map(r => dateDiff(r.end, r.start) + 1);
   const avgDurEl = document.getElementById('avg-dur-num');
+  const durRow = document.getElementById('dur-stat-row');
   if (durs.length >= 1) {
     const avg = Math.round(durs.reduce((s, v) => s + v, 0) / durs.length);
     const mn = Math.min(...durs), mx = Math.max(...durs);
     if (avgDurEl) avgDurEl.innerHTML = unitHtml(avg, '일');
-    drawLineChart('dur-chart', durs, avg, '#C3D6BF');
-    const row = document.getElementById('dur-stat-row');
-    if (row) row.innerHTML = `
-      <div class="stat-pill"><div class="stat-pill-val">${unitHtml(mn, '일')}</div><div class="stat-pill-label">최단 기간</div></div>
-      <div class="stat-pill"><div class="stat-pill-val">${unitHtml(mx, '일')}</div><div class="stat-pill-label">최장 기간</div></div>
-      <div class="stat-pill"><div class="stat-pill-val">${unitHtml(durs.length, '회')}</div><div class="stat-pill-label">기록 횟수</div></div>`;
+    drawLineChart('dur-chart', durs, avg, '#B49CEE');
+    if (durRow) durRow.textContent = `최단 ${mn}일 · 최장 ${mx}일 · ${durs.length}회 기록`;
   } else {
     if (avgDurEl) avgDurEl.textContent = '—';
-    drawLineChart('dur-chart', [], 0, '#C3D6BF');
-    const row = document.getElementById('dur-stat-row');
-    if (row) row.innerHTML = '';
+    drawLineChart('dur-chart', [], 0, '#B49CEE');
+    if (durRow) durRow.textContent = '';
   }
 }
 

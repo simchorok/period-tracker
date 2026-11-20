@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#241A2B">
+<meta name="theme-color" content="#0A070C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>달의 기록</title>
 <meta name="description" content="달마다 달라지는 몸과 마음의 리듬을 기록하는 앱, 달의 기록">
-<link rel="apple-touch-icon" href="../../icon-192.png">
-<link rel="preload" as="image" href="assets/moon.webp?v=20261120t">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=20261120f">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png?v=20261120f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- 웹폰트는 화면을 막지 않도록 비동기로 불러온다(먼저 시스템 폰트로 그리고 도착하면 교체) -->
@@ -19,21 +20,21 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Noto+Serif+KR:wght@600;700&family=Gowun+Batang:wght@700&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 </noscript>
-<link rel="stylesheet" href="styles/main.css?v=20261120t">
+<link rel="stylesheet" href="styles/main.css?v=20261120f">
 <style>
   /* 첫 페인트 보장용 최소 스타일 — 외부 CSS가 늦거나 막혀도 화면이 완전히 비지 않게 한다 */
-  html,body{margin:0;height:100%;background:#120C17;color:#F8F2ED}
+  html,body{margin:0;height:100%;background:#0A070C;color:#FBF4EE}
   #boot{position:fixed; left:0; top:0; right:0; bottom:0; z-index:9999;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:26px;
-    background:radial-gradient(60% 40% at 50% 42%, rgba(255,150,110,.16), rgba(255,150,110,0) 70%),
-      radial-gradient(70% 44% at 50% 44%, rgba(160,120,190,.22), rgba(160,120,190,0) 74%),
-      #120C17;
+    background:radial-gradient(58% 38% at 50% 44%, rgba(255,164,118,.14), rgba(255,164,118,0) 72%),
+      radial-gradient(70% 44% at 50% 46%, rgba(178,140,232,.14), rgba(178,140,232,0) 76%),
+      #0A070C;
     transition:opacity .35s ease; -webkit-transition:opacity .35s ease}
   #boot .boot-mark{font-family:-apple-system,'Apple SD Gothic Neo','Noto Serif KR',serif;
-    font-size:23px; font-weight:700; letter-spacing:.26em; text-indent:.26em; color:#FDF8F3}
+    font-size:23px; font-weight:700; letter-spacing:.26em; text-indent:.26em; color:#FFF8F2}
   #boot .boot-bar{width:64px; height:3px; border-radius:3px; background:rgba(255,255,255,.12); overflow:hidden}
   #boot .boot-bar i{display:block; width:40%; height:100%; border-radius:3px;
-    background:linear-gradient(90deg,#FFC48F,#FF8A5F);
+    background:linear-gradient(90deg,#FFC9A0,#FF8E72);
     -webkit-animation:bootBar 1.1s ease-in-out infinite; animation:bootBar 1.1s ease-in-out infinite}
   @-webkit-keyframes bootBar{0%{-webkit-transform:translateX(-100%)}100%{-webkit-transform:translateX(250%)}}
   @keyframes bootBar{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
@@ -136,8 +137,10 @@
     <button class="skip" id="skip" aria-label="건너뛰기">SKIP</button>
 
     <div class="splash-orb">
-      <span class="splash-bloom" aria-hidden="true"></span>
-      <img class="splash-moon" src="assets/moon.webp?v=20261120t" alt="">
+      <div class="aura aura-splash" aria-hidden="true">
+        <span class="aura-halo"></span>
+        <span class="aura-core"></span>
+      </div>
     </div>
 
     <div class="splash-tag"><i></i>오늘의 달이 차오르는 중</div>
@@ -147,8 +150,10 @@
   <div class="login" id="login-screen">
     <div class="login-inner">
       <div class="login-orb">
-        <span class="login-bloom" aria-hidden="true"></span>
-        <img src="assets/moon.webp?v=20261120t" alt="">
+        <div class="aura aura-login" aria-hidden="true">
+          <span class="aura-halo"></span>
+          <span class="aura-core"></span>
+        </div>
       </div>
       <div class="login-title">달의 기록</div>
       <div class="login-sub">몸과 마음의 리듬을 기록해요</div>
@@ -173,73 +178,38 @@
           <div class="brand">달의 기록</div>
         </header>
 
-        <div class="badges">
-          <button class="badge" onclick="switchTab('calendar')" aria-label="달력 열기">
-            <span class="badge-ring"><span class="badge-val" id="badge-dday">—</span></span>
-            <span class="badge-label">다음 생리</span>
-          </button>
-          <button class="badge" onclick="switchTab('graph')" aria-label="주기 그래프 열기">
-            <span class="badge-ring"><span class="badge-val" id="badge-cycle">—</span></span>
-            <span class="badge-label">평균 주기</span>
-          </button>
-          <button class="badge" onclick="switchTab('mypage')" aria-label="마이페이지 열기">
-            <span class="badge-ring"><span class="badge-val" id="badge-logs">—</span></span>
-            <span class="badge-label">기록한 날</span>
-          </button>
+        <div class="home-stats">
+          <span>다음 생리 <b id="badge-dday">—</b></span>
+          <span>평균 <b id="badge-cycle">—</b>일</span>
+          <span>기록 <b id="badge-logs">—</b>일</span>
         </div>
 
         <div class="stage">
           <div class="orb" id="orb">
-            <svg class="ring-svg" id="orbit-svg" viewBox="0 0 360 360" role="img" aria-label="주기 궤도">
-              <defs>
-                <linearGradient id="progGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#FFC48F"/>
-                  <stop offset="52%" stop-color="#FF8F5C"/>
-                  <stop offset="100%" stop-color="#FF6F4E"/>
-                </linearGradient>
-                <linearGradient id="trackGrad" x1="0" y1="0" x2="0.9" y2="1">
-                  <stop offset="0%" stop-color="#A9DCB6" stop-opacity=".30"/>
-                  <stop offset="45%" stop-color="#F0A99C" stop-opacity=".26"/>
-                  <stop offset="100%" stop-color="#B48CDF" stop-opacity=".20"/>
-                </linearGradient>
-                <radialGradient id="dialDisc" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#FFFFFF" stop-opacity=".085"/>
-                  <stop offset="64%" stop-color="#FFFFFF" stop-opacity=".03"/>
-                  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
-                </radialGradient>
-                <filter id="dotGlow" x="-200%" y="-200%" width="500%" height="500%">
-                  <feGaussianBlur stdDeviation="5" result="b"/>
-                  <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
-              </defs>
-              <circle cx="180" cy="180" r="150" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="1.2"/>
-              <circle cx="180" cy="180" r="118" fill="url(#dialDisc)"/>
-              <g id="orbit-ticks"></g>
-              <g id="orbit-arcs" class="orbit-arcs" aria-hidden="true"></g>
-              <g id="orbit-progress"></g>
-            </svg>
-
-            <div class="orb-center">
-              <div class="moon-orb">
-                <span class="moon-bloom" aria-hidden="true"></span>
-                <img class="moon-img" src="assets/moon.webp?v=20261120t" alt="">
-              </div>
-              <div class="orb-day"><span class="n" id="orb-day">—</span><span class="u" id="orb-day-unit">일째</span></div>
-              <div class="orb-season" id="orb-season">달의 기록</div>
+            <div class="aura" aria-hidden="true">
+              <span class="aura-halo"></span>
+              <span class="aura-core"></span>
             </div>
           </div>
+        </div>
+
+        <div class="hero-copy">
+          <div class="orb-day">
+            <span class="n" id="orb-day">—</span><span class="u" id="orb-day-unit">일째</span>
+          </div>
+          <div class="orb-season" id="orb-season">달의 기록</div>
         </div>
 
         <div class="status-line" id="hint-pill"><i id="hint-dot"></i><span id="hint-text">기록을 시작해보세요</span></div>
         <p class="phase-note" id="phase-note" hidden>생리 기록을 남기면 달이 차오르기 시작해요</p>
 
-        <div class="notice-row">
-          <button class="chip" id="question-banner" onclick="openQuestionModal()">
-            <span class="chip-dot" id="question-dot"></span>오늘의 질문
-            <span id="question-sub" hidden>달이 하루를 궁금해해요</span>
+        <div class="quick-links">
+          <button class="q-link" id="question-banner" onclick="openQuestionModal()">
+            <span class="q-mark" id="question-dot"></span>오늘의 질문<span id="question-sub" hidden></span>
           </button>
-          <button class="chip warm" id="report-banner" onclick="openReport()">
-            <span class="chip-dot"></span><span id="report-banner-title">이번 달 리포트</span>
+          <span class="q-div" aria-hidden="true"></span>
+          <button class="q-link" id="report-banner" onclick="openReport()">
+            <span class="q-mark"></span><span id="report-banner-title">AI 리포트</span>
           </button>
         </div>
 
@@ -278,51 +248,34 @@
 
       <!-- 그래프 -->
       <section class="screen" id="tab-graph" data-tab="graph">
-        <header class="screen-head">
-          <div class="head-title">주기</div>
+        <header class="screen-head graph-head">
+          <div class="head-row">
+            <div class="head-title">주기</div>
+            <button class="pill-chip" onclick="openReport()">AI 리포트</button>
+          </div>
           <div class="head-sub">쌓인 기록이 만드는 나의 리듬</div>
         </header>
 
-        <div class="quiet-list flush">
-          <button class="quiet-row card" onclick="openReport()">
-            <span class="q-dot gold"></span>
-            <span class="q-label">이번 사이클 리포트</span>
-            <span class="q-sub">AI 분석 보기</span>
-            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
-          </button>
-          <button class="quiet-row card" onclick="openReportList()">
-            <span class="q-dot"></span>
-            <span class="q-label">지난 리포트</span>
-            <span class="q-sub">모아보기</span>
-            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
-          </button>
-        </div>
-
-        <div class="graph-section">
-          <div class="section-title">주기 히스토리</div>
-          <div class="graph-card">
-            <div class="graph-card-header">
-              <div>
-                <div class="graph-card-title">생리 주기</div>
-                <div class="graph-card-avg-label">평균</div>
-              </div>
-              <div class="graph-card-avg" id="avg-cycle-num">—</div>
+        <div class="graph-body">
+          <div class="metric">
+            <div class="metric-head">
+              <div class="metric-val" id="avg-cycle-num">—</div>
+              <div class="metric-label">평균 주기</div>
             </div>
-            <div class="chart-wrap"><svg id="cycle-chart" height="80"></svg></div>
-            <div class="stat-row" id="cycle-stat-row"></div>
+            <div class="chart-wrap"><svg id="cycle-chart" height="104"></svg></div>
+            <div class="metric-foot" id="cycle-stat-row"></div>
           </div>
 
-          <div class="graph-card">
-            <div class="graph-card-header">
-              <div>
-                <div class="graph-card-title">생리 기간</div>
-                <div class="graph-card-avg-label">평균</div>
-              </div>
-              <div class="graph-card-avg" id="avg-dur-num">—</div>
+          <div class="metric">
+            <div class="metric-head">
+              <div class="metric-val" id="avg-dur-num">—</div>
+              <div class="metric-label">평균 생리 기간</div>
             </div>
-            <div class="chart-wrap"><svg id="dur-chart" height="80"></svg></div>
-            <div class="stat-row" id="dur-stat-row"></div>
+            <div class="chart-wrap"><svg id="dur-chart" height="104"></svg></div>
+            <div class="metric-foot" id="dur-stat-row"></div>
           </div>
+
+          <button class="text-link" onclick="openReportList()">지난 리포트 보기</button>
         </div>
       </section>
 
@@ -594,8 +547,10 @@
       </button>
       <div id="question-loading">
         <div class="q-orb">
-          <span class="q-bloom" aria-hidden="true"></span>
-          <img src="assets/moon.webp?v=20261120t" alt="">
+          <div class="aura aura-q" aria-hidden="true">
+            <span class="aura-halo"></span>
+            <span class="aura-core"></span>
+          </div>
         </div>
         <div class="q-loading-text">잠시, 오늘의 감정을 살펴보고 있어요</div>
       </div>
@@ -717,13 +672,13 @@
 </div>
 
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="js/config.js?v=20261120t"></script>
-<script defer src="js/auth.js?v=20261120t"></script>
-<script defer src="js/records.js?v=20261120t"></script>
-<script defer src="js/questions.js?v=20261120t"></script>
-<script defer src="js/ui.js?v=20261120t"></script>
-<script defer src="js/report.js?v=20261120t"></script>
-<script defer src="js/share.js?v=20261120t"></script>
-<script defer src="js/app.js?v=20261120t"></script>
+<script defer src="js/config.js?v=20261120f"></script>
+<script defer src="js/auth.js?v=20261120f"></script>
+<script defer src="js/records.js?v=20261120f"></script>
+<script defer src="js/questions.js?v=20261120f"></script>
+<script defer src="js/ui.js?v=20261120f"></script>
+<script defer src="js/report.js?v=20261120f"></script>
+<script defer src="js/share.js?v=20261120f"></script>
+<script defer src="js/app.js?v=20261120f"></script>
 </body>
 </html>
