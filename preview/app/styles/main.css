@@ -345,8 +345,8 @@ textarea{resize:none}
   position:sticky; top:0; z-index:6;
   /* iOS 26 WebKit: 스크롤 컨테이너 안의 sticky 요소에 backdrop-filter를 걸면 화면이 통째로 비는
      컴포지터 버그가 있어, 불투명 그라데이션 스크림으로만 처리한다. */
-  background:linear-gradient(180deg, rgba(21,14,19,1) 0%, rgba(21,14,19,.99) 58%, rgba(21,14,19,.94) 80%, rgba(21,14,19,.55) 93%, rgba(21,14,19,0) 100%);
-  padding-bottom:10px;
+  background:linear-gradient(180deg, rgba(20,13,18,1) 0%, rgba(20,13,18,.99) 44%, rgba(20,13,18,.92) 64%, rgba(20,13,18,.62) 81%, rgba(20,13,18,.24) 92%, rgba(20,13,18,0) 100%);
+  padding-bottom:14px;
 }
 .legend{display:flex; flex-wrap:wrap; gap:14px; padding:14px 22px 2px}
 .legend-item{display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:rgba(251,244,238,.66); letter-spacing:.01em}
@@ -354,7 +354,7 @@ textarea{resize:none}
 .lg-dot.period{background:#EE8C82}
 .lg-dot.predicted{background:#F0B6B8}
 .lg-dot.ovulation{background:#FFBE8C}
-.lg-dot.fertile{background:#B9CFAF; opacity:.85; width:5px; height:5px}
+.lg-dot.fertile{background:#C3B2EC; opacity:.85; width:5px; height:5px}
 
 .calendar-scroll-wrap{padding:12px 18px 0}
 .calendar-month-block{margin-bottom:26px}
@@ -383,10 +383,10 @@ textarea{resize:none}
 .day-cell.predicted{background:linear-gradient(145deg,#F6C6C4,#E6A4AB); color:#3A171B; font-weight:700}
 .day-cell.ovulation{background:linear-gradient(145deg,#FFD0A2,#FFAE78); color:#3A1E0D; font-weight:800}
 .day-cell.fertile{background:none; color:rgba(251,244,238,.86)}
-.day-cell.fertile::after{content:''; position:absolute; bottom:6px; width:4px; height:4px; border-radius:50%; background:rgba(185,207,175,.75)}
+.day-cell.fertile::after{content:''; position:absolute; bottom:6px; width:4px; height:4px; border-radius:50%; background:rgba(195,178,236,.80)}
 .day-cell.ovulation-predicted{background:linear-gradient(145deg,#FFE4C8,#FFCDA4); color:#3A220D; font-weight:700}
 .day-cell.fertile-predicted{background:none; color:rgba(251,244,238,.68)}
-.day-cell.fertile-predicted::after{content:''; position:absolute; bottom:6px; width:4px; height:4px; border-radius:50%; background:rgba(185,207,175,.40)}
+.day-cell.fertile-predicted::after{content:''; position:absolute; bottom:6px; width:4px; height:4px; border-radius:50%; background:rgba(195,178,236,.42)}
 .day-cell.today{color:#2A1008; background:linear-gradient(135deg,#FFD0A6,#FFA17F); font-weight:800;
   box-shadow:0 10px 22px -10px rgba(255,132,104,.9)}
 .day-cell.today::after{background:transparent}
@@ -517,7 +517,7 @@ textarea{resize:none}
   transition:transform .15s ease, opacity .15s ease;
 }
 .sheet-row:active{transform:scale(.99); opacity:.85}
-.sheet-row-mark{width:9px; height:9px; border-radius:50%; background:var(--sage); flex:0 0 auto; box-shadow:0 0 10px rgba(187,210,176,.6)}
+.sheet-row-mark{width:9px; height:9px; border-radius:50%; background:#C3B2EC; flex:0 0 auto; box-shadow:0 0 10px rgba(195,178,236,.65)}
 .sheet-row-mark.coral{background:var(--coral); box-shadow:0 0 10px rgba(255,142,114,.75)}
 .sheet-row-body{flex:1; min-width:0; display:flex; flex-direction:column; gap:5px}
 .sheet-row-title{font-size:16.5px; font-weight:700; color:rgba(255,250,246,.97)}

@@ -437,7 +437,7 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
 
     if (isLast) {
       const vLabel = document.createElementNS(NS, 'text');
-      vLabel.setAttribute('x', Math.min(cx, W - 10)); vLabel.setAttribute('y', Math.max(cy - 12, 12));
+      vLabel.setAttribute('x', cx); vLabel.setAttribute('y', Math.max(cy - 12, 12));
       vLabel.setAttribute('text-anchor', 'middle');
       vLabel.setAttribute('fill', colorStroke);
       vLabel.setAttribute('font-size', '14'); vLabel.setAttribute('font-weight', '700');
