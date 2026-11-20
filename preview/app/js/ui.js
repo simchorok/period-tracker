@@ -102,12 +102,12 @@ function renderOrbit(opts) {
   for (let d = 1; d <= cycle; d++) {
     const isToday = (day > 0 && d === day);
     const isWeek = (d % 7 === 1);
-    const r1 = ORBIT_R - 4;
-    const r2 = isToday ? ORBIT_R - 40 : (isWeek ? ORBIT_R - 26 : ORBIT_R - 18);
+    const r1 = ORBIT_R - 3;
+    const r2 = isToday ? ORBIT_R - 34 : (isWeek ? ORBIT_R - 24 : ORBIT_R - 16);
     const a = _orbitPt(r1, d, cycle), b = _orbitPt(r2, d, cycle);
     const stroke = isToday
       ? 'url(#progGrad)'
-      : (day > 0 && d <= day ? 'rgba(255,255,255,.38)' : 'rgba(255,255,255,.19)');
+      : (day > 0 && d <= day ? 'rgba(255,255,255,.46)' : 'rgba(255,255,255,.24)');
     ticks += `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${stroke}" stroke-width="${isToday ? 3 : (isWeek ? 1.8 : 1.2)}" stroke-linecap="round"/>`;
   }
   ticksG.innerHTML = ticks;
