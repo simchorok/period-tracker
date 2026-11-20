@@ -638,9 +638,9 @@ textarea{resize:none}
 .mood-arc{position:relative; display:block; height:202px}
 .mood-arc .log-tag{
   position:absolute; left:var(--lx); top:var(--ty);
-  width:56px; height:56px; padding:0 4px; border-radius:50%;
+  width:58px; height:58px; padding:0 3px; border-radius:50%;
   display:flex; align-items:center; justify-content:center; text-align:center;
-  font-size:10px; font-weight:700; line-height:1.32; letter-spacing:-.01em;
+  font-size:10.5px; font-weight:700; line-height:1.3; letter-spacing:-.01em;
   transform:translate(-50%,-50%);
   background:linear-gradient(168deg, rgba(50,36,46,.95) 0%, rgba(31,22,30,.96) 58%, rgba(22,15,22,.97) 100%);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.075), inset 0 1px 0 rgba(255,255,255,.11), 0 12px 22px -18px rgba(0,0,0,.95);
@@ -658,10 +658,10 @@ textarea{resize:none}
 .mood-arc .log-tag:nth-of-type(5){--lx:68.3%; --ty:62px}
 .mood-arc .log-tag:nth-of-type(6){--lx:83.3%; --ty:102px}
 .mood-arc .log-tag:nth-of-type(7){--lx:91.9%; --ty:161px}
-.mood-arc .log-tag:nth-of-type(8){--lx:25.7%; --ty:159px}
+.mood-arc .log-tag:nth-of-type(8){--lx:26.7%; --ty:153px}
 .mood-arc .log-tag:nth-of-type(9){--lx:40.8%; --ty:112px}
 .mood-arc .log-tag:nth-of-type(10){--lx:59.2%; --ty:112px}
-.mood-arc .log-tag:nth-of-type(11){--lx:74.3%; --ty:159px}
+.mood-arc .log-tag:nth-of-type(11){--lx:73.3%; --ty:153px}
 
 .star-row{display:flex; align-items:center; flex-wrap:wrap; gap:8px; row-gap:8px}
 .star-btn{
