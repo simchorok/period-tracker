@@ -394,25 +394,16 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
   const toX = i => pad.l + i * xStep;
   const toY = v => pad.t + (1 - (v - minV) / range) * (H - pad.t - pad.b);
 
-  // 선 아래를 은은하게 채우는 그라데이션
-  const gid = svgId + '-fill';
-  const defs = document.createElementNS(NS, 'defs');
-  const grad = document.createElementNS(NS, 'linearGradient');
-  grad.setAttribute('id', gid);
-  grad.setAttribute('x1', '0'); grad.setAttribute('y1', '0');
-  grad.setAttribute('x2', '0'); grad.setAttribute('y2', '1');
-  const s1 = document.createElementNS(NS, 'stop');
-  s1.setAttribute('offset', '0%'); s1.setAttribute('stop-color', colorStroke); s1.setAttribute('stop-opacity', '.28');
-  const s2 = document.createElementNS(NS, 'stop');
-  s2.setAttribute('offset', '100%'); s2.setAttribute('stop-color', colorStroke); s2.setAttribute('stop-opacity', '0');
-  grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad); svg.appendChild(defs);
-
-  const baseline = H - pad.b;
-  const lineD = values.map((v, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ');
-  const area = document.createElementNS(NS, 'path');
-  area.setAttribute('d', `${lineD} L${toX(values.length - 1).toFixed(1)},${baseline} L${toX(0).toFixed(1)},${baseline} Z`);
-  area.setAttribute('fill', `url(#${gid})`);
-  svg.appendChild(area);
+  // 부드러운 곡선 — 이웃 점의 중간점을 지나는 2차 베지어
+  const pts = values.map((v, i) => [toX(i), toY(v)]);
+  const n = pts.length;
+  let lineD = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+  for (let i = 1; i <= n - 2; i++) {
+    const mx = (pts[i][0] + pts[i + 1][0]) / 2;
+    const my = (pts[i][1] + pts[i + 1][1]) / 2;
+    lineD += ` Q${pts[i][0].toFixed(1)},${pts[i][1].toFixed(1)} ${mx.toFixed(1)},${my.toFixed(1)}`;
+  }
+  lineD += ` T${pts[n - 1][0].toFixed(1)},${pts[n - 1][1].toFixed(1)}`;
 
   // 평균선
   const avgY = toY(avgVal);

@@ -66,20 +66,19 @@ textarea{resize:none}
 .aurora{
   position:fixed; inset:0; z-index:0; overflow:hidden;
   background:
-    radial-gradient(74% 40% at 50% -12%, rgba(255,176,124,.17), transparent 72%),
-    radial-gradient(58% 34% at 94% 0%, rgba(186,150,238,.15), transparent 74%),
-    radial-gradient(64% 40% at 2% 10%, rgba(255,138,116,.10), transparent 76%),
-    linear-gradient(180deg,#160F15 0%, #130D13 32%, #0D0910 64%, #0A070C 100%);
+    radial-gradient(62% 28% at 50% -10%, rgba(255,176,124,.10), transparent 72%),
+    radial-gradient(48% 26% at 96% -4%, rgba(186,150,238,.10), transparent 76%),
+    linear-gradient(180deg,#140D12 0%, #100A0E 34%, #0A0709 66%, #070508 100%);
 }
 /* 블러·혼합모드는 iOS에서 화면이 통째로 그려지지 않는 사례가 있어
    같은 빛번짐을 여러 단계의 방사형 그라데이션으로 대신 표현한다. */
 .aurora .blob{position:absolute; border-radius:50%; pointer-events:none}
 .aurora .b1{width:660px; height:480px; left:-220px; top:-260px;
-  background:radial-gradient(circle closest-side at 50% 50%, rgba(255,168,120,0.300) 0%, rgba(255,168,120,0.293) 7%, rgba(255,168,120,0.274) 14%, rgba(255,168,120,0.245) 21%, rgba(255,168,120,0.210) 28%, rgba(255,168,120,0.172) 35%, rgba(255,168,120,0.135) 42%, rgba(255,168,120,0.101) 49%, rgba(255,168,120,0.072) 56%, rgba(255,168,120,0.050) 63%, rgba(255,168,120,0.033) 70%, rgba(255,168,120,0.020) 77%, rgba(255,168,120,0.012) 84%, rgba(255,168,120,0.007) 91%, rgba(255,168,120,0.000) 100%)}
+  background:radial-gradient(circle closest-side at 50% 50%, rgba(255,168,120,0.170) 0%, rgba(255,168,120,0.166) 7%, rgba(255,168,120,0.155) 14%, rgba(255,168,120,0.139) 21%, rgba(255,168,120,0.119) 28%, rgba(255,168,120,0.098) 35%, rgba(255,168,120,0.076) 42%, rgba(255,168,120,0.057) 49%, rgba(255,168,120,0.041) 56%, rgba(255,168,120,0.028) 63%, rgba(255,168,120,0.019) 70%, rgba(255,168,120,0.011) 77%, rgba(255,168,120,0.007) 84%, rgba(255,168,120,0.004) 91%, rgba(255,168,120,0.000) 100%)}
 .aurora .b2{width:560px; height:430px; right:-210px; top:-230px;
   background:radial-gradient(circle closest-side at 50% 50%, rgba(170,140,240,0.260) 0%, rgba(170,140,240,0.254) 7%, rgba(170,140,240,0.238) 14%, rgba(170,140,240,0.213) 21%, rgba(170,140,240,0.182) 28%, rgba(170,140,240,0.149) 35%, rgba(170,140,240,0.117) 42%, rgba(170,140,240,0.088) 49%, rgba(170,140,240,0.063) 56%, rgba(170,140,240,0.043) 63%, rgba(170,140,240,0.028) 70%, rgba(170,140,240,0.017) 77%, rgba(170,140,240,0.010) 84%, rgba(170,140,240,0.006) 91%, rgba(170,140,240,0.000) 100%)}
-.aurora .b3{width:620px; height:520px; left:50%; margin-left:-310px; top:110px;
-  background:radial-gradient(circle closest-side at 50% 50%, rgba(196,124,160,0.200) 0%, rgba(196,124,160,0.196) 7%, rgba(196,124,160,0.183) 14%, rgba(196,124,160,0.164) 21%, rgba(196,124,160,0.140) 28%, rgba(196,124,160,0.115) 35%, rgba(196,124,160,0.090) 42%, rgba(196,124,160,0.067) 49%, rgba(196,124,160,0.048) 56%, rgba(196,124,160,0.033) 63%, rgba(196,124,160,0.022) 70%, rgba(196,124,160,0.013) 77%, rgba(196,124,160,0.008) 84%, rgba(196,124,160,0.004) 91%, rgba(196,124,160,0.000) 100%)}
+.aurora .b3{width:620px; height:520px; left:50%; margin-left:-310px; top:150px;
+  background:radial-gradient(circle closest-side at 50% 50%, rgba(196,124,160,0.120) 0%, rgba(196,124,160,0.118) 7%, rgba(196,124,160,0.110) 14%, rgba(196,124,160,0.098) 21%, rgba(196,124,160,0.084) 28%, rgba(196,124,160,0.069) 35%, rgba(196,124,160,0.054) 42%, rgba(196,124,160,0.040) 49%, rgba(196,124,160,0.029) 56%, rgba(196,124,160,0.020) 63%, rgba(196,124,160,0.013) 70%, rgba(196,124,160,0.008) 77%, rgba(196,124,160,0.005) 84%, rgba(196,124,160,0.002) 91%, rgba(196,124,160,0.000) 100%)}
 .aurora .b4{width:540px; height:420px; left:50%; margin-left:-270px; bottom:-220px;
   background:radial-gradient(circle closest-side at 50% 50%, rgba(255,126,104,0.220) 0%, rgba(255,126,104,0.215) 7%, rgba(255,126,104,0.201) 14%, rgba(255,126,104,0.180) 21%, rgba(255,126,104,0.154) 28%, rgba(255,126,104,0.126) 35%, rgba(255,126,104,0.099) 42%, rgba(255,126,104,0.074) 49%, rgba(255,126,104,0.053) 56%, rgba(255,126,104,0.037) 63%, rgba(255,126,104,0.024) 70%, rgba(255,126,104,0.014) 77%, rgba(255,126,104,0.009) 84%, rgba(255,126,104,0.005) 91%, rgba(255,126,104,0.000) 100%)}
 
@@ -114,21 +113,21 @@ textarea{resize:none}
 .aura .aura-core{
   position:absolute; inset:0; border-radius:50%; overflow:hidden;
   background:
-    radial-gradient(56% 54% at 34% 28%, rgba(255,240,212,0.98) 0%, rgba(255,226,188,0.90) 26%, rgba(255,206,166,0.60) 48%, rgba(255,196,152,0.22) 66%, rgba(255,196,152,0.00) 78%),
-    radial-gradient(40% 40% at 53% 45%, rgba(255,116,84,0.94) 0%, rgba(255,110,86,0.72) 34%, rgba(255,104,88,0.34) 58%, rgba(255,104,88,0.00) 76%),
-    radial-gradient(46% 48% at 70% 54%, rgba(255,124,152,0.92) 0%, rgba(250,118,150,0.66) 34%, rgba(246,116,150,0.28) 58%, rgba(246,116,150,0.00) 78%),
-    radial-gradient(38% 38% at 76% 22%, rgba(166,158,240,0.62) 0%, rgba(166,158,240,0.30) 42%, rgba(166,158,240,0.00) 74%),
-    radial-gradient(54% 56% at 24% 56%, rgba(190,170,246,0.86) 0%, rgba(176,156,240,0.48) 36%, rgba(168,148,238,0.16) 60%, rgba(168,148,238,0.00) 80%),
-    radial-gradient(58% 52% at 48% 90%, rgba(150,108,232,0.50) 0%, rgba(146,104,228,0.22) 42%, rgba(146,104,228,0.00) 74%),
-    radial-gradient(circle at 46% 44%, #3A2333 0%, #2A1A28 52%, #1A1119 88%, #140D15 100%);
+    radial-gradient(50% 48% at 33% 26%, rgba(255,241,214,0.96) 0%, rgba(255,224,184,0.86) 24%, rgba(255,204,162,0.52) 46%, rgba(255,196,152,0.18) 66%, rgba(255,196,152,0.00) 78%),
+    radial-gradient(44% 42% at 52% 44%, rgba(255,108,78,0.96) 0%, rgba(255,104,84,0.78) 32%, rgba(255,100,88,0.38) 56%, rgba(255,100,88,0.00) 76%),
+    radial-gradient(50% 52% at 71% 53%, rgba(255,118,150,0.95) 0%, rgba(250,112,148,0.72) 32%, rgba(246,110,150,0.30) 56%, rgba(246,110,150,0.00) 78%),
+    radial-gradient(40% 40% at 78% 20%, rgba(170,162,244,0.60) 0%, rgba(170,162,244,0.28) 42%, rgba(170,162,244,0.00) 74%),
+    radial-gradient(56% 58% at 24% 58%, rgba(196,176,248,0.88) 0%, rgba(182,162,244,0.50) 34%, rgba(172,152,240,0.18) 58%, rgba(172,152,240,0.00) 80%),
+    radial-gradient(62% 56% at 46% 88%, rgba(158,116,240,0.62) 0%, rgba(152,110,234,0.30) 40%, rgba(152,110,234,0.00) 74%),
+    radial-gradient(circle at 46% 42%, #432A3C 0%, #301E2E 46%, #1E1420 84%, #160E16 100%);
   box-shadow:
-    inset 0 0 70px rgba(28,12,24,.32),
-    inset 0 1px 1px rgba(255,240,232,.14),
+    inset 0 0 60px rgba(28,12,24,.24),
+    inset 0 1px 1px rgba(255,240,232,.16),
     0 34px 80px -38px rgba(255,120,96,.55);
 }
 .aura .aura-core::after{
   content:''; position:absolute; inset:0; border-radius:50%;
-  box-shadow:inset 0 0 0 1px rgba(255,232,220,.10), inset 0 -34px 60px rgba(30,14,26,.34);
+  box-shadow:inset 0 0 28px 0 rgba(255,226,214,.05), inset 0 -40px 70px rgba(30,14,26,.30);
   pointer-events:none;
 }
 .aura-splash{width:246px; height:246px}
@@ -227,10 +226,10 @@ textarea{resize:none}
   font-size:19px; font-weight:700; letter-spacing:.16em; text-indent:.16em;
   color:#FFD3B8;
 }
-.orb-season.winter{color:#C6CEEC}
-.orb-season.spring{color:#CBE9D0}
-.orb-season.summer{color:#FFDFB4}
-.orb-season.autumn{color:#F8C4C6}
+.orb-season.winter{color:#C9C2EC}
+.orb-season.spring{color:#FFD8B6}
+.orb-season.summer{color:#FFE0AE}
+.orb-season.autumn{color:#F8C2C6}
 
 /* ── 한 줄 상태 ── */
 .status-line{
@@ -239,9 +238,9 @@ textarea{resize:none}
   text-align:center;
 }
 .status-line i{width:6px; height:6px; border-radius:50%; background:var(--peach); display:block; flex:0 0 auto; box-shadow:0 0 9px rgba(255,193,153,.85)}
-.status-line i.winter{background:#BBC6E8; box-shadow:0 0 9px rgba(187,198,232,.8)}
-.status-line i.spring{background:#C2E4C9; box-shadow:0 0 9px rgba(194,228,201,.8)}
-.status-line i.summer{background:var(--peach); box-shadow:0 0 9px rgba(255,193,153,.85)}
+.status-line i.winter{background:#BFC2E6; box-shadow:0 0 9px rgba(191,194,230,.8)}
+.status-line i.spring{background:#FFC9A4; box-shadow:0 0 9px rgba(255,201,164,.85)}
+.status-line i.summer{background:#FFDFAE; box-shadow:0 0 9px rgba(255,223,174,.85)}
 .status-line i.autumn{background:var(--rose); box-shadow:0 0 9px rgba(240,138,160,.85)}
 
 /* ── 질문·리포트 한 줄 진입 ── */
@@ -353,7 +352,7 @@ textarea{resize:none}
 .legend-item{display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:rgba(251,244,238,.66); letter-spacing:.01em}
 .lg-dot{width:8px; height:8px; border-radius:50%; display:block}
 .lg-dot.period{background:#EE8C82}
-.lg-dot.predicted{background:#F2C3B2}
+.lg-dot.predicted{background:#F0B6B8}
 .lg-dot.ovulation{background:#FFBE8C}
 .lg-dot.fertile{background:#B9CFAF; opacity:.85; width:5px; height:5px}
 
@@ -381,7 +380,7 @@ textarea{resize:none}
 .day-cell:active{background:rgba(255,255,255,.10)}
 .day-cell.period{background:linear-gradient(145deg,#EE968C,#DA7A78); color:#35120E; font-weight:800;
   box-shadow:0 8px 18px -12px rgba(230,140,128,.9)}
-.day-cell.predicted{background:linear-gradient(145deg,#F6CCBC,#E7B0A2); color:#3A1B15; font-weight:700}
+.day-cell.predicted{background:linear-gradient(145deg,#F6C6C4,#E6A4AB); color:#3A171B; font-weight:700}
 .day-cell.ovulation{background:linear-gradient(145deg,#FFD0A2,#FFAE78); color:#3A1E0D; font-weight:800}
 .day-cell.fertile{background:none; color:rgba(251,244,238,.86)}
 .day-cell.fertile::after{content:''; position:absolute; bottom:6px; width:4px; height:4px; border-radius:50%; background:rgba(185,207,175,.75)}
@@ -394,7 +393,7 @@ textarea{resize:none}
 
 /* ═══════════════ 주기(그래프) ═══════════════ */
 .graph-body{padding:6px 22px 0}
-.metric{padding:24px 2px 22px; border-bottom:1px solid rgba(255,255,255,.07)}
+.metric{padding:28px 2px 26px; border-bottom:1px solid rgba(255,255,255,.07)}
 .metric + .metric{border-top:0}
 .metric:last-of-type{border-bottom:0; padding-bottom:8px}
 .metric-head{display:flex; align-items:baseline; gap:10px}
