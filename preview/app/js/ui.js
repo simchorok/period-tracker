@@ -50,6 +50,13 @@ function getCyclePhase(dayOfCycle, cycleLength) {
   return 'autumn';
 }
 
+const CYCLE_PHASES_SHORT = {
+  winter: '몸이 쉬어가는 때예요',
+  spring: '기운이 다시 차오르는 때예요',
+  summer: '가장 밝게 빛나는 때예요',
+  autumn: '마음이 조금 예민해지는 때예요'
+};
+
 /* ── 홈: 방사형 다이얼 그리기 ── */
 const ORBIT_CX = 180, ORBIT_CY = 180, ORBIT_R = 150;
 
@@ -180,9 +187,9 @@ async function updateStatus() {
 
     if (hintEl) {
       if (inPeriod) hintEl.textContent = `생리 ${dayOfCycle}일째`;
-      else if (diff === 0) hintEl.textContent = '오늘 예상 생리 시작일';
-      else if (diff > 0) hintEl.textContent = `다음 생리 D-${diff}`;
-      else hintEl.textContent = `생리 예정일이 ${Math.abs(diff)}일 지났어요`;
+      else if (diff === 0) hintEl.textContent = '오늘이 예상 시작일이에요';
+      else if (diff < 0) hintEl.textContent = `예정일에서 ${Math.abs(diff)}일 지났어요`;
+      else hintEl.textContent = CYCLE_PHASES_SHORT[phaseKey] || phase.note;
     }
     if (hintDot) hintDot.className = phase.cls;
 
