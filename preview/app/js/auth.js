@@ -27,13 +27,18 @@ function skipSplash() { _actuallyHideSplash(); }
 
 /* ── 인증 ── */
 async function signInWithKakao() {
-  await sb.auth.signInWithOAuth({
-    provider: 'kakao',
-    options: {
-      redirectTo: APP_BASE_PATH,
-      scopes: 'profile_nickname profile_image'
-    }
-  });
+  if (SB_OFFLINE) { location.reload(); return; }
+  try {
+    await sb.auth.signInWithOAuth({
+      provider: 'kakao',
+      options: {
+        redirectTo: APP_BASE_PATH,
+        scopes: 'profile_nickname profile_image'
+      }
+    });
+  } catch (e) {
+    showToast('연결이 잠시 불안정해요. 다시 시도해 주세요.');
+  }
 }
 
 async function signOut() {
@@ -46,7 +51,13 @@ function showLoginScreen() {
   hideSplash();
   const app = document.getElementById('app-main');
   if (app) app.classList.remove('show');
-  document.getElementById('login-screen').classList.add('show');
+  const login = document.getElementById('login-screen');
+  if (!login) return;
+  login.classList.add('show');
+  if (typeof SB_OFFLINE !== 'undefined' && SB_OFFLINE) {
+    const sub = login.querySelector('.login-sub');
+    if (sub) sub.textContent = '연결이 잠시 불안정해요. 버튼을 누르면 다시 시도해요.';
+  }
 }
 
 let _loadedUserId = null;
@@ -75,32 +86,43 @@ async function showApp(user) {
   currentUser = user;
 
   hideSplash();
-  document.getElementById('login-screen').classList.remove('show');
+  const login = document.getElementById('login-screen');
+  if (login) { login.classList.remove('show'); login.style.display = ''; }
   document.getElementById('app-main').classList.add('show');
 
   if (isSameUser) return;
 
-  await ensureFreshSession();
+  try {
+    await ensureFreshSession();
 
-  // 마지막 접속일 업데이트
-  sb.from('user_profiles')
-    .upsert({ id: user.id, last_seen_at: new Date().toISOString() }, { onConflict: 'id' })
-    .then(() => {}).catch(() => {});
+    // 마지막 접속일 업데이트
+    sb.from('user_profiles')
+      .upsert({ id: user.id, last_seen_at: new Date().toISOString() }, { onConflict: 'id' })
+      .then(() => {}).catch(() => {});
 
-  // 데이터 로드 (캐시로 먼저 그리고, DB 응답 뒤 다시 맞춘다)
-  await loadAllData();
-  await loadNickname();
-  if (document.getElementById('tab-mypage').classList.contains('active')) renderMypage();
+    // 데이터 로드 (캐시로 먼저 그리고, DB 응답 뒤 다시 맞춘다)
+    await loadAllData();
+    await loadNickname();
+    if (document.getElementById('tab-mypage').classList.contains('active')) renderMypage();
+  } catch (e) {
+    console.warn('[auth] 데이터 로드 실패:', e && e.message);
+    try { updateStatus(); } catch (_) {}
+  }
 }
 
 /* ── 인증 상태 감지 ── */
-sb.auth.onAuthStateChange((event, session) => {
-  if (session?.user) {
-    showApp(session.user);
-  } else if (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT') {
-    showLoginScreen();
-  }
-});
+try {
+  sb.auth.onAuthStateChange((event, session) => {
+    if (session?.user) {
+      showApp(session.user).catch((e) => console.warn('[auth] 앱 진입 실패:', e && e.message));
+    } else if (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT') {
+      showLoginScreen();
+    }
+  });
+} catch (e) {
+  console.warn('[auth] 인증 상태 구독 실패:', e && e.message);
+  showLoginScreen();
+}
 
 /* ── 카카오 콜백 보완 ──
    브라우저 캐시·bfcache 등으로 클라이언트가 콜백 해시를 소비하지 못한 경우,
@@ -124,8 +146,13 @@ async function recoverSessionFromUrlHash() {
 }
 
 (async () => {
-  const { data } = await sb.auth.getSession();
-  if (!data?.session) await recoverSessionFromUrlHash();
+  try {
+    const { data } = await sb.auth.getSession();
+    if (!data?.session) await recoverSessionFromUrlHash();
+  } catch (e) {
+    console.warn('[auth] 세션 확인 실패:', e && e.message);
+    showLoginScreen();
+  }
 })();
 
 /* ── 마이페이지: 닉네임 ── */

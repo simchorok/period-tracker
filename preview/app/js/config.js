@@ -3,8 +3,48 @@
 // ── Supabase 설정 (라이브 본체와 동일 프로젝트) ──
 const SUPABASE_URL = 'https://nzxtpfgjiysmkecktekw.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_ad3WJqIrRSfKrpQYFjyTHA_DzktkuUA';
-const { createClient } = window.supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* SDK(CDN)가 늦거나 막혀도 화면이 멈추지 않도록, 그때는 아무 것도 하지 않는 대체 클라이언트를 쓴다.
+   (로그인 화면은 그대로 뜨고, 카카오 버튼을 누르면 새로고침으로 다시 시도한다) */
+function makeOfflineClient() {
+  const empty = () => Promise.resolve({ data: null, error: { message: 'offline' } });
+  const chain = new Proxy(function () {}, {
+    get(_t, prop) {
+      if (prop === 'then') return (resolve) => resolve({ data: null, error: { message: 'offline' } });
+      if (prop === 'catch' || prop === 'finally') return () => Promise.resolve({ data: null, error: { message: 'offline' } });
+      return () => chain;
+    },
+    apply() { return chain; }
+  });
+  return {
+    auth: {
+      getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+      getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+      onAuthStateChange: (cb) => {
+        setTimeout(() => { try { cb('INITIAL_SESSION', null); } catch (e) {} }, 0);
+        return { data: { subscription: { unsubscribe() {} } } };
+      },
+      signInWithOAuth: () => Promise.resolve({ error: { message: 'offline' } }),
+      signOut: () => Promise.resolve({ error: null }),
+      refreshSession: empty,
+      setSession: empty
+    },
+    from: () => chain
+  };
+}
+
+let sb = null;
+try {
+  sb = (window.supabase && typeof window.supabase.createClient === 'function')
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+    : null;
+} catch (e) {
+  console.warn('[config] Supabase 초기화 실패:', e && e.message);
+  sb = null;
+}
+// SDK를 못 불러왔을 때(SB_OFFLINE)는 대체 클라이언트로 넘겨 화면이 비지 않게 한다.
+const SB_OFFLINE = !sb;
+if (!sb) sb = makeOfflineClient();
 
 // ── 경로 ──
 // 이 앱의 위치(끝에 / 포함). 카카오 로그인 후 이 주소로 돌아온다.

@@ -39,6 +39,7 @@ body{
   font-weight:500;
   -webkit-font-smoothing:antialiased;
   display:flex; align-items:center; justify-content:center;
+  min-height:100vh;
   min-height:100dvh;
   overflow:hidden;
 }
@@ -55,30 +56,27 @@ textarea{resize:none}
     radial-gradient(60% 36% at 90% -4%, rgba(224,154,144,.32), transparent 74%),
     linear-gradient(180deg,#484151 0%, #453950 16%, #382A44 40%, #241831 66%, #170F1E 87%, #120C17 100%);
 }
-.aurora .blob{position:absolute; border-radius:50%; filter:blur(62px); mix-blend-mode:screen; pointer-events:none}
-.aurora .b1{width:500px; height:360px; left:-170px; top:-190px;
-  background:radial-gradient(circle at 50% 50%, rgba(150,186,144,.66), rgba(150,186,144,0) 72%)}
-.aurora .b2{width:400px; height:320px; right:-150px; top:-160px;
-  background:radial-gradient(circle at 50% 50%, rgba(216,144,134,.56), rgba(216,144,134,0) 72%)}
-.aurora .b3{width:470px; height:410px; left:50%; margin-left:-235px; top:130px;
-  background:radial-gradient(circle at 50% 50%, rgba(150,110,172,.44), rgba(150,110,172,0) 72%)}
-.aurora .b4{width:400px; height:330px; left:50%; margin-left:-200px; bottom:-160px;
-  background:radial-gradient(circle at 50% 50%, rgba(255,138,95,.34), rgba(255,138,95,0) 74%)}
-.aurora .grain{
-  position:absolute; inset:0; opacity:.055; mix-blend-mode:overlay;
-  background-repeat:repeat; background-size:170px 170px;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='170' height='170'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='170' height='170' filter='url(%23n)'/></svg>");
-}
+/* 블러·혼합모드는 합성 비용이 커서 iOS에서 화면이 통째로 그려지지 않는 사례가 있어
+   같은 빛번짐을 여러 단계의 방사형 그라데이션으로 대신 표현한다(픽셀 차이 거의 없음). */
+.aurora .blob{position:absolute; border-radius:50%; pointer-events:none}
+.aurora .b1{width:680px; height:500px; left:-210px; top:-250px;
+  background:radial-gradient(circle closest-side at 50% 50%, rgba(150,186,144,0.600) 0%, rgba(150,186,144,0.587) 7%, rgba(150,186,144,0.549) 14%, rgba(150,186,144,0.491) 21%, rgba(150,186,144,0.421) 28%, rgba(150,186,144,0.345) 35%, rgba(150,186,144,0.270) 42%, rgba(150,186,144,0.202) 49%, rgba(150,186,144,0.145) 56%, rgba(150,186,144,0.100) 63%, rgba(150,186,144,0.065) 70%, rgba(150,186,144,0.041) 77%, rgba(150,186,144,0.025) 84%, rgba(150,186,144,0.014) 91%, rgba(150,186,144,0.000) 100%)}
+.aurora .b2{width:560px; height:440px; right:-200px; top:-210px;
+  background:radial-gradient(circle closest-side at 50% 50%, rgba(216,144,134,0.500) 0%, rgba(216,144,134,0.489) 7%, rgba(216,144,134,0.458) 14%, rgba(216,144,134,0.410) 21%, rgba(216,144,134,0.351) 28%, rgba(216,144,134,0.287) 35%, rgba(216,144,134,0.225) 42%, rgba(216,144,134,0.169) 49%, rgba(216,144,134,0.121) 56%, rgba(216,144,134,0.083) 63%, rgba(216,144,134,0.054) 70%, rgba(216,144,134,0.034) 77%, rgba(216,144,134,0.020) 84%, rgba(216,144,134,0.012) 91%, rgba(216,144,134,0.000) 100%)}
+.aurora .b3{width:620px; height:540px; left:50%; margin-left:-310px; top:70px;
+  background:radial-gradient(circle closest-side at 50% 50%, rgba(150,110,172,0.400) 0%, rgba(150,110,172,0.391) 7%, rgba(150,110,172,0.366) 14%, rgba(150,110,172,0.328) 21%, rgba(150,110,172,0.280) 28%, rgba(150,110,172,0.230) 35%, rgba(150,110,172,0.180) 42%, rgba(150,110,172,0.135) 49%, rgba(150,110,172,0.097) 56%, rgba(150,110,172,0.066) 63%, rgba(150,110,172,0.044) 70%, rgba(150,110,172,0.027) 77%, rgba(150,110,172,0.016) 84%, rgba(150,110,172,0.009) 91%, rgba(150,110,172,0.000) 100%)}
+.aurora .b4{width:540px; height:440px; left:50%; margin-left:-270px; bottom:-210px;
+  background:radial-gradient(circle closest-side at 50% 50%, rgba(255,138,95,0.300) 0%, rgba(255,138,95,0.293) 7%, rgba(255,138,95,0.275) 14%, rgba(255,138,95,0.246) 21%, rgba(255,138,95,0.210) 28%, rgba(255,138,95,0.172) 35%, rgba(255,138,95,0.135) 42%, rgba(255,138,95,0.101) 49%, rgba(255,138,95,0.073) 56%, rgba(255,138,95,0.050) 63%, rgba(255,138,95,0.033) 70%, rgba(255,138,95,0.020) 77%, rgba(255,138,95,0.012) 84%, rgba(255,138,95,0.007) 91%, rgba(255,138,95,0.000) 100%)}
 
 .app-shell{
   position:relative; z-index:1;
-  width:100%; max-width:420px; height:100dvh;
+  width:100%; max-width:420px; height:100vh; height:100dvh;
   overflow:hidden;
   background:transparent;
 }
 @media (min-width:640px){
   .app-shell{
-    height:884px; max-height:calc(100dvh - 28px);
+    height:884px; max-height:calc(100vh - 28px); max-height:calc(100dvh - 28px);
     border-radius:44px;
     box-shadow:0 50px 110px -30px #000, 0 0 0 1px rgba(255,255,255,.07);
   }
@@ -102,37 +100,36 @@ textarea{resize:none}
 .splash-title{
   font-family:var(--serif); font-weight:700; font-size:29px;
   letter-spacing:.26em; text-indent:.26em; color:#FDF8F3;
-  opacity:0; transform:translateY(8px); animation:up 1s cubic-bezier(.22,.61,.36,1) forwards .25s;
+  opacity:1; transform:none; animation:up 1s cubic-bezier(.22,.61,.36,1) both .25s;
 }
 .skip{
   position:absolute; top:46px; right:26px; z-index:3; background:none; border:0; cursor:pointer;
   padding:8px; font-family:var(--sans); font-weight:700; font-size:12px; letter-spacing:.18em;
   color:rgba(248,242,237,.55);
-  opacity:0; animation:up .8s ease forwards 1s;
+  opacity:1; animation:up .8s ease both 1s;
 }
 .splash-orb{position:relative; flex:1; width:100%; display:grid; place-items:center}
 .splash-orb .splash-bloom{
-  position:absolute; width:330px; height:330px; border-radius:50%;
-  background:radial-gradient(circle at 48% 50%, rgba(255,150,105,.42), rgba(214,140,190,.26) 46%, rgba(120,90,170,0) 72%);
-  filter:blur(18px);
-  opacity:0; animation:bloomIn 1.8s ease forwards .2s;
+  position:absolute; width:360px; height:360px; border-radius:50%;
+  background:radial-gradient(circle closest-side at 48% 50%, rgba(255,150,105,0.420) 0%, rgba(255,150,105,0.411) 7%, rgba(255,150,105,0.384) 14%, rgba(255,150,105,0.344) 21%, rgba(255,150,105,0.295) 28%, rgba(255,150,105,0.241) 35%, rgba(255,150,105,0.189) 42%, rgba(255,150,105,0.142) 49%, rgba(255,150,105,0.102) 56%, rgba(255,150,105,0.070) 63%, rgba(255,150,105,0.046) 70%, rgba(255,150,105,0.029) 77%, rgba(255,150,105,0.017) 84%, rgba(255,150,105,0.010) 91%, rgba(255,150,105,0.000) 100%), radial-gradient(circle closest-side at 48% 50%, rgba(214,140,190,0.200) 0%, rgba(214,140,190,0.196) 7%, rgba(214,140,190,0.183) 14%, rgba(214,140,190,0.164) 21%, rgba(214,140,190,0.140) 28%, rgba(214,140,190,0.115) 35%, rgba(214,140,190,0.090) 42%, rgba(214,140,190,0.067) 49%, rgba(214,140,190,0.048) 56%, rgba(214,140,190,0.033) 63%, rgba(214,140,190,0.022) 70%, rgba(214,140,190,0.014) 77%, rgba(214,140,190,0.008) 84%, rgba(214,140,190,0.005) 91%, rgba(214,140,190,0.000) 100%);
+  opacity:1; animation:bloomIn 1.8s ease both .2s;
 }
 .splash-orb .splash-moon{
   position:relative; width:272px; height:272px; display:block;
-  opacity:0; transform:scale(.88);
-  animation:moonIn 1.7s cubic-bezier(.22,.61,.36,1) forwards .15s;
+  opacity:1; transform:none;
+  animation:moonIn 1.7s cubic-bezier(.22,.61,.36,1) both .15s;
 }
-@keyframes moonIn{to{opacity:1; transform:scale(1)}}
-@keyframes bloomIn{to{opacity:1}}
+@keyframes moonIn{from{opacity:0; transform:scale(.88)} to{opacity:1; transform:scale(1)}}
+@keyframes bloomIn{from{opacity:0} to{opacity:1}}
 .splash-tag{
   display:inline-flex; align-items:center; gap:8px; margin-top:10px;
   padding:11px 20px; border-radius:999px;
   background:rgba(255,255,255,.10);
   font-size:14px; font-weight:600; letter-spacing:.02em; color:rgba(248,242,237,.82);
-  opacity:0; animation:up .9s ease forwards 1.15s;
+  opacity:1; animation:up .9s ease both 1.15s;
 }
 .splash-tag i{width:6px; height:6px; border-radius:50%; background:var(--coral); box-shadow:0 0 10px rgba(255,138,95,.9); display:block}
-@keyframes up{to{opacity:1; transform:translateY(0)}}
+@keyframes up{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
 
 /* ═══════════════ 로그인 ═══════════════ */
 .login{
@@ -143,8 +140,7 @@ textarea{resize:none}
 .login-orb{position:relative; width:176px; height:176px; display:grid; place-items:center}
 .login-orb .login-bloom{
   position:absolute; inset:-26px; border-radius:50%;
-  background:radial-gradient(circle at 50% 50%, rgba(255,150,105,.38), rgba(200,130,190,.20) 48%, transparent 72%);
-  filter:blur(16px);
+  background:radial-gradient(circle closest-side at 50% 50%, rgba(255,150,105,0.380) 0%, rgba(255,150,105,0.372) 7%, rgba(255,150,105,0.348) 14%, rgba(255,150,105,0.311) 21%, rgba(255,150,105,0.266) 28%, rgba(255,150,105,0.218) 35%, rgba(255,150,105,0.171) 42%, rgba(255,150,105,0.128) 49%, rgba(255,150,105,0.092) 56%, rgba(255,150,105,0.063) 63%, rgba(255,150,105,0.041) 70%, rgba(255,150,105,0.026) 77%, rgba(255,150,105,0.016) 84%, rgba(255,150,105,0.009) 91%, rgba(255,150,105,0.000) 100%), radial-gradient(circle closest-side at 50% 50%, rgba(214,140,190,0.180) 0%, rgba(214,140,190,0.176) 7%, rgba(214,140,190,0.165) 14%, rgba(214,140,190,0.147) 21%, rgba(214,140,190,0.126) 28%, rgba(214,140,190,0.103) 35%, rgba(214,140,190,0.081) 42%, rgba(214,140,190,0.061) 49%, rgba(214,140,190,0.044) 56%, rgba(214,140,190,0.030) 63%, rgba(214,140,190,0.020) 70%, rgba(214,140,190,0.012) 77%, rgba(214,140,190,0.007) 84%, rgba(214,140,190,0.004) 91%, rgba(214,140,190,0.000) 100%);
 }
 .login-orb img{position:relative; width:162px; height:162px}
 .login-title{margin-top:16px; font-family:var(--serif); font-weight:700; font-size:26px; letter-spacing:.28em; text-indent:.28em; color:#FDF8F3}
@@ -203,15 +199,14 @@ textarea{resize:none}
 .moon-orb{position:relative; width:176px; height:176px; display:grid; place-items:center; margin-top:-10px}
 .moon-orb .moon-img{position:relative; width:100%; height:100%; display:block; transform:scale(1.06); filter:brightness(.97) saturate(1.06)}
 .moon-orb .moon-bloom{
-  position:absolute; width:244px; height:244px; border-radius:50%;
-  background:radial-gradient(circle at 50% 50%, rgba(255,150,105,.34), rgba(190,140,205,.22) 46%, rgba(120,90,170,0) 72%);
-  filter:blur(12px);
+  position:absolute; width:250px; height:250px; border-radius:50%;
+  background:radial-gradient(circle closest-side at 50% 50%, rgba(255,150,105,0.340) 0%, rgba(255,150,105,0.333) 7%, rgba(255,150,105,0.311) 14%, rgba(255,150,105,0.278) 21%, rgba(255,150,105,0.238) 28%, rgba(255,150,105,0.195) 35%, rgba(255,150,105,0.153) 42%, rgba(255,150,105,0.115) 49%, rgba(255,150,105,0.082) 56%, rgba(255,150,105,0.056) 63%, rgba(255,150,105,0.037) 70%, rgba(255,150,105,0.023) 77%, rgba(255,150,105,0.014) 84%, rgba(255,150,105,0.008) 91%, rgba(255,150,105,0.000) 100%), radial-gradient(circle closest-side at 50% 50%, rgba(214,140,190,0.200) 0%, rgba(214,140,190,0.196) 7%, rgba(214,140,190,0.183) 14%, rgba(214,140,190,0.164) 21%, rgba(214,140,190,0.140) 28%, rgba(214,140,190,0.115) 35%, rgba(214,140,190,0.090) 42%, rgba(214,140,190,0.067) 49%, rgba(214,140,190,0.048) 56%, rgba(214,140,190,0.033) 63%, rgba(214,140,190,0.022) 70%, rgba(214,140,190,0.014) 77%, rgba(214,140,190,0.008) 84%, rgba(214,140,190,0.005) 91%, rgba(214,140,190,0.000) 100%);
   transition:background .6s ease;
 }
-.orb.phase-winter .moon-bloom{background:radial-gradient(circle at 50% 50%, rgba(150,180,235,.30), rgba(150,150,215,.18) 46%, transparent 72%)}
-.orb.phase-spring .moon-bloom{background:radial-gradient(circle at 50% 50%, rgba(180,215,180,.30), rgba(150,200,180,.18) 46%, transparent 72%)}
-.orb.phase-summer .moon-bloom{background:radial-gradient(circle at 50% 50%, rgba(255,190,130,.36), rgba(240,150,150,.20) 46%, transparent 72%)}
-.orb.phase-autumn .moon-bloom{background:radial-gradient(circle at 50% 50%, rgba(240,160,150,.32), rgba(190,140,190,.20) 46%, transparent 72%)}
+.orb.phase-winter .moon-bloom{background:radial-gradient(circle closest-side at 50% 50%, rgba(150,180,235,0.320) 0%, rgba(150,180,235,0.313) 7%, rgba(150,180,235,0.293) 14%, rgba(150,180,235,0.262) 21%, rgba(150,180,235,0.224) 28%, rgba(150,180,235,0.184) 35%, rgba(150,180,235,0.144) 42%, rgba(150,180,235,0.108) 49%, rgba(150,180,235,0.077) 56%, rgba(150,180,235,0.053) 63%, rgba(150,180,235,0.035) 70%, rgba(150,180,235,0.022) 77%, rgba(150,180,235,0.013) 84%, rgba(150,180,235,0.008) 91%, rgba(150,180,235,0.000) 100%)}
+.orb.phase-spring .moon-bloom{background:radial-gradient(circle closest-side at 50% 50%, rgba(180,215,180,0.300) 0%, rgba(180,215,180,0.293) 7%, rgba(180,215,180,0.275) 14%, rgba(180,215,180,0.246) 21%, rgba(180,215,180,0.210) 28%, rgba(180,215,180,0.172) 35%, rgba(180,215,180,0.135) 42%, rgba(180,215,180,0.101) 49%, rgba(180,215,180,0.073) 56%, rgba(180,215,180,0.050) 63%, rgba(180,215,180,0.033) 70%, rgba(180,215,180,0.020) 77%, rgba(180,215,180,0.012) 84%, rgba(180,215,180,0.007) 91%, rgba(180,215,180,0.000) 100%)}
+.orb.phase-summer .moon-bloom{background:radial-gradient(circle closest-side at 50% 50%, rgba(255,190,130,0.360) 0%, rgba(255,190,130,0.352) 7%, rgba(255,190,130,0.329) 14%, rgba(255,190,130,0.295) 21%, rgba(255,190,130,0.252) 28%, rgba(255,190,130,0.207) 35%, rgba(255,190,130,0.162) 42%, rgba(255,190,130,0.121) 49%, rgba(255,190,130,0.087) 56%, rgba(255,190,130,0.060) 63%, rgba(255,190,130,0.039) 70%, rgba(255,190,130,0.025) 77%, rgba(255,190,130,0.015) 84%, rgba(255,190,130,0.008) 91%, rgba(255,190,130,0.000) 100%)}
+.orb.phase-autumn .moon-bloom{background:radial-gradient(circle closest-side at 50% 50%, rgba(240,160,150,0.320) 0%, rgba(240,160,150,0.313) 7%, rgba(240,160,150,0.293) 14%, rgba(240,160,150,0.262) 21%, rgba(240,160,150,0.224) 28%, rgba(240,160,150,0.184) 35%, rgba(240,160,150,0.144) 42%, rgba(240,160,150,0.108) 49%, rgba(240,160,150,0.077) 56%, rgba(240,160,150,0.053) 63%, rgba(240,160,150,0.035) 70%, rgba(240,160,150,0.022) 77%, rgba(240,160,150,0.013) 84%, rgba(240,160,150,0.008) 91%, rgba(240,160,150,0.000) 100%)}
 
 .orb-day{display:flex; align-items:baseline; justify-content:center; gap:5px; margin-top:-2px}
 .orb-day .n{font-family:var(--sans); font-weight:800; font-size:58px; line-height:.92; letter-spacing:-.045em; color:#FFFCF8}
@@ -516,7 +511,7 @@ textarea{resize:none}
   padding:26px 22px calc(26px + env(safe-area-inset-bottom));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.14), 0 -30px 60px -20px #000;
   animation:sheetUp .34s cubic-bezier(.22,.61,.36,1);
-  max-height:88dvh; overflow-y:auto;
+  max-height:88vh; max-height:88dvh; overflow-y:auto;
 }
 .modal-title{font-family:var(--serif); font-weight:700; font-size:19.5px; letter-spacing:.04em; color:rgba(253,248,243,.97)}
 .field{margin-top:20px}
@@ -543,7 +538,7 @@ textarea{resize:none}
 
 /* ═══════════════ 상태 기록 ═══════════════ */
 .log-modal{
-  width:100%; max-width:420px; height:92dvh; display:flex; flex-direction:column;
+  width:100%; max-width:420px; height:92vh; height:92dvh; display:flex; flex-direction:column;
   background:var(--sheet);
   border-radius:30px 30px 0 0;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.14), 0 -30px 60px -20px #000;
@@ -605,7 +600,7 @@ textarea{resize:none}
 #question-loading{text-align:center; padding:20px 0 16px}
 .q-orb{position:relative; width:96px; height:96px; margin:0 auto; display:grid; place-items:center}
 .q-orb .q-bloom{position:absolute; inset:-18px; border-radius:50%;
-  background:radial-gradient(circle at 50% 50%, rgba(255,150,105,.35), rgba(190,140,205,.20) 48%, transparent 72%); filter:blur(12px)}
+  background:radial-gradient(circle closest-side at 50% 50%, rgba(255,150,105,0.360) 0%, rgba(255,150,105,0.352) 7%, rgba(255,150,105,0.329) 14%, rgba(255,150,105,0.295) 21%, rgba(255,150,105,0.252) 28%, rgba(255,150,105,0.207) 35%, rgba(255,150,105,0.162) 42%, rgba(255,150,105,0.121) 49%, rgba(255,150,105,0.087) 56%, rgba(255,150,105,0.060) 63%, rgba(255,150,105,0.039) 70%, rgba(255,150,105,0.025) 77%, rgba(255,150,105,0.015) 84%, rgba(255,150,105,0.008) 91%, rgba(255,150,105,0.000) 100%), radial-gradient(circle closest-side at 50% 50%, rgba(214,140,190,0.180) 0%, rgba(214,140,190,0.176) 7%, rgba(214,140,190,0.165) 14%, rgba(214,140,190,0.147) 21%, rgba(214,140,190,0.126) 28%, rgba(214,140,190,0.103) 35%, rgba(214,140,190,0.081) 42%, rgba(214,140,190,0.061) 49%, rgba(214,140,190,0.044) 56%, rgba(214,140,190,0.030) 63%, rgba(214,140,190,0.020) 70%, rgba(214,140,190,0.012) 77%, rgba(214,140,190,0.007) 84%, rgba(214,140,190,0.004) 91%, rgba(214,140,190,0.000) 100%)}
 .q-orb img{position:relative; width:88px; height:88px}
 .q-loading-text{margin-top:20px; font-size:15px; font-weight:500; color:var(--ink-80); line-height:1.8}
 .q-kicker{font-size:13px; font-weight:700; letter-spacing:.16em; color:rgba(255,190,142,.92)}
@@ -624,7 +619,7 @@ textarea{resize:none}
 
 /* ═══════════════ 리포트 ═══════════════ */
 .report-sheet{
-  width:100%; max-width:420px; height:94dvh; overflow-y:auto; scrollbar-width:none;
+  width:100%; max-width:420px; height:94vh; height:94dvh; overflow-y:auto; scrollbar-width:none;
   background:
     radial-gradient(70% 26% at 50% 0%, rgba(255,180,130,.14), transparent 70%),
     linear-gradient(180deg, rgba(48,35,58,.995), rgba(24,17,30,.999));
@@ -734,8 +729,8 @@ textarea{resize:none}
 .report-loading{padding:34px; text-align:center; font-size:14.5px; color:var(--ink-66)}
 
 /* ═══════════════ 기록 상세 ═══════════════ */
-.modal.record-detail{max-height:82dvh}
-.record-detail-content{margin-top:16px; max-height:56dvh; overflow-y:auto; scrollbar-width:none}
+.modal.record-detail{max-height:82vh; max-height:82dvh}
+.record-detail-content{margin-top:16px; max-height:56vh; max-height:56dvh; overflow-y:auto; scrollbar-width:none}
 .record-detail-content::-webkit-scrollbar{display:none}
 .record-item{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px 0; border-bottom:1px solid rgba(255,255,255,.08)}
 .record-date{font-size:15.5px; font-weight:600; color:rgba(248,242,237,.92)}
