@@ -446,7 +446,7 @@ function renderGraph() {
     const avg = Math.round(cycles.reduce((s, v) => s + v, 0) / cycles.length);
     const mn = Math.min(...cycles), mx = Math.max(...cycles);
     if (avgCycleEl) avgCycleEl.innerHTML = unitHtml(avg, '일');
-    drawLineChart('cycle-chart', cycles, avg, '#F2CE8C');
+    drawLineChart('cycle-chart', cycles, avg, '#FFB27E');
     const row = document.getElementById('cycle-stat-row');
     if (row) row.innerHTML = `
       <div class="stat-pill"><div class="stat-pill-val">${unitHtml(mn, '일')}</div><div class="stat-pill-label">최단 주기</div></div>
@@ -454,7 +454,7 @@ function renderGraph() {
       <div class="stat-pill"><div class="stat-pill-val">${unitHtml(cycles.length, '회')}</div><div class="stat-pill-label">측정 횟수</div></div>`;
   } else {
     if (avgCycleEl) avgCycleEl.textContent = '—';
-    drawLineChart('cycle-chart', [], 0, '#F2CE8C');
+    drawLineChart('cycle-chart', [], 0, '#FFB27E');
     const row = document.getElementById('cycle-stat-row');
     if (row) row.innerHTML = '';
   }
@@ -466,7 +466,7 @@ function renderGraph() {
     const avg = Math.round(durs.reduce((s, v) => s + v, 0) / durs.length);
     const mn = Math.min(...durs), mx = Math.max(...durs);
     if (avgDurEl) avgDurEl.innerHTML = unitHtml(avg, '일');
-    drawLineChart('dur-chart', durs, avg, '#A9E3C6');
+    drawLineChart('dur-chart', durs, avg, '#C3D6BF');
     const row = document.getElementById('dur-stat-row');
     if (row) row.innerHTML = `
       <div class="stat-pill"><div class="stat-pill-val">${unitHtml(mn, '일')}</div><div class="stat-pill-label">최단 기간</div></div>
@@ -474,7 +474,7 @@ function renderGraph() {
       <div class="stat-pill"><div class="stat-pill-val">${unitHtml(durs.length, '회')}</div><div class="stat-pill-label">기록 횟수</div></div>`;
   } else {
     if (avgDurEl) avgDurEl.textContent = '—';
-    drawLineChart('dur-chart', [], 0, '#A9E3C6');
+    drawLineChart('dur-chart', [], 0, '#C3D6BF');
     const row = document.getElementById('dur-stat-row');
     if (row) row.innerHTML = '';
   }
