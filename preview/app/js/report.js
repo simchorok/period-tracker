@@ -1,10 +1,10 @@
 /* 달의 기록 — 월간 사이클 리포트: 렌더링, AI 분석(analyze-cycle), 피드백 */
 
 const REPORT_PHASES = {
-  winter: { name: '겨울 · 생리기', color: '#A6B8DE' },
-  spring: { name: '봄 · 여포기', color: '#A9E3C6' },
-  summer: { name: '여름 · 배란기', color: '#F2CE8C' },
-  autumn: { name: '가을 · 황체기', color: '#D9A08B' }
+  winter: { name: '겨울 · 생리기', color: '#8FA5D6' },
+  spring: { name: '봄 · 여포기', color: '#7FC0A0' },
+  summer: { name: '여름 · 배란기', color: '#E0B368' },
+  autumn: { name: '가을 · 황체기', color: '#C98470' }
 };
 
 async function checkReportBanner() {
@@ -191,7 +191,7 @@ function renderReportPhases(records, lastRecord) {
       </div>
     </div>`;
   }).join('') + (totalPhaseTags === 0
-    ? `<div style="margin-top:12px;font-size:13.5px;color:rgba(244,239,232,.58);text-align:center;line-height:1.8">상태 기록을 남기면 이 단계의 패턴을 함께 읽어드려요.</div>`
+    ? `<div style="margin-top:12px;font-size:13.5px;color:rgba(30,34,46,.58);text-align:center;line-height:1.8">상태 기록을 남기면 이 단계의 패턴을 함께 읽어드려요.</div>`
     : '');
 }
 
@@ -222,7 +222,7 @@ function renderReportEnergyChart(lastRecord) {
     const fo = document.createElementNS('http://www.w3.org/2000/svg','foreignObject');
     fo.setAttribute('x','0'); fo.setAttribute('y','0');
     fo.setAttribute('width', W); fo.setAttribute('height', H);
-    fo.innerHTML = `<div xmlns="http://www.w3.org/2000/svg" style="display:flex;align-items:center;justify-content:center;height:${H}px;font-size:13.5px;color:rgba(244,239,232,.58);text-align:center;line-height:1.8;padding:0 12px">상태 기록을 남기면 에너지 흐름을 함께 그려드려요.</div>`;
+    fo.innerHTML = `<div xmlns="http://www.w3.org/2000/svg" style="display:flex;align-items:center;justify-content:center;height:${H}px;font-size:13.5px;color:rgba(30,34,46,.58);text-align:center;line-height:1.8;padding:0 12px">상태 기록을 남기면 에너지 흐름을 함께 그려드려요.</div>`;
     svg.appendChild(fo); return;
   }
 
@@ -243,7 +243,7 @@ function renderReportEnergyChart(lastRecord) {
   if (pathD) {
     const path = document.createElementNS('http://www.w3.org/2000/svg','path');
     path.setAttribute('d', pathD); path.setAttribute('fill','none');
-    path.setAttribute('stroke','#D9A08B'); path.setAttribute('stroke-width','1.6');
+    path.setAttribute('stroke','#C98470'); path.setAttribute('stroke-width','1.6');
     path.setAttribute('stroke-linecap','round'); path.setAttribute('stroke-linejoin','round');
     svg.appendChild(path);
   }
@@ -252,7 +252,7 @@ function renderReportEnergyChart(lastRecord) {
     if (p === null) return;
     const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
     circle.setAttribute('cx', toX(i)); circle.setAttribute('cy', toY(p));
-    circle.setAttribute('r', '2.6'); circle.setAttribute('fill','#D9A08B');
+    circle.setAttribute('r', '2.6'); circle.setAttribute('fill','#C98470');
     svg.appendChild(circle);
   });
 
@@ -260,7 +260,7 @@ function renderReportEnergyChart(lastRecord) {
   labels.forEach((l, i) => {
     const t = document.createElementNS('http://www.w3.org/2000/svg','text');
     t.setAttribute('x', 2); t.setAttribute('y', toY(i + 1) + 3.5);
-    t.setAttribute('fill','rgba(244,239,232,.6)'); t.setAttribute('font-size','12.5');
+    t.setAttribute('fill','rgba(30,34,46,.6)'); t.setAttribute('font-size','12.5');
     t.textContent = l; svg.appendChild(t);
   });
 }
@@ -269,7 +269,7 @@ function renderReportForecast(records, lastRecord) {
   const el = document.getElementById('report-forecast');
   if (!el) return;
   if (records.length < 2) {
-    el.innerHTML = `<div style="text-align:center;padding:10px 0;font-size:13.5px;color:rgba(244,239,232,.58);line-height:1.9">상태 기록을 남기면 다음 사이클에 나타날 수 있는 패턴을 예고해드려요.</div>`;
+    el.innerHTML = `<div style="text-align:center;padding:10px 0;font-size:13.5px;color:rgba(30,34,46,.58);line-height:1.9">상태 기록을 남기면 다음 사이클에 나타날 수 있는 패턴을 예고해드려요.</div>`;
     return;
   }
 
@@ -302,7 +302,7 @@ function renderReportForecast(records, lastRecord) {
   });
 
   if (!forecasts.length) {
-    el.innerHTML = '<div style="text-align:center;padding:10px 0;font-size:13.5px;color:rgba(244,239,232,.58);line-height:1.9">상태 기록을 남기면 다음 사이클에 나타날 수 있는 패턴을 예고해드려요.</div>';
+    el.innerHTML = '<div style="text-align:center;padding:10px 0;font-size:13.5px;color:rgba(30,34,46,.58);line-height:1.9">상태 기록을 남기면 다음 사이클에 나타날 수 있는 패턴을 예고해드려요.</div>';
     return;
   }
 
@@ -330,8 +330,8 @@ async function openReportList() {
     content.innerHTML = `
       <div class="report-empty-state">
         <svg class="report-empty-moon" viewBox="0 0 100 100" aria-hidden="true">
-          <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,.12)" stroke-width=".8"/>
-          <path d="M50,10 A40,40 0 0 1 50,90 A17.6,40 0 0 1 50,10 Z" fill="rgba(250,246,240,.22)"/>
+          <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(30,34,46,.12)" stroke-width=".8"/>
+          <path d="M50,10 A40,40 0 0 1 50,90 A17.6,40 0 0 1 50,10 Z" fill="rgba(30,34,46,.13)"/>
         </svg>
         <div class="report-empty-text">아직 완성된 사이클 리포트가 없어요.<br>리포트가 도착하면 별점을 남겨 완성해보세요.</div>
       </div>`;

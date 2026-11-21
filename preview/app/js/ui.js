@@ -23,20 +23,24 @@ function showToast(message) {
 /* ── 사이클 단계 ── */
 const CYCLE_PHASES = {
   winter: {
-    name: '생리기', season: '겨울', cls: 'winter', color: '#A6B8DE',
-    note: '몸이 쉬어가는 때예요. 아무것도 하지 않아도 괜찮아요.'
+    name: '생리기', season: '겨울', cls: 'winter', color: '#8FA5D6',
+    note: '몸이 쉬어가는 때예요. 아무것도 하지 않아도 괜찮아요.',
+    detail: '몸이 한 달을 비우는 며칠이에요. 아무것도 하지 않아도 괜찮아요.'
   },
   spring: {
-    name: '여포기', season: '봄', cls: 'spring', color: '#A9E3C6',
-    note: '기운이 다시 차오르는 때예요.'
+    name: '여포기', season: '봄', cls: 'spring', color: '#7FC0A0',
+    note: '기운이 다시 차오르는 때예요.',
+    detail: '에스트로겐이 다시 올라오는 때예요. 작은 시작을 하기 좋아요.'
   },
   summer: {
-    name: '배란기', season: '여름', cls: 'summer', color: '#F2CE8C',
-    note: '가장 밝게 빛나는 때예요.'
+    name: '배란기', season: '여름', cls: 'summer', color: '#E0B368',
+    note: '가장 밝게 빛나는 때예요.',
+    detail: '에너지와 자신감이 가장 높은 때예요. 지금의 기운을 마음껏 써도 좋아요.'
   },
   autumn: {
-    name: '황체기', season: '가을', cls: 'autumn', color: '#D9A08B',
-    note: '마음이 조금 예민해지는 때예요.'
+    name: '황체기', season: '가을', cls: 'autumn', color: '#C98B72',
+    note: '마음이 조금 예민해지는 때예요.',
+    detail: '몸이 천천히 내려앉는 때예요. 예민함은 호르몬의 흐름이에요.'
   }
 };
 
@@ -146,28 +150,18 @@ function renderOrbit(opts) {
 async function updateStatus() {
   const records = loadRecords();
   const todayStr = getTodayStr();
-  const dayEl = document.getElementById('fc-day');
-  const unitEl = document.getElementById('fc-day-unit');
-  const seasonEl = document.getElementById('fc-phase');
+  const heroEl = document.getElementById('hero-title');
+  const nextEl = document.getElementById('hero-next');
   const hintEl = document.getElementById('hint-text');
-  const hintDot = document.getElementById('hint-dot');
   const noteEl = document.getElementById('phase-note');
-
-  const orbEl = document.getElementById('orb');
-  const heroTitle = document.getElementById('hero-title');
-  if (heroTitle) heroTitle.classList.toggle('is-empty', !records.length);
-
-  const fanEl = document.querySelector('.fan');
-  if (fanEl) fanEl.classList.toggle('is-empty', !records.length);
+  const cardEl = document.getElementById('home-card');
+  if (cardEl) cardEl.classList.toggle('is-empty', !records.length);
 
   if (!records.length) {
     renderOrbit({ cycle: 28, day: 0, phaseKey: null });
-    if (orbEl) orbEl.className = 'orb';
-    if (dayEl) dayEl.textContent = '—';
-    if (unitEl) unitEl.textContent = '';
-    if (seasonEl) { seasonEl.textContent = '기록 전'; seasonEl.className = 'fc-label is-phase'; }
+    if (heroEl) heroEl.textContent = '달의 기록';
+    if (nextEl) nextEl.textContent = '기록을 시작해보세요';
     if (hintEl) hintEl.textContent = '기록을 시작해보세요';
-    if (hintDot) hintDot.className = '';
     if (noteEl) noteEl.textContent = '생리 기록을 남기면 달이 차오르기 시작해요';
   } else {
     const sorted = [...records].sort((a, b) => a.start > b.start ? 1 : -1);
@@ -181,27 +175,26 @@ async function updateStatus() {
     const inPeriod = todayStr >= last.start && todayStr <= last.end;
 
     renderOrbit({ cycle, day: dayOfCycle, phaseKey });
-    if (orbEl) orbEl.className = 'orb phase-' + phaseKey;
 
-    if (dayEl) dayEl.textContent = dayOfCycle;
-    if (unitEl) unitEl.textContent = '일째';
-    if (seasonEl) {
-      seasonEl.textContent = phase.name;
-      seasonEl.className = 'fc-label is-phase ' + phase.cls;
+    if (heroEl) heroEl.textContent = `${dayOfCycle}일째 · ${phase.name}`;
+    if (nextEl) {
+      if (diff === null) nextEl.textContent = '';
+      else if (diff > 0) nextEl.textContent = `다음 예정 D-${diff}`;
+      else if (diff === 0) nextEl.textContent = '다음 예정 D-DAY';
+      else nextEl.textContent = `예정일에서 ${Math.abs(diff)}일 지남`;
     }
 
     if (hintEl) {
-      if (inPeriod) hintEl.textContent = `생리 ${dayOfCycle}일째`;
+      if (inPeriod) hintEl.textContent = `생리 ${dayOfCycle}일째예요`;
       else if (diff === 0) hintEl.textContent = '오늘이 예상 시작일이에요';
       else if (diff < 0) hintEl.textContent = `예정일에서 ${Math.abs(diff)}일 지났어요`;
       else hintEl.textContent = CYCLE_PHASES_SHORT[phaseKey] || phase.note;
     }
-    if (hintDot) hintDot.className = phase.cls;
 
     if (noteEl) {
       noteEl.textContent = (dayOfCycle > cycle + 5)
         ? '이번 주기가 조금 길어지고 있어요. 몸의 신호를 살펴봐요.'
-        : phase.note;
+        : (phase.detail || phase.note);
     }
   }
 
@@ -218,19 +211,26 @@ function renderHomeBadges() {
   const logs = loadLogs();
   const ddayEl = document.getElementById('fc-dday');
   const cycleEl = document.getElementById('fc-avg');
+  const durEl = document.getElementById('fc-avgdur');
+  const withUnit = (v, unit) => (v === null ? '—' : `${v}<i>${unit}</i>`);
 
-  if (cycleEl) cycleEl.textContent = records.length >= 2 ? calcAvgCycle(records) : '—';
-  const avgUnit = cycleEl && cycleEl.parentElement ? cycleEl.parentElement.querySelector('.fc-unit') : null;
-  if (avgUnit) avgUnit.textContent = records.length >= 2 ? '일' : '';
+  if (cycleEl) cycleEl.innerHTML = withUnit(records.length >= 2 ? calcAvgCycle(records) : null, '일');
+
+  const avgDur = records.length
+    ? Math.round(records.reduce((s, r) => s + dateDiff(r.end, r.start) + 1, 0) / records.length)
+    : null;
+  if (durEl) durEl.innerHTML = withUnit(avgDur, '일');
 
   if (ddayEl) {
     if (!records.length) {
       ddayEl.textContent = '—';
     } else {
       const pred = getNextPredictions(records);
-      const diff = pred ? dateDiff(pred.nextStart, getTodayStr()) : null;
-      ddayEl.textContent = diff === null ? '—'
-        : (diff > 0 ? `D-${diff}` : (diff === 0 ? 'D-DAY' : `D+${Math.abs(diff)}`));
+      if (!pred) ddayEl.textContent = '—';
+      else {
+        const [, m, d] = pred.nextStart.split('-');
+        ddayEl.textContent = `${parseInt(m, 10)}.${d}`;
+      }
     }
   }
 
@@ -284,8 +284,9 @@ function renderMypage() {
     : 0;
 
   const set = (id, v) => { const el = document.getElementById(id); if (el) el.innerHTML = v; };
-  set('mypage-avg-cycle', records.length >= 2 ? unitHtml(cycle, '일') : '—');
-  set('mypage-avg-dur', records.length ? unitHtml(avgDur, '일') : '—');
+  const blank = '<span class="is-blank">—</span>';
+  set('mypage-avg-cycle', records.length >= 2 ? unitHtml(cycle, '일') : blank);
+  set('mypage-avg-dur', records.length ? unitHtml(avgDur, '일') : blank);
   set('mypage-total-records', unitHtml(records.length, '회'));
   set('mypage-total-logs', unitHtml(Object.keys(logs).length, '일'));
 }
@@ -409,7 +410,7 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
     const text = document.createElementNS(NS, 'text');
     text.setAttribute('x', W / 2); text.setAttribute('y', H / 2);
     text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('fill', 'rgba(251,244,238,.38)');
+    text.setAttribute('fill', 'rgba(30,34,46,.42)');
     text.setAttribute('font-size', '12.5'); text.textContent = '기록이 2개 이상 필요해요';
     svg.appendChild(text); return;
   }
@@ -438,7 +439,7 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
   const avgLine = document.createElementNS(NS, 'line');
   avgLine.setAttribute('x1', pad.l - 2); avgLine.setAttribute('x2', W - pad.r + 2);
   avgLine.setAttribute('y1', avgY); avgLine.setAttribute('y2', avgY);
-  avgLine.setAttribute('stroke', 'rgba(251,244,238,.16)'); avgLine.setAttribute('stroke-width', '1');
+  avgLine.setAttribute('stroke', 'rgba(30,34,46,.16)'); avgLine.setAttribute('stroke-width', '1');
   avgLine.setAttribute('stroke-dasharray', '4 4');
   svg.appendChild(avgLine);
 
@@ -457,7 +458,7 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
     const circle = document.createElementNS(NS, 'circle');
     circle.setAttribute('cx', cx); circle.setAttribute('cy', cy);
     circle.setAttribute('r', isLast ? 4.4 : 2.6);
-    circle.setAttribute('fill', isLast ? colorStroke : 'rgba(20,13,19,.95)');
+    circle.setAttribute('fill', isLast ? colorStroke : '#FFFFFF');
     circle.setAttribute('stroke', colorStroke);
     circle.setAttribute('stroke-width', isLast ? '2' : '1.6');
     circle.setAttribute('stroke-opacity', isLast ? '1' : '.55');
@@ -490,11 +491,11 @@ function renderGraph() {
     const avg = Math.round(cycles.reduce((s, v) => s + v, 0) / cycles.length);
     const mn = Math.min(...cycles), mx = Math.max(...cycles);
     if (avgCycleEl) avgCycleEl.innerHTML = unitHtml(avg, '일');
-    drawLineChart('cycle-chart', cycles, avg, '#FFB48C');
+    drawLineChart('cycle-chart', cycles, avg, '#D9775F');
     if (cycleRow) cycleRow.textContent = `최단 ${mn}일 · 최장 ${mx}일 · ${cycles.length}회 기록`;
   } else {
     if (avgCycleEl) avgCycleEl.textContent = '—';
-    drawLineChart('cycle-chart', [], 0, '#FFB48C');
+    drawLineChart('cycle-chart', [], 0, '#D9775F');
     if (cycleRow) cycleRow.textContent = '';
   }
 
@@ -506,11 +507,11 @@ function renderGraph() {
     const avg = Math.round(durs.reduce((s, v) => s + v, 0) / durs.length);
     const mn = Math.min(...durs), mx = Math.max(...durs);
     if (avgDurEl) avgDurEl.innerHTML = unitHtml(avg, '일');
-    drawLineChart('dur-chart', durs, avg, '#B49CEE');
+    drawLineChart('dur-chart', durs, avg, '#8D7BD0');
     if (durRow) durRow.textContent = `최단 ${mn}일 · 최장 ${mx}일 · ${durs.length}회 기록`;
   } else {
     if (avgDurEl) avgDurEl.textContent = '—';
-    drawLineChart('dur-chart', [], 0, '#B49CEE');
+    drawLineChart('dur-chart', [], 0, '#8D7BD0');
     if (durRow) durRow.textContent = '';
   }
 }
@@ -520,12 +521,13 @@ function switchTab(tab) {
   ['home', 'calendar', 'graph', 'mypage'].forEach(t => {
     const section = document.getElementById(`tab-${t}`);
     if (section) section.classList.toggle('active', t === tab);
-    const navEl = document.getElementById(`nav-${t}`);
-    if (navEl) {
-      navEl.classList.toggle('active', t === tab);
-      if (t === tab) navEl.setAttribute('aria-current', 'page');
-      else navEl.removeAttribute('aria-current');
-    }
+  });
+  // 필 토글·아바타의 활성 표시(data-goto 기준, 화면마다 같은 토글이 있다)
+  document.querySelectorAll('[data-goto]').forEach(el => {
+    const on = el.dataset.goto === tab;
+    el.classList.toggle('active', on);
+    if (on) el.setAttribute('aria-current', 'page');
+    else el.removeAttribute('aria-current');
   });
   const scroller = document.getElementById('screens');
   if (scroller) scroller.scrollTop = 0;
@@ -533,6 +535,19 @@ function switchTab(tab) {
   if (tab === 'graph') renderGraph();
   if (tab === 'mypage') renderMypage();
   if (tab === 'home') updateStatus();
+}
+
+/* ── 메뉴 시트 ── */
+function openMenuSheet() {
+  const el = document.getElementById('menu-sheet');
+  if (el) el.classList.add('open');
+}
+function closeMenuSheet() {
+  const el = document.getElementById('menu-sheet');
+  if (el) el.classList.remove('open');
+}
+function closeMenuSheetOutside(e) {
+  if (e.target === document.getElementById('menu-sheet')) closeMenuSheet();
 }
 
 /* ── 기록 선택 시트 ── */
