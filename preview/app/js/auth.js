@@ -103,6 +103,7 @@ async function showApp(user) {
     // 데이터 로드 (캐시로 먼저 그리고, DB 응답 뒤 다시 맞춘다)
     await loadAllData();
     await loadNickname();
+    if (typeof renderNavAvatar === 'function') renderNavAvatar();
     if (document.getElementById('tab-mypage').classList.contains('active')) renderMypage();
   } catch (e) {
     console.warn('[auth] 데이터 로드 실패:', e && e.message);
@@ -172,6 +173,7 @@ function updateNicknameUI() {
   if (el) el.textContent = userNickname || '닉네임 설정';
   const email = document.getElementById('mypage-email');
   if (email && !email.textContent) email.textContent = currentUser?.email || '';
+  if (typeof renderNavAvatar === 'function') renderNavAvatar();
 }
 
 function toggleNicknameEdit() {

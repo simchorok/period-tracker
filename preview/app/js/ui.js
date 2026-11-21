@@ -206,6 +206,7 @@ async function updateStatus() {
   }
 
   renderHomeBadges();
+  renderNavAvatar();
 
   if (typeof checkReportBanner === 'function') await checkReportBanner();
   if (typeof checkQuestionBanner === 'function') await checkQuestionBanner();
@@ -242,6 +243,20 @@ function renderHomeBadges() {
   if (legacyL) legacyL.textContent = Object.keys(logs).length || '—';
 }
 
+/* ── 홈 상단 마이 버튼의 이니셜/사진 ── */
+function renderNavAvatar() {
+  const navAv = document.getElementById('nav-avatar');
+  if (!navAv || !currentUser) return;
+  const meta = currentUser.user_metadata || {};
+  if (meta.avatar_url) {
+    navAv.innerHTML = `<img src="${escapeHtml(meta.avatar_url)}" alt="">`;
+    navAv.classList.add('has-photo');
+    return;
+  }
+  const seed = (userNickname || currentUser.email || '·').trim();
+  navAv.textContent = seed ? seed[0].toUpperCase() : '·';
+}
+
 /* ── 마이페이지 렌더 ── */
 function renderMypage() {
   if (!currentUser) return;
@@ -257,18 +272,7 @@ function renderMypage() {
   const email = document.getElementById('mypage-email');
   if (email) email.textContent = currentUser.email || '';
 
-  // 홈 상단 마이 버튼 — 마이페이지 아바타와 같은 이니셜
-  const navAv = document.getElementById('nav-avatar');
-  if (navAv) {
-    const meta = currentUser.user_metadata || {};
-    if (meta.avatar_url) {
-      navAv.innerHTML = `<img src="${escapeHtml(meta.avatar_url)}" alt="">`;
-      navAv.classList.add('has-photo');
-    } else {
-      const seed = (userNickname || currentUser.email || '·').trim();
-      navAv.textContent = seed ? seed[0].toUpperCase() : '·';
-    }
-  }
+  renderNavAvatar();
 
   updateNicknameUI();
 
