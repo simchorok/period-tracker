@@ -26,9 +26,9 @@
   --sage:#BBD2B0;
 
   /* 바탕 */
-  --bg-0:#0A070C;
-  --bg-1:#160F15;
-  --bg-2:#1D131A;
+  --bg-0:#070509;
+  --bg-1:#0D0812;
+  --bg-2:#141019;
 
   /* 면 */
   --surface:linear-gradient(165deg, rgba(255,255,255,.075), rgba(255,255,255,.028));
@@ -40,8 +40,9 @@
   --warm-grad:linear-gradient(120deg,#FFD2A8 0%, #FFA07E 40%, #F58AA8 74%, #B49CEE 100%);
   --warm-ink:#2A1008;
 
-  --serif:'Noto Serif KR','Gowun Batang',serif;
-  --sans:'Pretendard','Noto Sans KR',-apple-system,system-ui,sans-serif;
+  /* Pretendard 단일 폰트 — 제목/숫자 700~800, 본문 500~600, 자간 -0.02em */
+  --sans:'Pretendard',-apple-system,'Apple SD Gothic Neo',system-ui,sans-serif;
+  --serif:var(--sans);
 }
 
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
@@ -66,9 +67,9 @@ textarea{resize:none}
 .aurora{
   position:fixed; inset:0; z-index:0; overflow:hidden;
   background:
-    radial-gradient(58% 24% at 50% -12%, rgba(255,176,124,.07), transparent 74%),
-    radial-gradient(44% 22% at 98% -6%, rgba(186,150,238,.07), transparent 78%),
-    linear-gradient(180deg,#120B10 0%, #0E090D 36%, #090608 68%, #070508 100%);
+    radial-gradient(54% 22% at 50% -10%, rgba(255,176,124,.055), transparent 76%),
+    radial-gradient(46% 20% at 100% -4%, rgba(186,150,238,.055), transparent 78%),
+    linear-gradient(180deg,#0D0812 0%, #0A0710 42%, #08060B 74%, #070509 100%);
 }
 /* 블러·혼합모드는 iOS에서 화면이 통째로 그려지지 않는 사례가 있어
    같은 빛번짐을 여러 단계의 방사형 그라데이션으로 대신 표현한다. */
@@ -102,28 +103,31 @@ textarea{resize:none}
 /* ═══════════════ 아우라 오브 (정면 주인공) ═══════════════ */
 .aura{position:relative; display:block; width:100%; aspect-ratio:1/1}
 .aura .aura-halo{
-  position:absolute; inset:-16%; border-radius:50%; pointer-events:none;
+  position:absolute; inset:-19%; border-radius:50%; pointer-events:none;
   background:
-    radial-gradient(circle closest-side at 50% 50%, rgba(255,164,116,0.115) 0%, rgba(255,164,116,0.112) 8%, rgba(255,164,116,0.104) 16%, rgba(255,164,116,0.091) 24%, rgba(255,164,116,0.076) 32%, rgba(255,164,116,0.060) 40%, rgba(255,164,116,0.045) 48%, rgba(255,164,116,0.031) 56%, rgba(255,164,116,0.020) 64%, rgba(255,164,116,0.012) 72%, rgba(255,164,116,0.007) 80%, rgba(255,164,116,0.003) 88%, rgba(255,164,116,0.000) 100%),
-    radial-gradient(circle closest-side at 52% 54%, rgba(176,148,238,0.105) 0%, rgba(176,148,238,0.102) 8%, rgba(176,148,238,0.094) 16%, rgba(176,148,238,0.083) 24%, rgba(176,148,238,0.069) 32%, rgba(176,148,238,0.055) 40%, rgba(176,148,238,0.041) 48%, rgba(176,148,238,0.029) 56%, rgba(176,148,238,0.019) 64%, rgba(176,148,238,0.011) 72%, rgba(176,148,238,0.006) 80%, rgba(176,148,238,0.002) 88%, rgba(176,148,238,0.000) 100%);
+    radial-gradient(circle closest-side at 50% 50%, rgba(255,166,120,0.135) 0%, rgba(255,166,120,0.128) 8%, rgba(255,166,120,0.118) 16%, rgba(255,166,120,0.102) 24%, rgba(255,166,120,0.085) 32%, rgba(255,166,120,0.067) 40%, rgba(255,166,120,0.049) 48%, rgba(255,166,120,0.034) 56%, rgba(255,166,120,0.032) 64%, rgba(255,166,120,0.019) 72%, rgba(255,166,120,0.010) 80%, rgba(255,166,120,0.004) 88%, rgba(255,166,120,0.000) 100%),
+    radial-gradient(circle closest-side at 54% 56%, rgba(176,148,238,0.125) 0%, rgba(176,148,238,0.119) 8%, rgba(176,148,238,0.109) 16%, rgba(176,148,238,0.095) 24%, rgba(176,148,238,0.078) 32%, rgba(176,148,238,0.061) 40%, rgba(176,148,238,0.045) 48%, rgba(176,148,238,0.031) 56%, rgba(176,148,238,0.028) 64%, rgba(176,148,238,0.016) 72%, rgba(176,148,238,0.008) 80%, rgba(176,148,238,0.003) 88%, rgba(176,148,238,0.000) 100%);
   animation:auraBreathe 7.5s ease-in-out infinite;
 }
 @keyframes auraBreathe{0%,100%{opacity:.85} 50%{opacity:1}}
-/* 오브 본체 — 다단계 방사형 그라데이션으로 색이 영롱하게 번지는 구체 */
+/* 오브 본체 — 다단계 방사형 그라데이션으로 색이 영롱하게 번지는 구체
+   (좌상단 피치 하이라이트 → 좌하단 코랄 → 중앙 로즈 → 우측 라벤더 → 아래 바이올렛) */
 .aura .aura-core{
   position:absolute; inset:0; border-radius:50%; overflow:hidden;
   background:
-    radial-gradient(50% 48% at 33% 26%, rgba(255,241,214,0.96) 0%, rgba(255,224,184,0.86) 24%, rgba(255,204,162,0.52) 46%, rgba(255,196,152,0.18) 66%, rgba(255,196,152,0.00) 78%),
-    radial-gradient(44% 42% at 52% 44%, rgba(255,108,78,0.96) 0%, rgba(255,104,84,0.78) 32%, rgba(255,100,88,0.38) 56%, rgba(255,100,88,0.00) 76%),
-    radial-gradient(50% 52% at 71% 53%, rgba(255,118,150,0.95) 0%, rgba(250,112,148,0.72) 32%, rgba(246,110,150,0.30) 56%, rgba(246,110,150,0.00) 78%),
-    radial-gradient(40% 40% at 78% 20%, rgba(170,162,244,0.60) 0%, rgba(170,162,244,0.28) 42%, rgba(170,162,244,0.00) 74%),
-    radial-gradient(56% 58% at 24% 58%, rgba(196,176,248,0.88) 0%, rgba(182,162,244,0.50) 34%, rgba(172,152,240,0.18) 58%, rgba(172,152,240,0.00) 80%),
-    radial-gradient(62% 56% at 46% 88%, rgba(158,116,240,0.52) 0%, rgba(152,110,234,0.26) 40%, rgba(152,110,234,0.00) 74%),
-    radial-gradient(circle at 46% 42%, #432A3C 0%, #301E2E 46%, #1E1420 84%, #160E16 100%);
+    radial-gradient(98% 98% at 50% 50%, rgba(255,214,196,0) 56%, rgba(255,206,186,0.05) 74%, rgba(255,200,180,0.13) 90%, rgba(255,190,170,0.22) 100%),
+    radial-gradient(38% 34% at 30% 21%, rgba(255,247,231,0.98) 0%, rgba(255,229,194,0.90) 30%, rgba(255,208,168,0.42) 58%, rgba(255,202,162,0.00) 78%),
+    radial-gradient(46% 44% at 25% 62%, rgba(255,112,84,0.95) 0%, rgba(255,108,88,0.72) 34%, rgba(255,104,92,0.28) 58%, rgba(255,104,92,0.00) 78%),
+    radial-gradient(52% 48% at 54% 46%, rgba(255,126,122,0.86) 0%, rgba(252,118,132,0.56) 40%, rgba(250,116,140,0.00) 72%),
+    radial-gradient(50% 50% at 84% 52%, rgba(178,148,246,0.92) 0%, rgba(170,140,240,0.55) 38%, rgba(168,138,238,0.00) 72%),
+    radial-gradient(48% 46% at 62% 86%, rgba(148,112,240,0.74) 0%, rgba(146,110,238,0.34) 44%, rgba(146,110,238,0.00) 74%),
+    radial-gradient(circle at 48% 44%, #4A2B41 0%, #35202F 48%, #221524 82%, #180F1A 100%);
   box-shadow:
-    inset 0 0 60px rgba(28,12,24,.24),
-    inset 0 1px 1px rgba(255,240,232,.09),
-    0 26px 64px -34px rgba(255,120,96,.40);
+    inset 0 0 0 1.4px rgba(255,234,224,.14),
+    inset 0 3px 26px rgba(255,238,226,.22),
+    inset 0 -34px 58px -18px rgba(26,10,26,.42),
+    inset 0 0 58px rgba(28,12,24,.18),
+    0 22px 56px -30px rgba(255,120,96,.34);
 }
 .aura .aura-core::after{
   content:''; position:absolute; inset:0; border-radius:50%;
@@ -147,8 +151,8 @@ textarea{resize:none}
 }
 .splash.gone{opacity:0; transform:scale(1.04); pointer-events:none}
 .splash-title{
-  font-family:var(--serif); font-weight:700; font-size:28px;
-  letter-spacing:.26em; text-indent:.26em; color:#FFF8F2;
+  font-family:var(--sans); font-weight:800; font-size:25px;
+  letter-spacing:-.02em; color:#FFF8F2;
   opacity:1; transform:none; animation:up 1s cubic-bezier(.22,.61,.36,1) both .25s;
 }
 .skip{
@@ -177,7 +181,7 @@ textarea{resize:none}
 .login.show{display:flex; align-items:center; justify-content:center}
 .login-inner{width:100%; padding:0 30px; text-align:center; display:flex; flex-direction:column; align-items:center}
 .login-orb{position:relative; width:168px; height:168px; display:grid; place-items:center}
-.login-title{margin-top:22px; font-family:var(--serif); font-weight:700; font-size:26px; letter-spacing:.28em; text-indent:.28em; color:#FFF8F2}
+.login-title{margin-top:22px; font-family:var(--sans); font-weight:800; font-size:24px; letter-spacing:-.02em; color:#FFF8F2}
 .login-sub{margin-top:12px; font-size:15px; font-weight:500; line-height:1.7; color:var(--ink-66); letter-spacing:.01em}
 .btn-kakao{
   margin-top:34px; width:100%; height:58px; border:0; border-radius:18px; cursor:pointer;
@@ -194,148 +198,162 @@ textarea{resize:none}
 .app.show{display:block}
 .screens{position:absolute; inset:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none}
 .screens::-webkit-scrollbar{display:none}
-.screen{display:none; min-height:100%; padding-bottom:122px}
+.screen{display:none; min-height:100%; padding-bottom:calc(34px + env(safe-area-inset-bottom))}
 .screen.active{display:block}
-#tab-home.active{display:flex; flex-direction:column; padding:0 20px 112px}
+#tab-home.active{display:flex; flex-direction:column; height:100%; min-height:100%; padding:0 18px calc(16px + env(safe-area-inset-bottom))}
 
-/* ── 홈 상단 ── */
-.home-top{flex:0 0 auto; padding:20px 0 0; text-align:center}
-.brand{
-  font-family:var(--serif); font-weight:700; font-size:18px;
-  letter-spacing:.32em; text-indent:.32em; color:rgba(255,248,242,.92);
-}
-.home-stats{
-  flex:0 0 auto; display:flex; justify-content:center; align-items:baseline;
-  margin-top:12px; font-size:12.5px; font-weight:500; color:rgba(251,244,238,.42); letter-spacing:.01em;
-}
-.home-stats span{display:inline-flex; align-items:baseline; gap:2px}
-.home-stats span + span::before{content:'·'; margin:0 9px; color:rgba(251,244,238,.24)}
-.home-stats b{font-size:13px; font-weight:700; color:rgba(251,244,238,.66); letter-spacing:0}
-
-/* ── 히어로: 아우라 오브 + 그 위로 겹쳐 올라오는 글라스 카드 ── */
-.hero{
-  position:relative; flex:1 1 auto; min-height:0;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  padding:8px 0 0;
-}
-.orb{position:relative; width:min(91vw, 352px); aspect-ratio:1/1; display:grid; place-items:center}
-
-/* 반투명 다크 글라스 — iOS Safari 안전을 위해 backdrop-filter 대신
-   다단계 반투명 그라데이션 + 상단 하이라이트 라인으로 유리감을 낸다.
-   오브 뒤쪽의 피치·코랄·라벤더 빛이 카드 위로 은은히 비친다. */
-.glass-card{
-  position:relative; z-index:2; width:100%; margin-top:-130px;
-  padding:28px 20px 24px; text-align:center;
-  border-radius:32px;
+/* ── 홈 상단: 원형 글라스 아이콘 (하단 탭바 대신) ── */
+.home-bar{flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding-top:calc(8px + env(safe-area-inset-top))}
+.home-bar-right{display:flex; align-items:center; gap:9px}
+.glass-btn{
+  width:46px; height:46px; border-radius:50%; border:0; padding:0; cursor:pointer;
+  display:grid; place-items:center; color:rgba(255,247,241,.86);
   background:
-    radial-gradient(124% 84% at 50% -14%, rgba(255,184,140,.36) 0%, rgba(255,168,124,.14) 38%, rgba(255,168,124,0) 66%),
-    radial-gradient(84% 70% at 12% -10%, rgba(255,122,100,.26) 0%, rgba(255,122,100,0) 62%),
-    radial-gradient(86% 72% at 89% -8%, rgba(182,154,242,.28) 0%, rgba(182,154,242,0) 64%),
-    linear-gradient(180deg, rgba(46,30,39,.82) 0%, rgba(30,20,28,.92) 46%, rgba(16,11,16,.97) 100%);
+    radial-gradient(120% 120% at 28% 0%, rgba(255,190,152,.11), rgba(255,190,152,0) 60%),
+    radial-gradient(120% 120% at 82% 100%, rgba(178,154,238,.13), rgba(178,154,238,0) 62%),
+    rgba(255,255,255,.045);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.13), inset 0 0 0 1px rgba(255,255,255,.06), 0 14px 26px -20px #000;
+  transition:transform .16s ease, background .2s ease;
+}
+.glass-btn svg{width:21px; height:21px; display:block}
+.glass-btn:active{transform:scale(.94)}
+.glass-btn.sm{width:42px; height:42px}
+.glass-btn.sm svg{width:19px; height:19px}
+.avatar-btn{
+  background:
+    radial-gradient(120% 120% at 30% 0%, rgba(255,196,160,.22), rgba(255,196,160,0) 62%),
+    radial-gradient(120% 120% at 80% 100%, rgba(184,158,242,.26), rgba(184,158,242,0) 64%),
+    rgba(255,255,255,.05);
+}
+.nav-initial{font-size:15px; font-weight:800; letter-spacing:-.01em; color:#FFF3EA; line-height:1; display:grid; place-items:center; width:100%; height:100%; border-radius:50%; overflow:hidden}
+.nav-initial img{width:100%; height:100%; object-fit:cover; display:block}
+
+/* ── 히어로: 정면 아우라 구체 + 그 안의 브랜드 타이틀 ── */
+.hero{position:relative; flex:0 0 auto; margin-top:auto; display:flex; align-items:center; justify-content:center; padding:4px 0 0}
+.orb{position:relative; width:min(73vw, 296px); aspect-ratio:1/1}
+.orb .aura{position:absolute; inset:0}
+.orb-brand{
+  position:absolute; inset:0; z-index:2;
+  display:flex; align-items:center; justify-content:center;
+  font-size:26px; font-weight:800; letter-spacing:-.02em;
+  color:#FFF8F3; text-shadow:0 2px 26px rgba(48,14,34,.72), 0 1px 3px rgba(40,10,28,.5), 0 0 2px rgba(255,214,196,.18);
+}
+
+/* ── 구체 아래로 부채꼴로 살짝 기울어져 겹친 다크 스퀘클 카드 3장 ── */
+.fan{
+  position:relative; flex:0 0 auto; display:flex; align-items:flex-start; justify-content:center;
+  margin-top:-34px;
+}
+.fan-card{
+  position:relative; flex:0 0 auto; cursor:pointer; text-align:center; overflow:hidden;
+  width:103px; height:146px; padding:18px 9px 15px; border:0;
+  display:flex; flex-direction:column; align-items:center;
+  border-radius:28px;
+  background:linear-gradient(168deg, rgba(38,27,36,.94) 0%, rgba(23,17,24,.97) 56%, rgba(13,10,15,.98) 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255,240,228,.28),
+    inset 0 1px 0 rgba(255,240,230,.10),
     inset 0 0 0 1px rgba(255,255,255,.05),
-    inset 0 -26px 40px -26px rgba(255,150,116,.42),
-    0 -16px 42px -16px rgba(255,150,116,.32),
-    0 36px 70px -30px rgba(0,0,0,.95);
+    0 26px 44px -26px #000;
+  transform-origin:50% 100%;
+  transition:transform .18s ease;
 }
-/* 카드 아래로 은은하게 번지는 빛 — 빈 아래 공간을 빛으로 잇는다 */
-.glass-card::after{
-  content:''; position:absolute; z-index:-1; left:-10%; right:-10%; bottom:-78px; height:180px;
-  border-radius:50%; pointer-events:none;
+.fan-card:active{transform:scale(.975)}
+.fc-1{transform:rotate(-9deg) translateY(24px); z-index:1; margin-right:-13px}
+.fc-2{
+  width:117px; height:166px; z-index:3; transform:translateY(-2px);
+  padding-top:22px;
   background:
-    radial-gradient(46% 50% at 50% 40%, rgba(255,148,114,.26) 0%, rgba(255,148,114,.10) 46%, rgba(255,148,114,0) 78%),
-    radial-gradient(40% 46% at 80% 36%, rgba(176,148,240,.18) 0%, rgba(176,148,240,0) 76%),
-    radial-gradient(38% 44% at 18% 38%, rgba(255,126,104,.16) 0%, rgba(255,126,104,0) 76%);
+    radial-gradient(120% 74% at 50% -12%, rgba(255,178,138,.20), rgba(255,178,138,0) 62%),
+    radial-gradient(96% 60% at 8% 108%, rgba(255,126,104,.10), rgba(255,126,104,0) 70%),
+    radial-gradient(96% 60% at 92% 108%, rgba(178,152,240,.12), rgba(178,152,240,0) 70%),
+    linear-gradient(168deg, rgba(46,32,42,.96) 0%, rgba(26,19,27,.97) 58%, rgba(15,11,17,.98) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,242,232,.16),
+    inset 0 0 0 1px rgba(255,255,255,.07),
+    0 0 34px -10px rgba(255,148,124,.24),
+    0 30px 50px -26px #000;
 }
-.glass-card::before{
-  content:''; position:absolute; left:14%; right:14%; top:0; height:1.5px; border-radius:2px;
-  background:linear-gradient(90deg, rgba(255,196,156,0), rgba(255,216,188,.62) 26%, rgba(198,172,246,.52) 72%, rgba(255,196,156,0));
-  pointer-events:none;
-}
+.fc-3{transform:rotate(9deg) translateY(24px); z-index:2; margin-left:-13px}
 
-/* ── 일수 · 단계 ── */
-.hero-title{display:flex; align-items:baseline; justify-content:center; gap:8px; flex-wrap:wrap}
-.hero-title.is-empty .orb-day,
-.hero-title.is-empty .h-sep{display:none}
-.hero-title.is-empty .orb-season{font-size:24px; letter-spacing:.1em}
-.orb-day{display:inline-flex; align-items:baseline; gap:3px}
-.orb-day .n{font-family:var(--sans); font-weight:800; font-size:46px; line-height:.96; letter-spacing:-.045em; color:#FFFBF7}
-.orb-day .u{font-size:14.5px; font-weight:700; letter-spacing:.02em; color:rgba(251,244,238,.62)}
-.h-sep{font-size:19px; font-weight:600; color:rgba(251,244,238,.26); line-height:1}
-.orb-season{
-  font-size:22px; font-weight:800; letter-spacing:.05em;
-  color:#FFD3B8;
+.fc-num{
+  font-weight:800; font-size:27px; line-height:1.04; letter-spacing:-.035em; white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+  background:linear-gradient(178deg,#FFD3AE 0%, #FFB08A 46%, #FF8E72 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
 }
-.orb-season.winter{color:#C9C2EC}
-.orb-season.spring{color:#FFD8B6}
-.orb-season.summer{color:#FFE0AE}
-.orb-season.autumn{color:#F8C2C6}
+.fc-num.is-day{
+  font-size:36px; letter-spacing:-.045em;
+  background:linear-gradient(176deg,#FFF3F6 0%, #FFDCE8 46%, #F4B4CC 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.fc-num.is-lav{
+  font-size:28px;
+  background:linear-gradient(176deg,#E4D8FB 0%, #C4ACF1 48%, #9E82E4 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.fc-unit{font-size:13px; font-weight:700; letter-spacing:-.01em; margin-left:2px;
+  -webkit-text-fill-color:rgba(251,244,238,.66)}
+.fan.is-empty .fc-num{background:none; -webkit-text-fill-color:rgba(251,244,238,.24); color:rgba(251,244,238,.24); font-weight:700; font-size:20px; letter-spacing:0}
+.fan.is-empty .fc-label{color:rgba(251,244,238,.40)}
+.fc-kicker{font-size:11.5px; font-weight:700; letter-spacing:.02em; color:rgba(251,244,238,.52); margin-bottom:5px}
+.fc-label{margin-top:7px; font-size:12.5px; font-weight:600; letter-spacing:-.01em; color:rgba(251,244,238,.56)}
+.fc-label.is-phase{color:#C9B4F3; font-weight:700; letter-spacing:.01em}
+.fc-mid-dot{width:3.5px; height:3.5px; border-radius:50%; background:rgba(251,244,238,.30); margin-top:8px}
+.fc-glyph{position:relative; margin-top:auto; display:block}
+.fc-glyph svg{width:19px; height:19px; display:block; opacity:.9}
+.fc-glow-orb{
+  width:20px; height:20px; border-radius:50%;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255,246,230,.95) 0%, rgba(255,206,176,.75) 34%, rgba(255,146,150,.55) 62%, rgba(186,150,240,.55) 100%);
+  box-shadow:0 0 16px rgba(255,150,130,.55), inset 0 1px 0 rgba(255,255,255,.45);
+}
+.fc-ring{width:20px; height:20px; border-radius:50%; border:1px dashed rgba(186,162,242,.85)}
 
-/* ── 한 줄 상태 ── */
+/* ── 카드 아래 한 줄 상태 ── */
+.home-status{flex:0 0 auto; margin-top:24px; text-align:center}
 .status-line{
-  margin:11px auto 0; display:flex; align-items:center; justify-content:center; gap:8px;
-  font-size:14.5px; font-weight:600; letter-spacing:.01em; color:rgba(251,244,238,.72);
-  text-align:center;
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  font-size:13.5px; font-weight:600; letter-spacing:-.01em; color:rgba(251,244,238,.62);
 }
-.status-line i{width:6px; height:6px; border-radius:50%; background:var(--peach); display:block; flex:0 0 auto; box-shadow:0 0 9px rgba(255,193,153,.85)}
+.status-line i{width:5px; height:5px; border-radius:50%; background:var(--peach); display:block; flex:0 0 auto; box-shadow:0 0 9px rgba(255,193,153,.85)}
 .status-line i.winter{background:#BFC2E6; box-shadow:0 0 9px rgba(191,194,230,.8)}
 .status-line i.spring{background:#FFC9A4; box-shadow:0 0 9px rgba(255,201,164,.85)}
 .status-line i.summer{background:#FFDFAE; box-shadow:0 0 9px rgba(255,223,174,.85)}
 .status-line i.autumn{background:var(--rose); box-shadow:0 0 9px rgba(240,138,160,.85)}
 
-/* ── 질문·리포트 한 줄 진입 ── */
-.quick-links{
-  display:flex; align-items:center; justify-content:center;
-  margin-top:16px; padding-top:13px;
-  border-top:1px solid rgba(255,255,255,.07);
+/* 오늘의 질문 — 있을 때만 조용히 한 줄 */
+.q-hint{
+  display:none; margin:10px auto 0; padding:6px 2px; border:0; background:none; cursor:pointer;
+  align-items:center; gap:7px;
+  font-size:12.5px; font-weight:600; letter-spacing:-.01em; color:rgba(255,226,208,.72);
 }
-.q-link{
-  display:inline-flex; align-items:center; gap:6px;
-  padding:7px 2px; border:0; background:none; cursor:pointer;
-  font-size:13.5px; font-weight:600; letter-spacing:.01em; color:rgba(251,244,238,.55);
-  transition:color .2s ease, transform .15s ease;
-}
-.q-link:active{transform:scale(.97)}
-.q-mark{width:5px; height:5px; border-radius:50%; background:rgba(251,244,238,.26); display:block; flex:0 0 auto}
-.q-div{width:1px; height:11px; background:rgba(251,244,238,.14); margin:0 13px; display:block}
-#question-banner.show{color:rgba(255,236,219,.96)}
-#question-banner.show .q-mark{background:var(--peach); box-shadow:0 0 8px rgba(255,193,153,.95)}
-#report-banner.show{color:rgba(255,220,233,.96)}
-#report-banner.show .q-mark{background:var(--rose); box-shadow:0 0 8px rgba(240,138,160,.95)}
+.q-hint.show{display:flex; width:max-content; margin:10px auto 0}
+.q-hint:active{opacity:.7}
+.q-hint-dot{width:5px; height:5px; border-radius:50%; background:var(--peach); display:block; box-shadow:0 0 9px rgba(255,193,153,.9)}
 #question-sub{display:none}
 
-/* ── 하단: 글로우 CTA ── */
-.home-foot{flex:0 0 auto; display:flex; align-items:center; gap:10px; margin-top:14px}
-.cta{
-  flex:1; height:60px; border-radius:999px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center; gap:9px;
-  border:1.2px solid transparent;
+/* ── 하단: 영롱한 피치-라벤더 글로우 필 CTA ── */
+.home-foot{position:relative; isolation:isolate; flex:0 0 auto; margin-top:auto; padding-top:26px; padding-bottom:calc(4px + env(safe-area-inset-bottom))}
+.home-foot::before{
+  content:''; position:absolute; z-index:-1; left:-8%; right:-8%; bottom:-8px; height:104px; pointer-events:none;
   background:
-    radial-gradient(120% 170% at 14% 124%, rgba(255,138,104,.58) 0%, rgba(255,138,104,0) 64%) padding-box,
-    radial-gradient(120% 170% at 88% -30%, rgba(184,158,242,.52) 0%, rgba(184,158,242,0) 66%) padding-box,
-    linear-gradient(180deg, #2A1A23 0%, #180F16 100%) padding-box,
-    linear-gradient(100deg, rgba(255,212,176,.95) 0%, rgba(255,146,152,.92) 30%, rgba(190,162,242,.94) 66%, rgba(255,206,180,.95) 100%) border-box;
-  color:#FFF8F3; font-size:17px; font-weight:700; letter-spacing:.01em;
-  box-shadow:0 22px 44px -24px rgba(255,120,98,.55), inset 0 1px 0 rgba(255,255,255,.09);
-  transition:transform .15s ease, box-shadow .2s ease;
+    radial-gradient(48% 58% at 44% 42%, rgba(255,150,118,.20), rgba(255,150,118,0) 74%),
+    radial-gradient(44% 54% at 78% 46%, rgba(180,152,240,.17), rgba(180,152,240,0) 76%);
 }
-.cta:active{transform:scale(.985)}
-.cta svg{width:19px; height:19px; flex:0 0 auto}
-.cta-icon{
-  width:60px; height:60px; flex:0 0 auto; cursor:pointer;
-  border-radius:50%; border:1.2px solid transparent;
-  display:grid; place-items:center; color:rgba(255,246,240,.86);
-  background:
-    radial-gradient(120% 120% at 30% 0%, rgba(255,168,140,.20) 0%, rgba(255,168,140,0) 60%) padding-box,
-    radial-gradient(120% 120% at 80% 100%, rgba(180,156,238,.24) 0%, rgba(180,156,238,0) 62%) padding-box,
-    linear-gradient(180deg, rgba(40,26,34,.94), rgba(20,13,19,.96)) padding-box,
-    linear-gradient(140deg, rgba(255,208,172,.55), rgba(190,162,242,.45)) border-box;
-  box-shadow:0 18px 34px -24px rgba(0,0,0,.9);
-  transition:transform .15s ease;
+.cta-glow{
+  width:100%; height:58px; border:0; border-radius:999px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:11px;
+  font-size:16.5px; font-weight:800; letter-spacing:-.01em; color:#2A1218;
+  background:linear-gradient(96deg,#FFC79F 0%, #FFA487 26%, #F799A9 58%, #C2A6F0 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.55),
+    inset 0 0 0 1px rgba(255,232,222,.45),
+    0 16px 40px -18px rgba(255,140,110,.62),
+    0 0 46px -8px rgba(190,160,240,.32);
+  transition:transform .16s ease, filter .2s ease;
 }
-.cta-icon:active{transform:scale(.95)}
-.cta-icon svg{width:21px; height:21px}
+.cta-glow:active{transform:scale(.985); filter:brightness(1.04)}
+.cta-glow .plus{width:17px; height:17px; flex:0 0 auto; opacity:.72}
 
 /* ── 공용 버튼 ── */
 .btn{
@@ -347,38 +365,29 @@ textarea{resize:none}
 .btn.solid{background:var(--warm-grad); color:var(--warm-ink)}
 .btn.ghost{background:rgba(255,255,255,.08); color:var(--ink)}
 
-/* ═══════════════ 하단 탭바: 다크 글라스 필 ═══════════════ */
-.tabbar{
-  position:absolute; left:18px; right:18px; z-index:20;
-  bottom:calc(16px + env(safe-area-inset-bottom));
-  height:70px; border-radius:999px;
-  display:flex; align-items:center; justify-content:space-around;
-  padding:0 12px;
-  background:linear-gradient(180deg, rgba(34,22,30,.90) 0%, rgba(18,11,17,.94) 100%);
-  box-shadow:0 24px 44px -20px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.10), 0 0 0 1px rgba(255,255,255,.05);
+/* ═══════════════ 하위 화면(달력·주기·마이) 상단 바 ═══════════════ */
+.sub-head{flex:0 0 auto}
+.sub-bar{
+  position:relative; display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:calc(12px + env(safe-area-inset-top)) 20px 0;
 }
-.tab{
-  width:54px; height:54px; border:0; border-radius:50%;
-  display:grid; place-items:center; cursor:pointer;
-  background:none; color:rgba(251,244,238,.50);
-  transition:color .2s ease, background .2s ease, transform .18s ease;
+.sub-title{
+  position:absolute; left:50%; top:calc(12px + env(safe-area-inset-top)); transform:translateX(-50%);
+  font-size:20px; font-weight:800; letter-spacing:-.02em; color:rgba(255,250,246,.97);
+  pointer-events:none;
 }
-.tab svg{width:24px; height:24px; display:block}
-.tab.active{
-  color:#2A1008;
-  background:radial-gradient(circle at 34% 28%, #FFD6AE 0%, #FFA583 58%, #F08BA4 100%);
-  box-shadow:0 12px 24px -10px rgba(255,132,110,.8), inset 0 1px 0 rgba(255,255,255,.4);
-}
-.tab:active{transform:scale(.94)}
+.sub-slot{width:42px; height:42px; display:block}
 
 /* ── 공통 화면 헤더 ── */
-.screen-head{padding:30px 22px 6px}
+.screen-head{padding:22px 22px 4px}
 .head-row{display:flex; align-items:center; justify-content:space-between; gap:12px}
-.head-title{font-family:var(--serif); font-weight:700; font-size:26px; letter-spacing:.06em; text-indent:.06em; color:rgba(255,250,246,.97)}
-.head-sub{margin-top:9px; font-size:14px; font-weight:500; letter-spacing:.01em; color:var(--ink-52)}
+.head-title{font-family:var(--sans); font-weight:800; font-size:23px; letter-spacing:-.02em; color:rgba(255,250,246,.97)}
+.head-sub{margin-top:8px; font-size:13.5px; font-weight:500; letter-spacing:-.01em; color:var(--ink-52)}
+.head-sub.center{text-align:center; padding:10px 22px 0}
+.sub-head .head-sub{padding:9px 22px 0}
 .pill-chip{
-  flex:0 0 auto; border:0; cursor:pointer; border-radius:999px; padding:8px 14px;
-  font-size:12.5px; font-weight:700; letter-spacing:.02em; color:#FFE6D4;
+  flex:0 0 auto; border:0; cursor:pointer; border-radius:999px; padding:8px 13px;
+  font-size:12px; font-weight:700; letter-spacing:-.01em; color:#FFE6D4; white-space:nowrap;
   background:rgba(255,182,142,.12);
   box-shadow:inset 0 0 0 1px rgba(255,192,158,.26);
   transition:transform .15s ease, background .2s ease;
@@ -390,8 +399,8 @@ textarea{resize:none}
   position:sticky; top:0; z-index:6;
   /* iOS 26 WebKit: 스크롤 컨테이너 안의 sticky 요소에 backdrop-filter를 걸면 화면이 통째로 비는
      컴포지터 버그가 있어, 불투명 그라데이션 스크림으로만 처리한다. */
-  background:linear-gradient(180deg, #140D12 0%, #140D12 84%, rgba(20,13,18,.97) 90%, rgba(20,13,18,.72) 95%, rgba(20,13,18,0) 100%);
-  padding-bottom:16px;
+  background:linear-gradient(180deg, #0B070D 0%, #0B070D 84%, rgba(11,7,13,.97) 90%, rgba(11,7,13,.72) 95%, rgba(11,7,13,0) 100%);
+  padding-bottom:14px;
 }
 .legend{display:flex; flex-wrap:wrap; gap:14px; padding:14px 22px 2px}
 .legend-item{display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:rgba(251,244,238,.66); letter-spacing:.01em}
@@ -885,38 +894,31 @@ textarea{resize:none}
 
 /* ── 낮은 화면 대응 ── */
 @media (max-height: 820px){
-  #tab-home.active{padding-bottom:106px}
-  .home-top{padding-top:16px}
-  .home-stats{margin-top:9px}
-  .orb{width:min(82vw, 306px)}
-  .glass-card{margin-top:-96px; padding:17px 16px 11px}
-  .orb-day .n{font-size:38px}
-  .orb-season{font-size:20px}
-  .status-line{margin-top:8px; font-size:13.5px}
-  .quick-links{margin-top:11px; padding-top:10px}
+  .orb{width:min(72vw, 280px)}
+  .orb-brand{font-size:25px}
+  .fan{margin-top:-28px}
+  .fan-card{width:97px; height:138px; padding-top:16px}
+  .fc-2{width:111px; height:156px}
+  .fc-1,.fc-3{transform:rotate(-9deg) translateY(22px)}
+  .fc-3{transform:rotate(9deg) translateY(22px)}
+  .fc-num.is-day{font-size:33px}
+  .home-status{margin-top:20px}
   .home-foot{margin-top:16px}
-  .cta,.cta-icon{height:56px}
-  .cta-icon{width:56px}
+  .cta-glow{height:54px}
 }
 @media (max-height: 730px){
-  #tab-home.active{padding-bottom:100px}
-  .home-top{padding-top:12px}
-  .brand{font-size:17px}
-  .home-stats{font-size:12px; margin-top:7px}
-  .orb{width:min(72vw, 262px)}
-  .glass-card{margin-top:-80px; padding:14px 14px 9px; border-radius:26px}
-  .orb-day .n{font-size:33px}
-  .orb-day .u{font-size:13px}
-  .orb-season{font-size:18px}
-  .status-line{margin-top:7px; font-size:13px}
-  .quick-links{margin-top:9px; padding-top:9px}
-  .q-link{font-size:13px; padding:6px 2px}
-  .home-foot{margin-top:13px}
-  .cta,.cta-icon{height:52px}
-  .cta-icon{width:52px}
-  .cta{font-size:16px}
-  .tabbar{height:64px; bottom:calc(12px + env(safe-area-inset-bottom))}
-  .tab{width:48px; height:48px}
+  .orb{width:min(64vw, 246px)}
+  .orb-brand{font-size:23px}
+  .fan{margin-top:-24px}
+  .fan-card{width:91px; height:128px; padding:14px 8px 12px; border-radius:24px}
+  .fc-2{width:104px; height:146px; padding-top:16px}
+  .fc-num{font-size:26px}
+  .fc-num.is-day{font-size:30px}
+  .fc-label{font-size:12px; margin-top:5px}
+  .home-status{margin-top:16px}
+  .status-line{font-size:13px}
+  .home-foot{margin-top:12px}
+  .cta-glow{height:50px; font-size:15.5px}
 }
 
 @media (prefers-reduced-motion: reduce){

@@ -146,9 +146,9 @@ function renderOrbit(opts) {
 async function updateStatus() {
   const records = loadRecords();
   const todayStr = getTodayStr();
-  const dayEl = document.getElementById('orb-day');
-  const unitEl = document.getElementById('orb-day-unit');
-  const seasonEl = document.getElementById('orb-season');
+  const dayEl = document.getElementById('fc-day');
+  const unitEl = document.getElementById('fc-day-unit');
+  const seasonEl = document.getElementById('fc-phase');
   const hintEl = document.getElementById('hint-text');
   const hintDot = document.getElementById('hint-dot');
   const noteEl = document.getElementById('phase-note');
@@ -157,12 +157,15 @@ async function updateStatus() {
   const heroTitle = document.getElementById('hero-title');
   if (heroTitle) heroTitle.classList.toggle('is-empty', !records.length);
 
+  const fanEl = document.querySelector('.fan');
+  if (fanEl) fanEl.classList.toggle('is-empty', !records.length);
+
   if (!records.length) {
     renderOrbit({ cycle: 28, day: 0, phaseKey: null });
     if (orbEl) orbEl.className = 'orb';
     if (dayEl) dayEl.textContent = '—';
-    if (unitEl) unitEl.textContent = '일째';
-    if (seasonEl) { seasonEl.textContent = '달의 기록'; seasonEl.className = 'orb-season'; }
+    if (unitEl) unitEl.textContent = '';
+    if (seasonEl) { seasonEl.textContent = '기록 전'; seasonEl.className = 'fc-label is-phase'; }
     if (hintEl) hintEl.textContent = '기록을 시작해보세요';
     if (hintDot) hintDot.className = '';
     if (noteEl) noteEl.textContent = '생리 기록을 남기면 달이 차오르기 시작해요';
@@ -184,7 +187,7 @@ async function updateStatus() {
     if (unitEl) unitEl.textContent = '일째';
     if (seasonEl) {
       seasonEl.textContent = phase.name;
-      seasonEl.className = `orb-season ${phase.cls}`;
+      seasonEl.className = 'fc-label is-phase ' + phase.cls;
     }
 
     if (hintEl) {
@@ -208,18 +211,16 @@ async function updateStatus() {
   if (typeof checkQuestionBanner === 'function') await checkQuestionBanner();
 }
 
-/* ── 홈 상단 뱃지 ── */
+/* ── 홈 부채꼴 카드 3장 ── */
 function renderHomeBadges() {
   const records = loadRecords();
   const logs = loadLogs();
-  const ddayEl = document.getElementById('badge-dday');
-  const cycleEl = document.getElementById('badge-cycle');
-  const logsEl = document.getElementById('badge-logs');
+  const ddayEl = document.getElementById('fc-dday');
+  const cycleEl = document.getElementById('fc-avg');
 
   if (cycleEl) cycleEl.textContent = records.length >= 2 ? calcAvgCycle(records) : '—';
-
-  const logCount = Object.keys(logs).length;
-  if (logsEl) logsEl.textContent = logCount ? logCount : '—';
+  const avgUnit = cycleEl && cycleEl.parentElement ? cycleEl.parentElement.querySelector('.fc-unit') : null;
+  if (avgUnit) avgUnit.textContent = records.length >= 2 ? '일' : '';
 
   if (ddayEl) {
     if (!records.length) {
@@ -231,6 +232,14 @@ function renderHomeBadges() {
         : (diff > 0 ? `D-${diff}` : (diff === 0 ? 'D-DAY' : `D+${Math.abs(diff)}`));
     }
   }
+
+  // 예전 상단 통계 줄을 쓰던 화면이 남아 있어도 깨지지 않게
+  const legacyD = document.getElementById('badge-dday');
+  if (legacyD && ddayEl) legacyD.textContent = ddayEl.textContent;
+  const legacyC = document.getElementById('badge-cycle');
+  if (legacyC && cycleEl) legacyC.textContent = cycleEl.textContent;
+  const legacyL = document.getElementById('badge-logs');
+  if (legacyL) legacyL.textContent = Object.keys(logs).length || '—';
 }
 
 /* ── 마이페이지 렌더 ── */
@@ -247,6 +256,19 @@ function renderMypage() {
   }
   const email = document.getElementById('mypage-email');
   if (email) email.textContent = currentUser.email || '';
+
+  // 홈 상단 마이 버튼 — 마이페이지 아바타와 같은 이니셜
+  const navAv = document.getElementById('nav-avatar');
+  if (navAv) {
+    const meta = currentUser.user_metadata || {};
+    if (meta.avatar_url) {
+      navAv.innerHTML = `<img src="${escapeHtml(meta.avatar_url)}" alt="">`;
+      navAv.classList.add('has-photo');
+    } else {
+      const seed = (userNickname || currentUser.email || '·').trim();
+      navAv.textContent = seed ? seed[0].toUpperCase() : '·';
+    }
+  }
 
   updateNicknameUI();
 
