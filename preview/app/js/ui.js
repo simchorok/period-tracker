@@ -159,8 +159,10 @@ async function updateStatus() {
 
   if (!records.length) {
     renderOrbit({ cycle: 28, day: 0, phaseKey: null });
-    if (heroEl) heroEl.textContent = '달의 기록';
-    if (nextEl) nextEl.textContent = '기록을 시작해보세요';
+    if (heroEl) heroEl.innerHTML = '기록을<br>시작해보세요';
+    if (nextEl) nextEl.textContent = '';
+    if (typeof setSeason === 'function') setSeason('none');
+    if (typeof renderCycleProgress === 'function') renderCycleProgress(0, 28);
     if (hintEl) hintEl.textContent = '기록을 시작해보세요';
     if (noteEl) noteEl.textContent = '생리 기록을 남기면 달이 차오르기 시작해요';
   } else {
@@ -176,13 +178,16 @@ async function updateStatus() {
 
     renderOrbit({ cycle, day: dayOfCycle, phaseKey });
 
-    if (heroEl) heroEl.textContent = `${dayOfCycle}일째 · ${phase.name}`;
+    // 히어로: 전문 용어 대신 계절 이름만 크게
+    if (heroEl) heroEl.textContent = phase.season;
     if (nextEl) {
       if (diff === null) nextEl.textContent = '';
-      else if (diff > 0) nextEl.textContent = `다음 예정 D-${diff}`;
-      else if (diff === 0) nextEl.textContent = '다음 예정 D-DAY';
-      else nextEl.textContent = `예정일에서 ${Math.abs(diff)}일 지남`;
+      else if (diff > 0) nextEl.innerHTML = `다음 생리까지 <b>${diff}일</b>`;
+      else if (diff === 0) nextEl.textContent = '오늘이 예상 시작일이에요';
+      else nextEl.textContent = `예정일에서 ${Math.abs(diff)}일 지났어요`;
     }
+    if (typeof setSeason === 'function') setSeason(phaseKey);
+    if (typeof renderCycleProgress === 'function') renderCycleProgress(dayOfCycle, cycle);
 
     if (hintEl) {
       if (inPeriod) hintEl.textContent = `생리 ${dayOfCycle}일째예요`;
@@ -200,6 +205,8 @@ async function updateStatus() {
 
   renderHomeBadges();
   renderNavAvatar();
+  if (typeof renderHeroDate === 'function') renderHeroDate();
+  if (typeof renderWeekStrip === 'function') renderWeekStrip(records);
 
   if (typeof checkReportBanner === 'function') await checkReportBanner();
   if (typeof checkQuestionBanner === 'function') await checkQuestionBanner();

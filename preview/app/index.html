@@ -9,15 +9,24 @@
 <title>달의 기록</title>
 <meta name="description" content="달마다 달라지는 몸과 마음의 리듬을 기록하는 앱, 달의 기록">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=20261121c">
-<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png?v=20261121c">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=20261122a">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png?v=20261122a">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <!-- Pretendard 단일 웹폰트. 화면을 막지 않도록 비동기로 불러온다(먼저 시스템 폰트로 그리고 도착하면 교체) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" media="print" onload="this.media='all'">
 <noscript>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 </noscript>
-<link rel="stylesheet" href="styles/main.css?v=20261121c">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" media="print" onload="this.media='all'">
+<script>
+  /* 화면 모드(라이트 기본)와 마지막 계절을 첫 페인트 전에 적용 — 다크 사용자에게 흰 화면이 번쩍이지 않게 */
+  (function () {
+    var m = 'light', se = 'none';
+    try { m = localStorage.getItem('dal_mode') === 'dark' ? 'dark' : 'light'; se = localStorage.getItem('dal_season') || 'none'; } catch (_) {}
+    var r = document.documentElement; r.setAttribute('data-mode', m); r.setAttribute('data-season', se);
+  })();
+</script>
+<link rel="stylesheet" href="styles/main.css?v=20261122a">
 <style>
   /* 첫 페인트 보장용 최소 스타일 — 외부 CSS가 늦거나 막혀도 화면이 완전히 비지 않게 한다 */
   html,body{margin:0;height:100%;background:#A9B5D2;color:#1E222E}
@@ -132,7 +141,7 @@
     <button class="skip" id="skip" aria-label="건너뛰기">SKIP</button>
 
     <div class="splash-orb">
-      <img class="orb-img" src="assets/airy-orb.webp?v=20261121c" alt="" width="760" height="837" decoding="async">
+      <img class="orb-img" src="assets/airy-orb.webp?v=20261122a" alt="" width="760" height="837" decoding="async">
     </div>
 
     <div class="splash-tag"><i></i>오늘의 달이 차오르는 중</div>
@@ -142,7 +151,7 @@
   <div class="login" id="login-screen">
     <div class="login-inner">
       <div class="login-orb login-logo">
-        <img class="orb-img" src="assets/airy-orb.webp?v=20261121c" alt="" width="760" height="837" decoding="async">
+        <img class="orb-img" src="assets/airy-orb.webp?v=20261122a" alt="" width="760" height="837" decoding="async">
       </div>
       <div class="login-title">달의 기록</div>
       <div class="login-sub">몸과 마음의 리듬을 기록해요</div>
@@ -161,80 +170,59 @@
 
     <div class="screens" id="screens">
 
-      <!-- 홈 · 에어리 오로라 글라스: 상단 메뉴·필 토글·아바타 + 3D 오브제 + 글라스 요약 카드 + 순백 CTA -->
+      <!-- 홈 · 계절 테마: 상단(메뉴·라이트/다크 토글) + 계절 히어로 + 사이클 진행 라인 + 기록 버튼 + 주간 날짜 + 오늘의 문장 + 요약 -->
       <section class="screen active" id="tab-home" data-tab="home">
-
-        <div class="topbar">
-          <button class="glass-btn" id="nav-menu" onclick="openMenuSheet()" aria-label="메뉴">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
-              <path d="M4 8.2h16M4 13h16M4 17.8h10"/>
-            </svg>
-          </button>
-          <div class="seg" role="tablist" aria-label="화면 전환">
-            <button class="seg-btn active" data-goto="home" onclick="switchTab('home')" role="tab">오늘</button>
-            <button class="seg-btn" data-goto="calendar" onclick="switchTab('calendar')" role="tab">달력</button>
-            <button class="seg-btn" data-goto="graph" onclick="switchTab('graph')" role="tab">주기</button>
+        <div class="h-top">
+          <button class="h-ib" id="nav-menu" onclick="openMenuSheet()" aria-label="메뉴"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 8.2h16M4 13h16M4 17.8h10"/></svg></button>
+          <span class="h-brand">달의 기록</span>
+          <div class="mode-toggle" role="group" aria-label="화면 모드">
+            <button class="mt-btn" data-mode-btn="light" onclick="setMode('light')" aria-label="라이트 모드"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></button>
+            <button class="mt-btn" data-mode-btn="dark" onclick="setMode('dark')" aria-label="다크 모드"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/></svg></button>
           </div>
-          <button class="glass-btn avatar-btn" id="nav-mypage" data-goto="mypage" onclick="switchTab('mypage')" aria-label="마이">
-            <span class="nav-initial" id="nav-avatar">·</span>
-          </button>
         </div>
 
-        <header class="home-head">
-          <h1 class="hero-title" id="hero-title">달의 기록</h1>
-          <p class="hero-next" id="hero-next">기록을 시작해보세요</p>
-        </header>
-
-        <div class="orb-stage" id="orb-stage">
-          <img class="orb-img" src="assets/airy-orb.webp?v=20261121c" alt="" width="760" height="837" decoding="async">
+        <div class="h-hero">
+          <img class="h-shape" id="hero-shape" src="assets/season/light-none.webp?v=20261122a" alt="" decoding="async">
+          <div class="h-text">
+            <div class="h-date" id="hero-date"></div>
+            <h1 class="h-season" id="hero-title">기록을<br>시작해보세요</h1>
+            <p class="h-next" id="hero-next"></p>
+          </div>
         </div>
 
-        <!-- 하단 플로팅 프로스티드 글라스 요약 카드 -->
-        <div class="glass-card" id="home-card">
-          <div class="gc-kicker">Today's outlook</div>
-          <p class="gc-status" id="hint-text">기록을 시작해보세요</p>
-          <p class="gc-note" id="phase-note">생리 기록을 남기면 달이 차오르기 시작해요</p>
-          <div class="gc-metrics">
-            <div class="gc-metric">
-              <span class="gm-val" id="fc-dday">—</span>
-              <span class="gm-label">예정일</span>
-            </div>
-            <div class="gc-metric">
-              <span class="gm-val" id="fc-avg">—</span>
-              <span class="gm-label">평균 주기</span>
-            </div>
-            <div class="gc-metric">
-              <span class="gm-val" id="fc-avgdur">—</span>
-              <span class="gm-label">평균 기간</span>
-            </div>
-          </div>
+        <div class="h-prog" id="cycle-progress"></div>
+
+        <button class="h-cta" onclick="openRecordSheet()">
+          <span class="h-cta-orb" aria-hidden="true"></span>
+          <span class="h-cta-t">오늘 기록하기</span>
+          <span class="h-cta-go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12h15M13.4 5.9l6.1 6.1-6.1 6.1"/></svg></span>
+        </button>
+
+        <div class="h-week" id="week-strip" aria-label="이번 주"></div>
+
+        <div class="h-outlook">
+          <div class="h-kicker">Today's outlook</div>
+          <p class="h-hint" id="hint-text">기록을 시작해보세요</p>
+          <p class="h-note" id="phase-note">생리 기록을 남기면 달이 차오르기 시작해요</p>
+        </div>
+
+        <div class="h-metrics" id="home-card">
+          <div class="h-metric"><span class="gm-val" id="fc-dday">—</span><span class="gm-label">예정일</span></div>
+          <div class="h-metric"><span class="gm-val" id="fc-avg">—</span><span class="gm-label">평균 주기</span></div>
+          <div class="h-metric"><span class="gm-val" id="fc-avgdur">—</span><span class="gm-label">평균 기간</span></div>
+        </div>
+
+        <div class="h-q-row">
           <button class="q-hint" id="question-banner" onclick="openQuestionModal()">
             <span class="q-hint-dot" aria-hidden="true"></span><span>오늘의 질문</span><span id="question-sub" hidden></span>
           </button>
         </div>
-
-        <footer class="home-foot">
-          <button class="cta-white" onclick="openRecordSheet()">
-            <span>오늘 기록하기</span>
-            <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12h15M13.4 5.9l6.1 6.1-6.1 6.1"/></svg>
-          </button>
-        </footer>
       </section>
 
       <!-- 달력 -->
       <section class="screen" id="tab-calendar" data-tab="calendar">
         <div class="cal-top">
-          <div class="sub-bar">
-            <button class="glass-btn sm" onclick="switchTab('home')" aria-label="오늘로">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5 8 12l6.5 7"/></svg>
-            </button>
-            <div class="seg" role="tablist" aria-label="화면 전환">
-              <button class="seg-btn" data-goto="home" onclick="switchTab('home')" role="tab">오늘</button>
-              <button class="seg-btn active" data-goto="calendar" onclick="switchTab('calendar')" role="tab">달력</button>
-              <button class="seg-btn" data-goto="graph" onclick="switchTab('graph')" role="tab">주기</button>
-            </div>
-            <span class="sub-slot" aria-hidden="true"></span>
-          </div>
+          <div class="sub-bar t-bar"><span class="sub-title">달력</span></div>
         </div>
         <div class="cal-intro">
           <div class="head-sub center" id="calendar-sub">기록과 예측을 한눈에</div>
@@ -251,17 +239,7 @@
       <!-- 그래프 -->
       <section class="screen" id="tab-graph" data-tab="graph">
         <div class="sub-head">
-          <div class="sub-bar">
-            <button class="glass-btn sm" onclick="switchTab('home')" aria-label="오늘로">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5 8 12l6.5 7"/></svg>
-            </button>
-            <div class="seg" role="tablist" aria-label="화면 전환">
-              <button class="seg-btn" data-goto="home" onclick="switchTab('home')" role="tab">오늘</button>
-              <button class="seg-btn" data-goto="calendar" onclick="switchTab('calendar')" role="tab">달력</button>
-              <button class="seg-btn active" data-goto="graph" onclick="switchTab('graph')" role="tab">주기</button>
-            </div>
-            <span class="sub-slot" aria-hidden="true"></span>
-          </div>
+          <div class="sub-bar t-bar"><span class="sub-title">주기</span></div>
           <div class="head-sub" style="text-align:center">쌓인 기록이 만드는 나의 리듬</div>
           <div class="report-row"><button class="pill-chip" id="report-banner" onclick="openReport()"><span id="report-banner-title">AI 리포트</span></button></div>
         </div>
@@ -292,17 +270,7 @@
       <!-- 마이 -->
       <section class="screen" id="tab-mypage" data-tab="mypage">
         <div class="sub-head">
-          <div class="sub-bar">
-            <button class="glass-btn sm" onclick="switchTab('home')" aria-label="오늘로">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5 8 12l6.5 7"/></svg>
-            </button>
-            <div class="seg" role="tablist" aria-label="화면 전환">
-              <button class="seg-btn" data-goto="home" onclick="switchTab('home')" role="tab">오늘</button>
-              <button class="seg-btn" data-goto="calendar" onclick="switchTab('calendar')" role="tab">달력</button>
-              <button class="seg-btn" data-goto="graph" onclick="switchTab('graph')" role="tab">주기</button>
-            </div>
-            <span class="sub-slot" aria-hidden="true"></span>
-          </div>
+          <div class="sub-bar t-bar"><span class="sub-title">마이</span></div>
           <div class="head-sub" style="text-align:center">나의 기록과 설정</div>
         </div>
 
@@ -367,6 +335,13 @@
       </section>
 
     </div>
+
+    <nav class="tabbar" aria-label="화면 전환">
+      <button class="tab-btn active" data-goto="home" onclick="switchTab('home')" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/></svg><span>오늘</span></button>
+      <button class="tab-btn" data-goto="calendar" onclick="switchTab('calendar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><span>달력</span></button>
+      <button class="tab-btn" data-goto="graph" onclick="switchTab('graph')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M5 19v-5M12 19V7M19 19v-9"/></svg><span>주기</span></button>
+      <button class="tab-btn" data-goto="mypage" onclick="switchTab('mypage')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="9" r="4"/><path d="M4.5 20c1.5-3.5 4.3-5 7.5-5s6 1.5 7.5 5"/></svg><span>마이</span></button>
+    </nav>
 
   </div>
 
@@ -592,7 +567,7 @@
       </button>
       <div id="question-loading">
         <div class="q-orb">
-          <img class="orb-img" src="assets/airy-orb.webp?v=20261121c" alt="" width="760" height="837" decoding="async">
+          <img class="orb-img" src="assets/airy-orb.webp?v=20261122a" alt="" width="760" height="837" decoding="async">
         </div>
         <div class="q-loading-text">잠시, 오늘의 감정을 살펴보고 있어요</div>
       </div>
@@ -714,13 +689,14 @@
 </div>
 
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="js/config.js?v=20261121c"></script>
-<script defer src="js/auth.js?v=20261121c"></script>
-<script defer src="js/records.js?v=20261121c"></script>
-<script defer src="js/questions.js?v=20261121c"></script>
-<script defer src="js/ui.js?v=20261121c"></script>
-<script defer src="js/report.js?v=20261121c"></script>
-<script defer src="js/share.js?v=20261121c"></script>
-<script defer src="js/app.js?v=20261121c"></script>
+<script defer src="js/config.js?v=20261122a"></script>
+<script defer src="js/auth.js?v=20261122a"></script>
+<script defer src="js/records.js?v=20261122a"></script>
+<script defer src="js/questions.js?v=20261122a"></script>
+<script defer src="js/theme.js?v=20261122a"></script>
+<script defer src="js/ui.js?v=20261122a"></script>
+<script defer src="js/report.js?v=20261122a"></script>
+<script defer src="js/share.js?v=20261122a"></script>
+<script defer src="js/app.js?v=20261122a"></script>
 </body>
 </html>

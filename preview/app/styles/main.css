@@ -844,3 +844,160 @@ textarea{resize:none}
 @media (prefers-reduced-motion: reduce){
   .splash-title,.splash-orb .orb-img,.splash-tag,.skip{animation-duration:.01s; animation-delay:0s}
 }
+
+/* ═════════════════════════════════════════════════════════════
+   계절 테마 · 라이트/다크 (20261122a)
+   · html[data-mode=light|dark] × html[data-season=winter|spring|summer|autumn|none]
+   · 바뀌는 것: 분위기 색(배경 안개, 히어로 형태, 강조색, 진행 라인, 버튼 속 구슬)
+   · 고정: 글자, 레이아웃, 생리일(주황)·가임기(보라) 표시 색
+   · 히어로 형태는 미리 그린 이미지(assets/season)라 iOS에서 blur 없이 안전하다
+   ═════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#F6F3FA; --t1:#2A2540; --t2:#5E5874; --t3:#8A84A0; --t4:#A9A3BC;
+  --surf:rgba(255,255,255,.85); --surf-line:#FFFFFF; --surf-shadow:0 10px 30px rgba(130,110,180,.16);
+  --strong:#2A2540; --on-strong:#FFFFFF;
+  --b1:#FBE0EC; --b2:#FFEFF5; --b3:#F1E4FA; --b4:#FFE9F0;
+  --accent:#C9578F; --fill-a:#F6B8D2; --fill-b:#F6B8D2; --ring:#F2A2C4; --qdot:#F2A2C4;
+  --orb:radial-gradient(circle at 35% 30%,#FFFFFF,#FFE6F0 30%,#F8BCD5 62%,#D9C8FF 95%);
+  --seg-w:#C9D8FA; --seg-sp:#BFE8CF; --seg-su:#FFD7B5; --seg-au:#E6D2F7; --seg-op:1;
+  --serif:'Gowun Batang','Apple SD Gothic Neo',serif;
+}
+html[data-mode="light"][data-season="winter"]{--b1:#DCE5FB;--b2:#EAF1FF;--b3:#E3E9F8;--b4:#F0F4FF;--accent:#5B76C4;--fill-a:#B9CBF5;--fill-b:#8DA9EC;--ring:#8DA9EC;--qdot:#8DA9EC;--orb:radial-gradient(circle at 35% 30%,#FFFFFF,#EAF3FF 30%,#B9CFFA 65%,#8DA9EC 95%)}
+html[data-mode="light"][data-season="spring"]{--b1:#E3D9FA;--b2:#D9F2E3;--b3:#FFF0C9;--b4:#F9DDEA;--accent:#6B5FA8;--fill-a:#9DB6F2;--fill-b:#8FD6AE;--ring:#8FD6AE;--qdot:#8FD6AE;--orb:radial-gradient(circle at 35% 30%,#FFFFFF,#FFF2B8 25%,#BDEBD2 55%,#C8B6FF 90%)}
+html[data-mode="light"][data-season="summer"]{--b1:#FFE3D3;--b2:#FFF0D2;--b3:#FFDCCB;--b4:#FFEBDD;--accent:#C9663A;--fill-a:#FFC29E;--fill-b:#FF9F7A;--ring:#FF9F7A;--qdot:#FFAA80;--orb:radial-gradient(circle at 35% 30%,#FFFFFF,#FFF0C2 28%,#FFC39E 60%,#FF8F6E 95%)}
+html[data-mode="light"][data-season="autumn"]{--b1:#EEDFFA;--b2:#FBE1EC;--b3:#FFE7DA;--b4:#F3E3F8;--accent:#9358C4;--fill-a:#D4B5F2;--fill-b:#F2A9C4;--ring:#E7A3C8;--qdot:#E7A3C8;--orb:radial-gradient(circle at 35% 30%,#FFFFFF,#FFE6DA 28%,#F2B6CF 58%,#B98AE6 95%)}
+
+html[data-mode="dark"]{
+  --bg:#110A0F; --t1:#F2EEF6; --t2:#CFC8DC; --t3:#9C95AD; --t4:#7E7790;
+  --surf:rgba(255,255,255,.08); --surf-line:rgba(255,255,255,.14); --surf-shadow:0 12px 30px rgba(0,0,0,.35);
+  --strong:rgba(255,255,255,.92); --on-strong:#16121F;
+  --b1:#5A2238; --b2:#6FA8FF; --b3:#5A2238; --b4:#E68FAE;
+  --accent:#FFC2DA; --fill-a:#FF7EB6; --fill-b:#FFC2DA; --ring:#FFC2DA; --qdot:#FFC2DA;
+  --orb:radial-gradient(circle at 35% 30%,#FFFFFF,#FFC2DA 40%,#FF7EB6 90%);
+  --seg-w:#7C8FE0; --seg-sp:#8BC9A6; --seg-su:#FFB347; --seg-au:#9B5CE0; --seg-op:.28;
+}
+html[data-mode="dark"][data-season="winter"]{--bg:#06081A;--b1:#1A2490;--b2:#3D9BFF;--b3:#1A2490;--b4:#3D5BFF;--accent:#A9D8FF;--fill-a:#3D5BFF;--fill-b:#8FD3FF;--ring:#8FD3FF;--qdot:#A9D8FF;--orb:radial-gradient(circle at 35% 30%,#FFFFFF,#8FD3FF 40%,#3D5BFF 90%)}
+html[data-mode="dark"][data-season="spring"]{--bg:#070C06;--b1:#1F5A2A;--b2:#8B3DFF;--b3:#1F5A2A;--b4:#5BE37D;--accent:#E2F76A;--fill-a:#5BE37D;--fill-b:#F5F23A;--ring:#F5F23A;--qdot:#E2F76A;--orb:radial-gradient(circle at 35% 30%,#FFFFFF,#F5F23A 40%,#5BE37D 90%)}
+html[data-mode="dark"][data-season="summer"]{--bg:#0E0504;--b1:#7A1408;--b2:#FFB13A;--b3:#7A1408;--b4:#FF3B1F;--accent:#FFB36B;--fill-a:#FF3B1F;--fill-b:#FFD25A;--ring:#FFD25A;--qdot:#FFB36B;--orb:radial-gradient(circle at 35% 30%,#FFFFFF,#FFD25A 40%,#FF3B1F 90%)}
+html[data-mode="dark"][data-season="autumn"]{--bg:#0D0610;--b1:#3A0F66;--b2:#E0457B;--b3:#3A0F66;--b4:#FF9A7A;--accent:#FFB39A;--fill-a:#7A2BC8;--fill-b:#FF9A7A;--ring:#FF9A7A;--qdot:#FFB39A;--orb:radial-gradient(circle at 35% 30%,#FFFFFF,#FF9A7A 40%,#7A2BC8 90%)}
+
+/* 화면 안(탭 화면)의 기존 토큰을 모드에 맞춘다 — 시트·모달은 아직 라이트 그대로 */
+html[data-mode="light"] .screens{--glass:rgba(255,255,255,.72); --glass-hi:rgba(255,255,255,.86); --glass-line:1px solid #FFFFFF}
+html[data-mode="dark"] .screens{
+  --ink:#F2EEF6; --ink-2:#E6E0EE; --ink-80:rgba(242,238,246,.80); --ink-66:rgba(242,238,246,.66);
+  --ink-52:rgba(242,238,246,.52); --ink-40:rgba(242,238,246,.40); --ink-30:rgba(242,238,246,.30);
+  --glass:rgba(255,255,255,.07); --glass-hi:rgba(255,255,255,.12); --glass-line:1px solid rgba(255,255,255,.13);
+}
+html[data-mode="dark"] .screens .day-cell.today,
+html[data-mode="dark"] .screens .btn.solid,
+html[data-mode="dark"] .screens .btn-save-nickname{color:#16121F}
+html[data-mode="dark"] .screens .btn-line{background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.16)}
+html[data-mode="dark"] .screens .pill-chip{background:rgba(255,255,255,.08)}
+
+/* 앱 배경: 계절 안개 (blur 없이 넓은 radial-gradient) */
+.app{
+  background:
+    radial-gradient(70% 45% at 8% 4%, var(--b1), rgba(0,0,0,0) 70%),
+    radial-gradient(70% 40% at 100% 48%, var(--b2), rgba(0,0,0,0) 70%),
+    radial-gradient(70% 40% at 0% 82%, var(--b3), rgba(0,0,0,0) 70%),
+    radial-gradient(60% 35% at 100% 100%, var(--b4), rgba(0,0,0,0) 70%),
+    var(--bg);
+  color:var(--t1);
+}
+html[data-mode="dark"] .app{
+  background:
+    radial-gradient(80% 45% at 0% 70%, color-mix(in srgb, var(--b1) 60%, transparent), rgba(0,0,0,0) 70%),
+    radial-gradient(70% 40% at 100% 100%, color-mix(in srgb, var(--b2) 18%, transparent), rgba(0,0,0,0) 70%),
+    var(--bg);
+}
+.screens{padding-bottom:0}
+.screen{padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+#tab-home.active{display:block; height:auto; min-height:100%; padding:0 0 calc(120px + env(safe-area-inset-bottom))}
+.sub-title{color:var(--t1); font-family:var(--serif); font-size:20px; letter-spacing:-.01em; position:static; transform:none; height:44px}
+.t-bar{justify-content:center}
+.cal-top{background:var(--bg); box-shadow:none}
+
+/* ── 홈 상단 ── */
+.h-top{position:relative; display:flex; align-items:center; justify-content:space-between; padding:calc(10px + env(safe-area-inset-top)) 20px 0; min-height:44px}
+.h-ib{width:44px; height:44px; border-radius:50%; display:grid; place-items:center; cursor:pointer;
+  background:var(--surf); border:1px solid var(--surf-line); color:var(--t1); box-shadow:var(--surf-shadow); padding:0}
+.h-ib svg{width:20px; height:20px}
+.h-brand{position:absolute; left:0; right:0; text-align:center; font-family:var(--serif); font-size:17px; color:var(--accent); pointer-events:none}
+.mode-toggle{display:flex; gap:2px; padding:4px; border-radius:999px; background:var(--surf); border:1px solid var(--surf-line); box-shadow:var(--surf-shadow); position:relative; z-index:1}
+.mt-btn{width:34px; height:34px; border-radius:50%; border:0; padding:0; display:grid; place-items:center; background:none; color:var(--t3); cursor:pointer}
+.mt-btn svg{width:15px; height:15px}
+.mt-btn.on{background:var(--strong); color:var(--on-strong)}
+
+/* ── 히어로 ── */
+.h-hero{position:relative; height:290px; margin-top:6px}
+.h-shape{position:absolute; right:0; top:-40px; width:390px; height:400px; pointer-events:none; -webkit-user-select:none; user-select:none}
+.h-text{position:absolute; left:28px; top:44px; right:28px}
+.h-date{font-size:12.5px; color:var(--t3)}
+.h-season{margin:12px 0 0; font-family:var(--serif); font-weight:400; font-size:64px; line-height:1.05; letter-spacing:-.02em; color:var(--t1)}
+html:not([data-season="winter"]):not([data-season="spring"]):not([data-season="summer"]):not([data-season="autumn"]) .h-season{font-size:38px; line-height:1.25; margin-top:16px}
+.h-next{margin:12px 0 0; font-size:15px; color:var(--t2)}
+.h-next b{color:var(--t1); font-weight:700}
+
+/* ── 사이클 진행 라인 ── */
+.h-prog{margin:26px 30px 0}
+.cp-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; font-size:13px; color:var(--t2)}
+.cp-head span + span{font-size:12.5px; color:var(--t3)}
+.cp-head b{color:var(--t1); font-weight:700}
+.cp-track{position:relative; height:6px; display:flex; gap:4px}
+.cp-seg{height:6px; border-radius:3px; display:block; opacity:var(--seg-op)}
+.cp-seg.cp-winter{background:var(--seg-w)} .cp-seg.cp-spring{background:var(--seg-sp)}
+.cp-seg.cp-summer{background:var(--seg-su)} .cp-seg.cp-autumn{background:var(--seg-au)}
+.cp-fill{position:absolute; left:0; top:0; height:6px; border-radius:3px; background:linear-gradient(90deg,var(--fill-a),var(--fill-b))}
+.cp-knob{position:absolute; top:-7px; width:20px; height:20px; margin-left:-10px; border-radius:50%; background:#FFFFFF;
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--ring) 35%, transparent), 0 4px 10px rgba(40,30,80,.25)}
+.cp-labs{display:flex; margin-top:12px}
+.cp-lab{text-align:center; font-size:11px; color:var(--t4); white-space:nowrap}
+.cp-lab.on{color:var(--t1); font-weight:600}
+
+/* ── 오늘 기록하기 ── */
+.h-cta{display:flex; align-items:center; gap:12px; width:calc(100% - 40px); height:60px; margin:24px 20px 0; padding:0 8px; border-radius:999px; cursor:pointer;
+  background:var(--surf); border:1px solid var(--surf-line); box-shadow:var(--surf-shadow); color:var(--t1); text-align:left}
+.h-cta:active{transform:scale(.985)}
+.h-cta-orb{width:44px; height:44px; flex:0 0 auto; border-radius:50%; background:var(--orb); box-shadow:0 4px 14px rgba(150,130,230,.35)}
+.h-cta-t{flex:1; font-size:16px; font-weight:600}
+.h-cta-go{width:44px; height:44px; flex:0 0 auto; border-radius:50%; display:grid; place-items:center; background:var(--strong); color:var(--on-strong)}
+.h-cta-go svg{width:18px; height:18px}
+
+/* ── 주간 날짜 ── */
+.h-week{display:flex; justify-content:center; gap:0; margin-top:30px; overflow:hidden}
+.wk-day{width:46px; flex:0 0 46px; text-align:center; padding:10px 0; border-radius:999px}
+.wk-w{display:block; font-size:11px; color:var(--t4)}
+.wk-d{display:block; margin-top:6px; font-size:15px; font-weight:500; color:var(--t2); font-variant-numeric:tabular-nums}
+.wk-day i{display:block; width:5px; height:5px; border-radius:50%; margin:7px auto 0; background:transparent}
+.wk-day.is-period i{background:#F0A23C}
+.wk-day.is-fertile i{background:#9B6BF0}
+.wk-day.today{background:var(--strong); box-shadow:0 8px 18px rgba(42,37,64,.25)}
+.wk-day.today .wk-w,.wk-day.today .wk-d{color:var(--on-strong)}
+.wk-day.today .wk-d{font-weight:600}
+
+/* ── 오늘의 문장 ── */
+.h-outlook{padding:38px 30px 0; text-align:center}
+.h-kicker{font-size:12.5px; font-weight:500; color:var(--accent)}
+.h-hint{margin:14px 0 0; font-family:var(--serif); font-size:26px; line-height:1.45; color:var(--t1)}
+.h-note{margin:12px 0 0; font-size:15px; line-height:1.75; color:var(--t3)}
+
+/* ── 요약 ── */
+.h-metrics{display:flex; margin:28px 20px 0; padding:20px 6px; border-radius:28px; background:var(--surf); border:1px solid var(--surf-line); box-shadow:var(--surf-shadow)}
+.h-metric{flex:1; text-align:center}
+.h-metric + .h-metric{border-left:1px solid color-mix(in srgb, var(--t1) 9%, transparent)}
+.h-metrics .gm-val{font-family:var(--serif); font-size:26px; color:var(--t1)}
+.h-metrics .gm-val i{font-family:var(--sans); color:var(--t3); font-size:14px}
+.h-metrics .gm-label{color:var(--t3); font-size:12px; margin-top:6px}
+.h-metrics.is-empty .gm-val{color:var(--t4)}
+.h-q-row{display:flex; justify-content:center; margin-top:18px}
+.h-q-row .q-hint{width:auto; margin:0; padding:0 20px; height:42px; border-radius:999px; border:1px solid var(--surf-line); border-top:1px solid var(--surf-line);
+  background:var(--surf); box-shadow:var(--surf-shadow); font-size:14px; font-weight:500; color:var(--t1); gap:8px}
+.h-q-row .q-hint-dot{width:7px; height:7px; background:var(--qdot)}
+
+/* ── 하단 탭바 ── */
+.tabbar{position:absolute; left:16px; right:16px; bottom:calc(16px + env(safe-area-inset-bottom)); z-index:20; display:flex; gap:4px; padding:6px; border-radius:999px;
+  background:color-mix(in srgb, var(--bg) 82%, transparent); border:1px solid var(--surf-line); box-shadow:0 12px 36px rgba(60,40,110,.22)}
+html[data-mode="light"] .tabbar{background:rgba(255,255,255,.9)}
+.tab-btn{flex:1; height:58px; border:0; border-radius:999px; background:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; font-size:11px; color:var(--t3)}
+.tab-btn svg{width:22px; height:22px}
+.tab-btn.active{background:var(--strong); color:var(--on-strong); font-weight:600}
