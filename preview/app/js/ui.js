@@ -182,7 +182,10 @@ async function updateStatus() {
     if (heroEl) heroEl.textContent = phase.season;
     if (nextEl) {
       if (diff === null) nextEl.textContent = '';
-      else if (diff > 0) nextEl.innerHTML = `다음 생리까지 <b>${diff}일</b>`;
+      else if (diff > 0) {
+        const [, nm, nd] = pred.nextStart.split('-');
+        nextEl.innerHTML = `<span class="h-next-k">다음 생리</span><span class="h-next-d">${parseInt(nm, 10)}월 ${parseInt(nd, 10)}일</span><span class="h-next-left">${diff}일 남았어요</span>`;
+      }
       else if (diff === 0) nextEl.textContent = '오늘이 예상 시작일이에요';
       else nextEl.textContent = `예정일에서 ${Math.abs(diff)}일 지났어요`;
     }
@@ -207,6 +210,8 @@ async function updateStatus() {
   renderNavAvatar();
   if (typeof renderHeroDate === 'function') renderHeroDate();
   if (typeof renderWeekStrip === 'function') renderWeekStrip(records);
+  if (typeof renderHomeExtras === 'function') renderHomeExtras(records);
+  if (typeof renderInsight === 'function') renderInsight(records);
 
   if (typeof checkReportBanner === 'function') await checkReportBanner();
   if (typeof checkQuestionBanner === 'function') await checkQuestionBanner();

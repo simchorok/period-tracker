@@ -1,5 +1,5 @@
 /* 달의 기록 — 앱 초기화, 스플래시 건너뛰기, 이벤트 바인딩
-   (preview/app에서는 서비스워커를 등록하지 않는다 — 라이브 PWA 캐시와 분리) */
+   (서비스워커는 운영 경로에서만 등록한다 — preview/app은 라이브 PWA 캐시와 분리) */
 
 (function () {
   // 스플래시 건너뛰기
@@ -29,6 +29,11 @@
   };
   setVH();
   window.addEventListener('resize', setVH);
+
+  // 운영(루트)에서만 PWA 서비스워커 등록
+  if ('serviceWorker' in navigator && !location.pathname.includes('/preview/')) {
+    navigator.serviceWorker.register('/period-tracker/sw.js').catch(() => {});
+  }
 
   // 부팅 완료 표시(검증용)
   window.__bootOk = true;

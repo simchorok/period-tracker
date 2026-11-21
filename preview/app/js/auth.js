@@ -89,6 +89,7 @@ async function showApp(user) {
   const login = document.getElementById('login-screen');
   if (login) { login.classList.remove('show'); login.style.display = ''; }
   document.getElementById('app-main').classList.add('show');
+  if (typeof maybeShowOnboarding === 'function') maybeShowOnboarding();
 
   if (isSameUser) return;
 

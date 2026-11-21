@@ -353,3 +353,105 @@ async function shareTodayStatus() {
   const copied = await copyShareLink(url);
   showToast(copied ? '공유 링크를 복사했어요' : '링크를 복사하지 못했어요. 주소창의 주소를 복사해 주세요.');
 }
+
+/* ── 공유 받은 화면 (?share=) — 로그인 없이 보이는 전용 뷰 ── */
+const SHARE_SEASON_LABEL = { winter: '겨울', spring: '봄', summer: '여름', autumn: '가을' };
+
+function shareB64UrlDecode(code) {
+  let s = String(code || '').replace(/-/g, '+').replace(/_/g, '/');
+  while (s.length % 4) s += '=';
+  const bin = atob(s);
+  const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
+function shareCycleBounds(cycleLength) {
+  const cycle = Math.min(60, Math.max(10, Math.round(Number(cycleLength) || SHARE_DEFAULT_CYCLE)));
+  return { cycle };
+}
+
+function parseShareParam() {
+  const raw = new URLSearchParams(location.search).get('share');
+  if (!raw) return null;
+  try {
+    const data = JSON.parse(shareB64UrlDecode(raw));
+    if (!data || typeof data !== 'object' || !data.seasonName) return null;
+    data.nickname = String(data.nickname || '사용자');
+    data.seasonName = String(data.seasonName);
+    data.tags = sanitizeShareTags(Array.isArray(data.tags) ? data.tags : []).slice(0, 5);
+    const meta = shareSnapshotMeta(data);
+    data.phaseKey = meta ? meta.key : null;
+    data.seasonKey = meta ? meta.seasonKey : (data.seasonKey || null);
+    data.cycleLength = shareCycleBounds(data.cycleLength).cycle;
+    data.cycleDay = Math.min(data.cycleLength, Math.max(1, Math.round(Number(data.cycleDay) || 1)));
+    data.insightTitle = (typeof data.insightTitle === 'string' && data.insightTitle.trim()) ? data.insightTitle : (meta ? meta.insightTitle : '');
+    data.insight = (typeof data.insight === 'string' && data.insight.trim()) ? data.insight : (meta ? meta.insight : '');
+    data.care = (Array.isArray(data.care) ? data.care : []).slice(0, 2)
+      .filter(c => c && c.text)
+      .map(c => ({ title: c.title || '', text: c.text }));
+    if (!data.care.length) data.care = pickCareHints(data.tags, data.phaseKey);
+    if (!SHARE_SOURCE_LABEL[data.tagSource]) data.tagSource = data.tags.length ? 'today' : 'none';
+    return data;
+  } catch (e) {
+    return null;
+  }
+}
+
+function renderShareView() {
+  const view = document.getElementById('share-view');
+  if (!view) return;
+  document.documentElement.classList.add('share-mode');
+  const snap = parseShareParam();
+  const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12h15M13.4 5.9l6.1 6.1-6.1 6.1"/></svg>';
+  const cta = (label) => `<button class="sv-cta" onclick="leaveShareView()"><span class="sv-cta-orb" aria-hidden="true"></span><span class="sv-cta-t">${label}</span><span class="sv-cta-go" aria-hidden="true">${ARROW}</span></button>`;
+
+  if (!snap) {
+    view.dataset.season = 'none';
+    view.innerHTML = `
+      <div class="sv-inner">
+        <div class="sv-brand">달의 기록</div>
+        <div class="sv-card sv-error">
+          <div class="sv-err-t">공유 링크를 읽을 수 없어요</div>
+          <div class="sv-err-s">링크가 조금 잘렸을 수 있어요.<br>보낸 사람에게 다시 공유를 부탁해주세요.</div>
+        </div>
+        ${cta('달의 기록 둘러보기')}
+      </div>`;
+    view.hidden = false;
+    return;
+  }
+
+  const season = snap.seasonKey && SHARE_SEASON_LABEL[snap.seasonKey] ? snap.seasonKey : 'none';
+  view.dataset.season = season;
+  const name = escapeHtml(snap.nickname);
+  const tagsHtml = snap.tags.length
+    ? `<div class="sv-tags">${snap.tags.map(t => `<span class="sv-tag">${escapeHtml(t)}</span>`).join('')}</div>`
+    : '<div class="sv-empty">오늘은 따로 남긴 상태가 없어요</div>';
+  const careHtml = snap.care.map(c => `
+      <div class="sv-care-item"><span class="sv-care-orb" aria-hidden="true"></span>
+        <div><div class="sv-care-t">${escapeHtml(c.title)}</div><div class="sv-care-x">${escapeHtml(c.text)}</div></div></div>`).join('');
+
+  view.innerHTML = `
+    <div class="sv-inner">
+      <div class="sv-brand">달의 기록</div>
+      <div class="sv-hero">
+        <img class="sv-shape" src="assets/season/light-${season}.webp?v=20261122a" alt="" decoding="async">
+        <div class="sv-hero-tx">
+          <div class="sv-name">${name}님의 오늘</div>
+          <div class="sv-season">${SHARE_SEASON_LABEL[snap.seasonKey] || ''}</div>
+          <div class="sv-day">생리 시작 후 ${snap.cycleDay}일째</div>
+        </div>
+      </div>
+      ${snap.insight ? `<div class="sv-card"><div class="sv-k">지금은 ${escapeHtml(snap.insightTitle)}</div><p class="sv-insight">${escapeHtml(snap.insight)}</p></div>` : ''}
+      <div class="sv-card"><div class="sv-k">${escapeHtml(SHARE_SOURCE_LABEL[snap.tagSource] || SHARE_SOURCE_LABEL.today)}</div>${tagsHtml}</div>
+      <div class="sv-card"><div class="sv-k">이렇게 챙겨주면 좋아요</div>${careHtml}</div>
+      ${cta('나도 달의 기록 시작하기')}
+      <div class="sv-foot">달마다 달라지는 몸과 마음의 리듬을 기록해요</div>
+    </div>`;
+  view.hidden = false;
+}
+
+function leaveShareView() {
+  location.replace(SHARE_BASE_PATH);
+}
+
+if (new URLSearchParams(location.search).has('share')) renderShareView();
