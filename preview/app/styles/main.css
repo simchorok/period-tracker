@@ -191,7 +191,7 @@ textarea{resize:none}
 .seg-btn{
   border:0; background:none; cursor:pointer;
   padding:0 13px; height:32px; border-radius:999px;
-  font-size:11.5px; font-weight:400; letter-spacing:.04em; color:var(--w-88);
+  font-size:12px; font-weight:400; letter-spacing:.04em; color:var(--w-88);
   display:flex; align-items:center; justify-content:center;
   transition:color .2s ease, background .2s ease;
 }
@@ -223,7 +223,7 @@ textarea{resize:none}
   box-shadow:0 22px 44px -30px rgba(58,50,92,.55), inset 0 1px 0 rgba(255,255,255,.38);
 }
 .gc-kicker{
-  font-size:10px; font-weight:400; letter-spacing:.2em; text-transform:uppercase;
+  font-size:10.5px; font-weight:400; letter-spacing:.2em; text-transform:uppercase;
   color:var(--ink-52);
 }
 .gc-status{
@@ -244,8 +244,8 @@ textarea{resize:none}
   display:block; font-size:19px; font-weight:400; line-height:1.2;
   letter-spacing:-.01em; color:var(--ink); font-variant-numeric:tabular-nums; white-space:nowrap;
 }
-.gm-val i{font-style:normal; font-size:11.5px; font-weight:300; color:var(--ink-52); margin-left:2px}
-.gm-label{display:block; margin-top:5px; font-size:11px; font-weight:300; letter-spacing:.02em; color:var(--ink-52)}
+.gm-val i{font-style:normal; font-size:12px; font-weight:300; color:var(--ink-52); margin-left:2px}
+.gm-label{display:block; margin-top:5px; font-size:11.5px; font-weight:300; letter-spacing:.02em; color:var(--ink-52)}
 .glass-card.is-empty .gm-val{color:var(--ink-30)}
 
 /* 오늘의 질문 — 있을 때만 조용히 한 줄 */
@@ -296,12 +296,12 @@ textarea{resize:none}
 }
 .sub-slot{width:40px; height:40px; display:block}
 .head-row{display:flex; align-items:center; justify-content:space-between; gap:12px}
-.head-sub{margin:0; font-size:12px; font-weight:300; letter-spacing:.02em; color:var(--ink-52)}
+.head-sub{margin:0; font-size:12.5px; font-weight:300; letter-spacing:.02em; color:var(--ink-52)}
 .head-sub.center{text-align:center; padding:12px 22px 0}
 .sub-head .head-sub{padding:10px 22px 0}
 .pill-chip{
   flex:0 0 auto; border:0; cursor:pointer; border-radius:999px; padding:8px 13px;
-  font-size:11px; font-weight:400; letter-spacing:.02em; color:var(--ink); white-space:nowrap;
+  font-size:11.5px; font-weight:400; letter-spacing:.02em; color:var(--ink); white-space:nowrap;
   background:rgba(255,255,255,.45);
   border:1px solid rgba(255,255,255,.62);
   transition:transform .15s ease, background .2s ease;
@@ -320,7 +320,7 @@ textarea{resize:none}
 }
 .cal-intro{padding-top:4px}
 .legend{display:flex; flex-wrap:wrap; gap:13px; padding:14px 22px 0; justify-content:center}
-.legend-item{display:flex; align-items:center; gap:6px; font-size:11px; font-weight:400; color:var(--ink-66); letter-spacing:.02em}
+.legend-item{display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:400; color:var(--ink-66); letter-spacing:.02em}
 .lg-dot{width:6px; height:6px; border-radius:50%; display:block}
 .lg-dot.period{background:#E4796C}
 .lg-dot.predicted{background:#EFB0B6}
@@ -340,7 +340,7 @@ textarea{resize:none}
   box-shadow:0 20px 40px -32px rgba(58,50,92,.5), inset 0 1px 0 rgba(255,255,255,.36);
 }
 .day-labels{display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:6px}
-.day-label{text-align:center; font-size:11px; font-weight:400; letter-spacing:.06em; color:var(--ink-52)}
+.day-label{text-align:center; font-size:11.5px; font-weight:400; letter-spacing:.06em; color:var(--ink-52)}
 .day-label:first-child{color:var(--coral)}
 .days-grid{display:grid; grid-template-columns:repeat(7,1fr); row-gap:2px}
 .day-cell{
@@ -375,7 +375,7 @@ textarea{resize:none}
   box-shadow:0 20px 40px -32px rgba(58,50,92,.5), inset 0 1px 0 rgba(255,255,255,.36)}
 .metric-head{display:flex; align-items:baseline; gap:9px}
 .metric-val{display:flex; align-items:baseline; font-size:39px; font-weight:300; line-height:1; letter-spacing:-.03em; color:var(--ink); font-variant-numeric:tabular-nums}
-.metric-label{font-size:11.5px; font-weight:300; color:var(--ink-52); letter-spacing:.03em}
+.metric-label{font-size:12px; font-weight:300; color:var(--ink-52); letter-spacing:.03em}
 .unit{font-size:13px; font-weight:300; letter-spacing:0; margin-left:3px; color:var(--ink-52)}
 .chart-wrap{width:100%; overflow:hidden; margin-top:12px}
 .chart-wrap svg{display:block; width:100%; height:104px; overflow:visible}
@@ -408,7 +408,7 @@ textarea{resize:none}
   background:rgba(255,255,255,.5); border:1px solid rgba(255,255,255,.6); border-radius:999px;
   padding:4px 10px; font-size:11px; font-weight:300; color:var(--ink-66); cursor:pointer; flex:0 0 auto;
 }
-.profile-email{margin-top:5px; font-size:12px; font-weight:300; line-height:1.6; color:var(--ink-52); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.profile-email{margin-top:5px; font-size:12.5px; font-weight:300; line-height:1.6; color:var(--ink-52); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 
 .nickname-input-row{display:none; gap:8px; margin-top:11px}
 .nickname-input-row.show{display:flex}
@@ -431,8 +431,8 @@ textarea{resize:none}
 }
 .mypage-stat-val{font-size:26px; font-weight:300; line-height:1.1; color:var(--ink); letter-spacing:-.02em; font-variant-numeric:tabular-nums}
 .is-blank{color:var(--ink-30); font-size:21px; font-weight:300}
-.mypage-stat-val .unit{font-size:11.5px; font-weight:300; color:var(--ink-52)}
-.mypage-stat-label{font-size:11px; font-weight:300; color:var(--ink-52); margin-top:5px; letter-spacing:.02em}
+.mypage-stat-val .unit{font-size:12px; font-weight:300; color:var(--ink-52)}
+.mypage-stat-label{font-size:11.5px; font-weight:300; color:var(--ink-52); margin-top:5px; letter-spacing:.02em}
 .stat-link{
   position:absolute; top:9px; right:9px; background:rgba(255,255,255,.44); border:1px solid rgba(255,255,255,.6); border-radius:999px;
   padding:4px 9px; font-size:10.5px; font-weight:300; color:var(--ink-52); cursor:pointer; letter-spacing:.01em;
@@ -553,7 +553,7 @@ textarea{resize:none}
 .log-scroll{flex:1; overflow-y:auto; padding:6px 20px 4px; scrollbar-width:none}
 .log-scroll::-webkit-scrollbar{display:none}
 .log-section{margin-bottom:25px}
-.log-section-title{font-size:11px; font-weight:400; letter-spacing:.12em; color:var(--ink-52); margin-bottom:12px}
+.log-section-title{font-size:11.5px; font-weight:400; letter-spacing:.12em; color:var(--ink-52); margin-bottom:12px}
 .log-opt{font-size:10.5px; font-weight:300; color:var(--ink-40); letter-spacing:.04em; margin-left:6px}
 .log-tags{display:flex; flex-wrap:wrap; gap:7px}
 .log-tag{
@@ -576,7 +576,7 @@ textarea{resize:none}
   position:absolute; left:var(--lx); top:var(--ty);
   width:58px; height:58px; padding:0 3px; border-radius:50%;
   display:flex; align-items:center; justify-content:center; text-align:center;
-  font-size:9.5px; font-weight:400; line-height:1.3; letter-spacing:-.01em;
+  font-size:10.5px; font-weight:400; line-height:1.3; letter-spacing:-.01em;
   transform:translate(-50%,-50%);
   background:rgba(255,255,255,.9); border:1px solid rgba(255,255,255,1);
   box-shadow:0 9px 18px -14px rgba(48,44,74,.55), inset 0 0 0 1px rgba(30,34,46,.035);
@@ -640,7 +640,7 @@ textarea{resize:none}
 .q-orb{position:relative; width:110px; margin:0 auto}
 .q-orb .orb-img{width:100%}
 .q-loading-text{margin-top:18px; font-size:13px; font-weight:300; color:var(--ink-52); line-height:1.8}
-.q-kicker{font-size:10.5px; font-weight:400; letter-spacing:.18em; color:var(--ink-40)}
+.q-kicker{font-size:11px; font-weight:400; letter-spacing:.18em; color:var(--ink-40)}
 .question-text{
   margin-top:14px; font-weight:400; font-size:18px; line-height:1.75;
   color:var(--ink); letter-spacing:-.01em; word-break:keep-all; overflow-wrap:break-word;
@@ -665,7 +665,7 @@ textarea{resize:none}
 }
 .report-sheet::-webkit-scrollbar{display:none}
 .report-header{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:26px 0 18px}
-.report-header-label{font-size:10px; font-weight:400; letter-spacing:.2em; color:var(--ink-40)}
+.report-header-label{font-size:10.5px; font-weight:400; letter-spacing:.2em; color:var(--ink-40)}
 .report-header-title{margin-top:9px; font-weight:400; font-size:20px; letter-spacing:-.01em; color:var(--ink)}
 .report-header-sub{margin-top:7px; font-size:11.5px; font-weight:300; color:var(--ink-52); letter-spacing:.02em}
 .report-ai-section{
@@ -680,7 +680,7 @@ textarea{resize:none}
 .rdot:nth-child(2){animation-delay:.15s}
 .rdot:nth-child(3){animation-delay:.3s; margin-right:7px}
 @keyframes rd{0%,100%{opacity:.25} 50%{opacity:1}}
-.report-ai-label{display:block; font-size:10.5px; font-weight:400; letter-spacing:.12em; color:var(--ink-40); margin-bottom:8px}
+.report-ai-label{display:block; font-size:11px; font-weight:400; letter-spacing:.12em; color:var(--ink-40); margin-bottom:8px}
 .ai-block + .ai-block{margin-top:17px; padding-top:15px; border-top:1px solid rgba(30,34,46,.08)}
 .report-ai-text{font-size:14px; font-weight:300; line-height:1.95; color:var(--ink-80); letter-spacing:.005em; white-space:pre-wrap; word-break:keep-all; overflow-wrap:break-word}
 .report-ai-encouragement{margin-top:15px; padding-top:14px; border-top:1px solid rgba(30,34,46,.08);
@@ -710,7 +710,7 @@ textarea{resize:none}
 .rs-card + .rs-card{margin-left:-7px}
 .rs-val{font-size:21px; font-weight:400; letter-spacing:-.03em; color:var(--ink); line-height:1.14; white-space:nowrap; font-variant-numeric:tabular-nums}
 .rs-val .unit{font-size:11px; margin-left:2px; font-weight:300; color:var(--ink-52)}
-.rs-label{margin-top:6px; font-size:10.5px; font-weight:400; color:var(--ink-52); letter-spacing:.01em; white-space:nowrap}
+.rs-label{margin-top:6px; font-size:11px; font-weight:400; color:var(--ink-52); letter-spacing:.01em; white-space:nowrap}
 .rs-change{margin-top:4px; font-size:10px; font-weight:400; letter-spacing:.01em; white-space:nowrap}
 .rs-change.up{color:#B5715F}
 .rs-change.down{color:#5F7F6A}
