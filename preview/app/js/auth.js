@@ -102,6 +102,13 @@ async function showApp(user) {
       .then(() => {}).catch(() => {});
 
     // 데이터 로드 (캐시로 먼저 그리고, DB 응답 뒤 다시 맞춘다)
+    // 로그인 확인이 나머지 스크립트(records.js 등)보다 먼저 끝날 수 있어, 모두 실행된 뒤에 부른다
+    if (typeof loadAllData !== 'function') {
+      await new Promise((resolve) => {
+        if (document.readyState === 'complete') resolve();
+        else document.addEventListener('DOMContentLoaded', resolve, { once: true });
+      });
+    }
     await loadAllData();
     await loadNickname();
     if (typeof renderNavAvatar === 'function') renderNavAvatar();
