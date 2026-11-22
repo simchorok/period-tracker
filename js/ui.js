@@ -490,6 +490,7 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
 
 function renderGraph() {
   const records = loadRecords().sort((a, b) => a.start > b.start ? 1 : -1);
+  if (typeof renderWeightCard === 'function') renderWeightCard();
 
   // 주기
   const cycles = [];

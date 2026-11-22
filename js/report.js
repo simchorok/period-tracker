@@ -65,6 +65,7 @@ function openReport() {
     document.getElementById('report-phases').innerHTML = '';
     document.getElementById('report-forecast').innerHTML = '';
     document.getElementById('report-energy-chart').innerHTML = '';
+    renderReportDiet([], null);
     document.getElementById('report-backdrop').classList.add('open');
     localStorage.setItem(monthKey, '1');
     document.getElementById('report-banner').classList.remove('show');
@@ -87,6 +88,7 @@ function openReport() {
   renderReportPhases(records, lastRecord);
   renderReportEnergyChart(lastRecord);
   renderReportForecast(records, lastRecord);
+  renderReportDiet(records, lastRecord);
 
   document.getElementById('report-backdrop').classList.add('open');
   localStorage.setItem(`report_seen_${lastRecord.end}`, '1');
@@ -382,6 +384,7 @@ function openReportByEndDate(endDate) {
   renderReportPhases(reorderedRecords, target);
   renderReportEnergyChart(target);
   renderReportForecast([target, ...older], target);
+  renderReportDiet(reorderedRecords, target);
   document.getElementById('report-list-backdrop').classList.remove('open');
   document.getElementById('report-backdrop').classList.add('open');
   currentReportEndDate = target.end;
@@ -496,6 +499,10 @@ function renderAIAnalysis(rawText) {
       <div class="report-ai-label">다음 사이클 예고</div>
       <div class="report-ai-text">${escapeHtml(parsed.next_preview) || '2사이클이 쌓이면 예고해드릴게요.'}</div>
     </div>
+    ${parsed.diet ? `<div class="ai-block">
+      <div class="report-ai-label">식단 · 운동</div>
+      <div class="report-ai-text">${escapeHtml(parsed.diet)}</div>
+    </div>` : ''}
     ${parsed.encouragement ? `<div class="report-ai-encouragement">${escapeHtml(parsed.encouragement)}</div>` : ''}
   `;
   checkFeedbackComplete();

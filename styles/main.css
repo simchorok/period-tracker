@@ -915,7 +915,19 @@ html[data-mode="dark"] .app{
 #tab-home.active{display:block; height:auto; min-height:100%; padding:0 0 calc(120px + env(safe-area-inset-bottom))}
 .sub-title{color:var(--t1); font-family:var(--serif); font-size:20px; letter-spacing:-.01em; position:static; transform:none; height:44px}
 .t-bar{justify-content:center}
-.cal-top{background:var(--bg); box-shadow:none}
+/* 달력 상단 고정 띠: 앱 배경과 같은 그라데이션을 화면 크기로 깔아 이음새가 보이지 않게 한다 */
+.cal-top{box-shadow:none; background-repeat:no-repeat; background-position:0 0;
+  background-size:100% 100vh; background-size:100% 100dvh;
+  background-image:
+    radial-gradient(70% 45% at 8% 4%, var(--b1), rgba(0,0,0,0) 70%),
+    radial-gradient(70% 40% at 100% 48%, var(--b2), rgba(0,0,0,0) 70%),
+    radial-gradient(70% 40% at 0% 82%, var(--b3), rgba(0,0,0,0) 70%),
+    radial-gradient(60% 35% at 100% 100%, var(--b4), rgba(0,0,0,0) 70%);
+  background-color:var(--bg)}
+html[data-mode="dark"] .cal-top{
+  background-image:
+    radial-gradient(80% 45% at 0% 70%, color-mix(in srgb, var(--b1) 60%, transparent), rgba(0,0,0,0) 70%),
+    radial-gradient(70% 40% at 100% 100%, color-mix(in srgb, var(--b2) 18%, transparent), rgba(0,0,0,0) 70%)}
 
 /* ── 홈 상단 ── */
 .h-top{position:relative; display:flex; align-items:center; justify-content:space-between; padding:calc(10px + env(safe-area-inset-top)) 20px 0; min-height:44px}
@@ -999,7 +1011,7 @@ html:not([data-season="winter"]):not([data-season="spring"]):not([data-season="s
   background:color-mix(in srgb, var(--bg) 82%, transparent); border:1px solid var(--surf-line); box-shadow:0 12px 36px rgba(60,40,110,.22)}
 html[data-mode="light"] .tabbar{background:rgba(255,255,255,.9)}
 .tab-btn{flex:1; height:58px; border:0; border-radius:999px; background:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; font-size:11px; color:var(--t3)}
-.tab-btn svg{width:22px; height:22px}
+.tab-btn svg{width:28px; height:28px}
 .tab-btn.active{background:var(--strong); color:var(--on-strong); font-weight:600}
 
 /* ── 홈 보강: 리포트 띠 · 다음 생리 날짜 · 인사이트 · 요약 · 배란/가임기 · 질문/공유 ── */
@@ -1204,3 +1216,47 @@ html.share-mode #boot{display:none !important}
 .sv-hero-tx{left:6px; right:auto; text-align:left; top:110px}
 html[data-mode="dark"] .log-modal .log-tag.selected,
 html[data-mode="dark"] .log-modal .mood-arc .log-tag.selected{background:#F2EEF6; border-color:#F2EEF6; color:#16121F}
+
+/* ═══════════════ 몸무게 · 식단 ═══════════════ */
+.weight-row{display:flex; align-items:center; gap:8px}
+.weight-input{width:120px}
+.weight-unit{font-size:13px; font-weight:400; color:var(--ink-52)}
+.w-card{margin:0}
+.w-card .chart-wrap svg{height:120px}
+.w-line{stroke:var(--ink-52)}
+.w-band{opacity:.16}
+.w-dot{fill:var(--ink-80); stroke:#FFFFFF}
+.w-dot.last{fill:var(--ink)}
+.w-grid{stroke:rgba(30,34,46,.10); stroke-width:1; stroke-dasharray:2 4}
+.w-tick{fill:var(--ink-40)}
+.w-empty{fill:var(--ink-40)}
+.w-legend{display:flex; gap:12px; flex-wrap:wrap; margin-top:10px}
+.w-lg,.rd-k,.rd-chip{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:400; color:var(--ink-66); letter-spacing:.02em}
+.w-lg i,.rd-k i,.rd-chip i{width:6px; height:6px; border-radius:50%; display:block; flex:0 0 auto}
+.rd-sum{display:flex; justify-content:space-between; align-items:baseline; gap:10px; font-size:13px; color:var(--ink-80)}
+.rd-sum-k{color:var(--ink-52); font-size:12px}
+.rd-sum-v{font-variant-numeric:tabular-nums}
+.rd-sum-v em{font-style:normal; margin-left:6px; color:var(--ink-52); font-size:12px}
+.rd-chips{display:flex; flex-wrap:wrap; gap:6px 12px; margin-top:10px}
+.rd-note{margin-top:10px; font-size:12.5px; line-height:1.7; color:var(--ink-80)}
+.rd-empty{font-size:13px; line-height:1.8; color:var(--ink-52)}
+.rd-tips-title{margin:16px 0 8px; font-size:11px; letter-spacing:.12em; color:var(--ink-40)}
+.rd-tip{display:flex; gap:10px; padding:7px 0; border-top:1px solid rgba(30,34,46,.06)}
+.rd-tip:first-of-type{border-top:0}
+.rd-k{flex:0 0 42px; align-self:flex-start; margin-top:2px}
+.rd-t{font-size:12.5px; line-height:1.7; color:var(--ink-80)}
+html[data-mode="dark"] .w-dot{stroke:rgba(10,10,20,.9)}
+html[data-mode="dark"] .w-band{opacity:.24}
+html[data-mode="dark"] .rd-tip{border-top-color:rgba(255,255,255,.08)}
+html[data-mode="dark"] .w-grid{stroke:rgba(255,255,255,.10)}
+.w-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px}
+.w-seg{display:flex; flex:0 0 auto; padding:3px; border-radius:999px; background:rgba(30,34,46,.06)}
+.w-seg button{border:0; background:none; cursor:pointer; padding:6px 11px; border-radius:999px; font-size:11.5px; font-weight:400; color:var(--ink-52); letter-spacing:.02em}
+.w-seg button.on{background:#FFFFFF; color:var(--ink); box-shadow:0 4px 10px -6px rgba(58,50,92,.5)}
+.w-month{display:flex; align-items:center; justify-content:center; gap:14px; margin-top:12px}
+.w-month-t{font-size:12.5px; font-weight:400; color:var(--ink-80); letter-spacing:.04em; min-width:86px; text-align:center}
+.w-arrow{width:28px; height:28px; border:0; border-radius:50%; background:none; cursor:pointer; color:var(--ink-66); display:flex; align-items:center; justify-content:center}
+.w-arrow svg{width:16px; height:16px}
+.w-arrow:disabled{opacity:.25; cursor:default}
+html[data-mode="dark"] .w-seg{background:rgba(255,255,255,.08)}
+html[data-mode="dark"] .w-seg button.on{background:rgba(255,255,255,.9); color:#14121C}
