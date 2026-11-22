@@ -376,19 +376,10 @@ function hasAnyWeight() {
   return Object.keys(logs).some(d => Number(logs[d] && logs[d].weight) > 0);
 }
 
-/* 달력 탭 — 몸무게 그래프(최근 90일, 점 색 = 그날의 계절) */
+/* 주기 탭 — 몸무게 그래프(최근 90일, 배경 띠 = 그날의 계절) */
 function renderWeightCard() {
-  const wrap = document.getElementById('calendar-scroll-wrap');
-  if (!wrap) return;
-  let card = document.getElementById('weight-card');
-  if (!card) {
-    card = document.createElement('div');
-    card.id = 'weight-card';
-    card.className = 'metric w-card';
-  }
-  const anchor = document.getElementById('cal-today-block');
-  if (anchor && anchor.nextSibling) wrap.insertBefore(card, anchor.nextSibling);
-  else wrap.appendChild(card);
+  const card = document.getElementById('weight-card');
+  if (!card) return;
 
   const today = getTodayStr();
   const from = addDays(today, -89);
@@ -437,6 +428,21 @@ function renderWeightCard() {
   const range = maxV - minV || 1;
   const toX = ds => pad.l + (dateDiff(ds, from) / 89) * (W - pad.l - pad.r);
   const toY = v => pad.t + (1 - (v - minV) / range) * (H - pad.t - pad.b);
+  const dayW = (W - pad.l - pad.r) / 89;
+
+  // 계절 띠 — 같은 계절이 이어지는 구간을 한 칸으로 칠한다
+  let runS = null, runStart = 0;
+  for (let i = 0; i <= 90; i++) {
+    const s = i < 90 ? seasonOfDate(addDays(from, i), records) : null;
+    if (s !== runS) {
+      if (runS) {
+        const x0 = Math.max(pad.l, pad.l + (runStart - 0.5) * dayW);
+        const x1 = Math.min(W - pad.r, pad.l + (i - 0.5) * dayW);
+        mk('rect', { x: x0, y: pad.t - 6, width: Math.max(0, x1 - x0), height: H - pad.b - pad.t + 6, fill: W_SEASON_DOT[runS] }, 'w-band');
+      }
+      runS = s; runStart = i;
+    }
+  }
 
   // 월 눈금
   const [fy, fm] = from.split('-').map(Number);
@@ -456,12 +462,8 @@ function renderWeightCard() {
     mk('path', { d, fill: 'none', 'stroke-width': '1.6', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, 'w-line');
   }
   series.forEach((p, i) => {
-    const s = seasonOfDate(p.d, records);
     const isLast = i === series.length - 1;
-    mk('circle', {
-      cx: toX(p.d), cy: toY(p.w), r: isLast ? 4.6 : 3.2,
-      fill: s ? W_SEASON_DOT[s] : '#B8B2C8', 'stroke-width': isLast ? '2' : '1.2',
-    }, 'w-dot');
+    mk('circle', { cx: toX(p.d), cy: toY(p.w), r: isLast ? 4.4 : 2.8, 'stroke-width': isLast ? '2' : '1.2' }, isLast ? 'w-dot last' : 'w-dot');
   });
 }
 

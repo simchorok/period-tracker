@@ -377,8 +377,6 @@ function renderCalendar() {
     if (offset === 0) block.id = 'cal-today-block';
   }
 
-  if (typeof renderWeightCard === 'function') renderWeightCard();
-
   const sub = document.getElementById('calendar-sub');
   if (sub && records.length) {
     const p = getNextPredictions(records);
@@ -492,6 +490,7 @@ function drawLineChart(svgId, values, avgVal, colorStroke) {
 
 function renderGraph() {
   const records = loadRecords().sort((a, b) => a.start > b.start ? 1 : -1);
+  if (typeof renderWeightCard === 'function') renderWeightCard();
 
   // 주기
   const cycles = [];

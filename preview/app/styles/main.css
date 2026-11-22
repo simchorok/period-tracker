@@ -1209,10 +1209,12 @@ html[data-mode="dark"] .log-modal .mood-arc .log-tag.selected{background:#F2EEF6
 .weight-row{display:flex; align-items:center; gap:8px}
 .weight-input{width:120px}
 .weight-unit{font-size:13px; font-weight:400; color:var(--ink-52)}
-.w-card{margin:0 0 24px}
+.w-card{margin:0}
 .w-card .chart-wrap svg{height:120px}
-.w-line{stroke:var(--ink-40)}
-.w-dot{stroke:#FFFFFF}
+.w-line{stroke:var(--ink-52)}
+.w-band{opacity:.16}
+.w-dot{fill:var(--ink-80); stroke:#FFFFFF}
+.w-dot.last{fill:var(--ink)}
 .w-grid{stroke:rgba(30,34,46,.10); stroke-width:1; stroke-dasharray:2 4}
 .w-tick{fill:var(--ink-40)}
 .w-empty{fill:var(--ink-40)}
@@ -1232,5 +1234,6 @@ html[data-mode="dark"] .log-modal .mood-arc .log-tag.selected{background:#F2EEF6
 .rd-k{flex:0 0 42px; align-self:flex-start; margin-top:2px}
 .rd-t{font-size:12.5px; line-height:1.7; color:var(--ink-80)}
 html[data-mode="dark"] .w-dot{stroke:rgba(10,10,20,.9)}
+html[data-mode="dark"] .w-band{opacity:.24}
 html[data-mode="dark"] .rd-tip{border-top-color:rgba(255,255,255,.08)}
 html[data-mode="dark"] .w-grid{stroke:rgba(255,255,255,.10)}
