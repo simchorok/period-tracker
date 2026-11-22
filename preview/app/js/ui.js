@@ -377,6 +377,8 @@ function renderCalendar() {
     if (offset === 0) block.id = 'cal-today-block';
   }
 
+  if (typeof renderWeightCard === 'function') renderWeightCard();
+
   const sub = document.getElementById('calendar-sub');
   if (sub && records.length) {
     const p = getNextPredictions(records);

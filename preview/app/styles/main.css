@@ -1204,3 +1204,33 @@ html.share-mode #boot{display:none !important}
 .sv-hero-tx{left:6px; right:auto; text-align:left; top:110px}
 html[data-mode="dark"] .log-modal .log-tag.selected,
 html[data-mode="dark"] .log-modal .mood-arc .log-tag.selected{background:#F2EEF6; border-color:#F2EEF6; color:#16121F}
+
+/* ═══════════════ 몸무게 · 식단 ═══════════════ */
+.weight-row{display:flex; align-items:center; gap:8px}
+.weight-input{width:120px}
+.weight-unit{font-size:13px; font-weight:400; color:var(--ink-52)}
+.w-card{margin:0 0 24px}
+.w-card .chart-wrap svg{height:120px}
+.w-line{stroke:var(--ink-40)}
+.w-dot{stroke:#FFFFFF}
+.w-grid{stroke:rgba(30,34,46,.10); stroke-width:1; stroke-dasharray:2 4}
+.w-tick{fill:var(--ink-40)}
+.w-empty{fill:var(--ink-40)}
+.w-legend{display:flex; gap:12px; flex-wrap:wrap; margin-top:10px}
+.w-lg,.rd-k,.rd-chip{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:400; color:var(--ink-66); letter-spacing:.02em}
+.w-lg i,.rd-k i,.rd-chip i{width:6px; height:6px; border-radius:50%; display:block; flex:0 0 auto}
+.rd-sum{display:flex; justify-content:space-between; align-items:baseline; gap:10px; font-size:13px; color:var(--ink-80)}
+.rd-sum-k{color:var(--ink-52); font-size:12px}
+.rd-sum-v{font-variant-numeric:tabular-nums}
+.rd-sum-v em{font-style:normal; margin-left:6px; color:var(--ink-52); font-size:12px}
+.rd-chips{display:flex; flex-wrap:wrap; gap:6px 12px; margin-top:10px}
+.rd-note{margin-top:10px; font-size:12.5px; line-height:1.7; color:var(--ink-80)}
+.rd-empty{font-size:13px; line-height:1.8; color:var(--ink-52)}
+.rd-tips-title{margin:16px 0 8px; font-size:11px; letter-spacing:.12em; color:var(--ink-40)}
+.rd-tip{display:flex; gap:10px; padding:7px 0; border-top:1px solid rgba(30,34,46,.06)}
+.rd-tip:first-of-type{border-top:0}
+.rd-k{flex:0 0 42px; align-self:flex-start; margin-top:2px}
+.rd-t{font-size:12.5px; line-height:1.7; color:var(--ink-80)}
+html[data-mode="dark"] .w-dot{stroke:rgba(10,10,20,.9)}
+html[data-mode="dark"] .rd-tip{border-top-color:rgba(255,255,255,.08)}
+html[data-mode="dark"] .w-grid{stroke:rgba(255,255,255,.10)}

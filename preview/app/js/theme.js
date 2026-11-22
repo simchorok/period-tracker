@@ -232,6 +232,8 @@ function renderInsight(records) {
     if (ph) parts.push(INSIGHT_ADVICE[ph]);
     if (em) parts.push(INSIGHT_ADVICE[em]);
   }
+  if (typeof DIET_TIP !== 'undefined' && DIET_TIP[phase]) parts.push(DIET_TIP[phase]);
+  if (phase === 'autumn' && typeof hasAnyWeight === 'function' && hasAnyWeight()) parts.push(WEIGHT_SWELL);
   body.innerHTML = parts.map((t, i) => `<p class="${i === 0 ? 'h-ins-lead' : 'h-ins-p'}">${esc(t)}</p>`).join('');
   card.hidden = false;
 }
@@ -332,4 +334,175 @@ function closeOnboarding() {
   const el = document.getElementById('onboarding');
   if (el) el.hidden = true;
   try { localStorage.setItem('onboarding_done', '1'); } catch (_) {}
+}
+
+/* ═══════════ 몸무게 · 식단 ═══════════ */
+const W_SEASON_KO = { winter: '겨울', spring: '봄', summer: '여름', autumn: '가을' };
+const W_SEASON_DOT = { winter: '#8DA9EC', spring: '#7FCFA2', summer: '#FF9F7A', autumn: '#E79AC2' };
+const DIET_TIP = {
+  winter: '철분이 많은 살코기·시금치·두부를 챙기고, 운동은 걷기나 스트레칭으로 가볍게 해요.',
+  spring: '식욕이 안정되는 시기라 식단 조절이 가장 수월해요. 근력 운동을 늘리기 좋아요.',
+  summer: '에너지가 높아 강도 있는 운동도 잘 맞아요. 단백질을 충분히 챙겨주세요.',
+  autumn: '단 게 당기기 쉬운 시기예요. 짠 음식을 줄이면 붓기가 덜하고, 운동은 요가나 가벼운 유산소로 바꿔도 괜찮아요.',
+};
+const WEIGHT_SWELL = '이 시기엔 붓기 때문에 몸무게가 1~2kg 늘 수 있어요. 실패가 아니에요.';
+
+function _fmtKg(v) { return (Math.round(v * 10) / 10).toFixed(1); }
+
+// 날짜가 속한 계절(직전 생리 시작일 기준). 기록 밖이면 null
+function seasonOfDate(ds, records) {
+  if (!records || !records.length) return null;
+  const asc = [...records].sort((a, b) => a.start > b.start ? 1 : -1);
+  let base = null;
+  for (const r of asc) { if (r.start <= ds) base = r; else break; }
+  if (!base) return null;
+  const cycle = calcAvgCycle(records);
+  const day = dateDiff(ds, base.start) + 1;
+  if (day < 1 || day > cycle + 15) return null;
+  return getCyclePhase(Math.min(day, cycle), cycle);
+}
+
+// 기간 안의 몸무게 기록 [{d, w}] (날짜 오름차순)
+function getWeightSeries(fromDs, toDs) {
+  const logs = loadLogs();
+  return Object.keys(logs)
+    .filter(d => d >= fromDs && d <= toDs && Number(logs[d] && logs[d].weight) > 0)
+    .sort()
+    .map(d => ({ d, w: Number(logs[d].weight) }));
+}
+
+function hasAnyWeight() {
+  const logs = loadLogs();
+  return Object.keys(logs).some(d => Number(logs[d] && logs[d].weight) > 0);
+}
+
+/* 달력 탭 — 몸무게 그래프(최근 90일, 점 색 = 그날의 계절) */
+function renderWeightCard() {
+  const wrap = document.getElementById('calendar-scroll-wrap');
+  if (!wrap) return;
+  let card = document.getElementById('weight-card');
+  if (!card) {
+    card = document.createElement('div');
+    card.id = 'weight-card';
+    card.className = 'metric w-card';
+  }
+  const anchor = document.getElementById('cal-today-block');
+  if (anchor && anchor.nextSibling) wrap.insertBefore(card, anchor.nextSibling);
+  else wrap.appendChild(card);
+
+  const today = getTodayStr();
+  const from = addDays(today, -89);
+  const series = getWeightSeries(from, today);
+  const records = loadRecords();
+  const last = series.length ? series[series.length - 1] : null;
+  const ws = series.map(p => p.w);
+  const foot = series.length
+    ? `최근 90일 · 최저 ${_fmtKg(Math.min(...ws))}kg · 최고 ${_fmtKg(Math.max(...ws))}kg`
+    : '최근 90일';
+  const legend = ['winter', 'spring', 'summer', 'autumn']
+    .map(k => `<span class="w-lg"><i style="background:${W_SEASON_DOT[k]}"></i>${W_SEASON_KO[k]}</span>`).join('');
+
+  card.innerHTML = `
+    <div class="metric-head">
+      <div class="metric-val">${last ? `${_fmtKg(last.w)}<span class="unit">kg</span>` : '—'}</div>
+      <div class="metric-label">몸무게</div>
+    </div>
+    <div class="chart-wrap"><svg id="weight-chart" height="120"></svg></div>
+    <div class="w-legend">${legend}</div>
+    <div class="metric-foot">${foot}</div>`;
+
+  const svg = document.getElementById('weight-chart');
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = svg.parentElement.offsetWidth || 300;
+  const H = 120;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+  const mk = (tag, attrs, cls) => {
+    const el = document.createElementNS(NS, tag);
+    Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+    if (cls) el.setAttribute('class', cls);
+    svg.appendChild(el);
+    return el;
+  };
+
+  if (!series.length) {
+    const t = mk('text', { x: W / 2, y: H / 2, 'text-anchor': 'middle', 'font-size': '12.5' }, 'w-empty');
+    t.textContent = '상태 기록에서 몸무게를 입력하면 그래프가 그려져요';
+    return;
+  }
+
+  const pad = { l: 10, r: 14, t: 18, b: 22 };
+  const minV = Math.min(...ws) - 1, maxV = Math.max(...ws) + 1;
+  const range = maxV - minV || 1;
+  const toX = ds => pad.l + (dateDiff(ds, from) / 89) * (W - pad.l - pad.r);
+  const toY = v => pad.t + (1 - (v - minV) / range) * (H - pad.t - pad.b);
+
+  // 월 눈금
+  const [fy, fm] = from.split('-').map(Number);
+  for (let i = 1; i <= 4; i++) {
+    let y = fy, m = fm + i;
+    while (m > 12) { m -= 12; y++; }
+    const ds = `${y}-${String(m).padStart(2, '0')}-01`;
+    if (ds > today) break;
+    const x = toX(ds);
+    mk('line', { x1: x, x2: x, y1: pad.t - 6, y2: H - pad.b }, 'w-grid');
+    const t = mk('text', { x: x + 3, y: H - 6, 'font-size': '10' }, 'w-tick');
+    t.textContent = `${m}월`;
+  }
+
+  if (series.length >= 2) {
+    const d = series.map((p, i) => `${i ? 'L' : 'M'}${toX(p.d).toFixed(1)},${toY(p.w).toFixed(1)}`).join(' ');
+    mk('path', { d, fill: 'none', 'stroke-width': '1.6', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, 'w-line');
+  }
+  series.forEach((p, i) => {
+    const s = seasonOfDate(p.d, records);
+    const isLast = i === series.length - 1;
+    mk('circle', {
+      cx: toX(p.d), cy: toY(p.w), r: isLast ? 4.6 : 3.2,
+      fill: s ? W_SEASON_DOT[s] : '#B8B2C8', 'stroke-width': isLast ? '2' : '1.2',
+    }, 'w-dot');
+  });
+}
+
+/* 사이클 리포트 — 몸무게 · 식단 */
+function renderReportDiet(records, target) {
+  const el = document.getElementById('report-diet');
+  if (!el) return;
+  const esc = (t) => (typeof escapeHtml === 'function' ? escapeHtml(t) : t);
+  const tips = ['winter', 'spring', 'summer', 'autumn'].map(k => `
+    <div class="rd-tip"><span class="rd-k"><i style="background:${W_SEASON_DOT[k]}"></i>${W_SEASON_KO[k]}</span><span class="rd-t">${esc(DIET_TIP[k])}</span></div>`).join('');
+
+  let head = '';
+  if (records && records.length && target) {
+    const older = records.find(r => r.start < target.start) || null;
+    const from = older ? older.start : target.start;
+    const to = older ? addDays(target.start, -1) : getTodayStr();
+    const label = older ? '지난 주기' : '이번 주기';
+    const series = getWeightSeries(from, to);
+    if (series.length >= 2) {
+      const a = series[0].w, b = series[series.length - 1].w;
+      const diff = Math.round((b - a) * 10) / 10;
+      const diffTxt = diff === 0 ? '변화 없음' : `${diff > 0 ? '+' : ''}${diff.toFixed(1)}kg`;
+      const bySeason = {};
+      series.forEach(p => {
+        const s = seasonOfDate(p.d, records);
+        if (!s) return;
+        (bySeason[s] = bySeason[s] || []).push(p.w);
+      });
+      const avg = (k) => bySeason[k] ? bySeason[k].reduce((x, y) => x + y, 0) / bySeason[k].length : null;
+      const chips = ['winter', 'spring', 'summer', 'autumn'].filter(k => bySeason[k])
+        .map(k => `<span class="rd-chip"><i style="background:${W_SEASON_DOT[k]}"></i>${W_SEASON_KO[k]} ${_fmtKg(avg(k))}</span>`).join('');
+      const swell = (avg('autumn') !== null && avg('spring') !== null && avg('autumn') - avg('spring') >= 0.5)
+        ? '<div class="rd-note">가을에 몸무게가 올라간 건 붓기 때문일 수 있어요. 실패가 아니에요.</div>' : '';
+      head = `
+        <div class="rd-sum"><span class="rd-sum-k">${label} 몸무게</span><span class="rd-sum-v">${_fmtKg(a)} → ${_fmtKg(b)}kg <em>${diffTxt}</em></span></div>
+        ${chips ? `<div class="rd-chips">${chips}</div>` : ''}${swell}`;
+    } else {
+      head = '<div class="rd-empty">상태 기록에서 몸무게를 남기면 계절별 변화를 보여드려요.</div>';
+    }
+  } else {
+    head = '<div class="rd-empty">생리 기록과 몸무게를 남기면 계절별 변화를 보여드려요.</div>';
+  }
+  el.innerHTML = `${head}<div class="rd-tips-title">계절별 식단 · 운동</div>${tips}`;
 }

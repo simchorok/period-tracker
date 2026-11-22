@@ -39,7 +39,8 @@ async function loadLogsFromDB() {
       mood: r.mood||[], symptom: r.symptom||[], energy: r.energy||[], etc: r.etc||[],
       memo: r.memo ?? null,
       periodIntensity: r.period_intensity, sleepQuality: r.sleep_quality,
-      sleepHours: r.sleep_hours, symptomSeverity: r.symptom_severity, id: r.id
+      sleepHours: r.sleep_hours, symptomSeverity: r.symptom_severity,
+      weight: (r.weight === null || r.weight === undefined) ? null : Number(r.weight), id: r.id
     };
   });
   localStorage.setItem(LOG_KEY, JSON.stringify(logs));
@@ -82,6 +83,7 @@ async function saveLogToDB(logDate, entry) {
     period_intensity: entry.periodIntensity || null,
     sleep_quality: entry.sleepQuality || null,
     sleep_hours: entry.sleepHours || null,
+    weight: entry.weight || null,
     memo: entry.memo || null,
   };
   const { error } = await sb.from('daily_logs')
@@ -308,6 +310,8 @@ function resetLogExtras() {
   document.querySelectorAll('#sleep-quality .star-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('#log-sleep-quality .log-tag').forEach(b => b.classList.remove('selected'));
   document.getElementById('sleep-hours').value = '';
+  const w = document.getElementById('log-weight');
+  if (w) w.value = '';
 }
 
 function restoreLogExtras(existing) {
@@ -325,6 +329,10 @@ function restoreLogExtras(existing) {
   }
   if (existing.symptomSeverity) {
     symptomSeverity = existing.symptomSeverity;
+  }
+  if (existing.weight) {
+    const w = document.getElementById('log-weight');
+    if (w) w.value = existing.weight;
   }
 }
 
@@ -390,9 +398,11 @@ async function saveLog() {
   entry.sleepQuality = sleepQualityTag ? sleepQualityTag.dataset.val : null;
   entry.sleepHours = parseFloat(document.getElementById('sleep-hours').value) || null;
   entry.memo = document.getElementById('log-memo')?.value?.trim() || null;
+  const wRaw = parseFloat(document.getElementById('log-weight')?.value);
+  entry.weight = (wRaw >= 20 && wRaw <= 300) ? Math.round(wRaw * 10) / 10 : null;
 
   const hasAny = entry.mood.length > 0 || entry.symptom.length > 0 || entry.energy.length > 0 ||
-    entry.etc.length > 0 || entry.periodIntensity || entry.sleepQuality || entry.sleepHours || entry.memo;
+    entry.etc.length > 0 || entry.periodIntensity || entry.sleepQuality || entry.sleepHours || entry.memo || entry.weight;
   try {
     if (hasAny) {
       logs[logTargetDate] = entry;
