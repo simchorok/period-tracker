@@ -9,8 +9,8 @@
 <title>달의 기록</title>
 <meta name="description" content="달마다 달라지는 몸과 마음의 리듬을 기록하는 앱, 달의 기록">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=20261122e">
-<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png?v=20261122e">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=20261122f">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png?v=20261122f">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <!-- Pretendard 단일 웹폰트. 화면을 막지 않도록 비동기로 불러온다(먼저 시스템 폰트로 그리고 도착하면 교체) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" media="print" onload="this.media='all'">
@@ -26,7 +26,7 @@
     var r = document.documentElement; r.setAttribute('data-mode', m); r.setAttribute('data-season', se);
   })();
 </script>
-<link rel="stylesheet" href="styles/main.css?v=20261122e">
+<link rel="stylesheet" href="styles/main.css?v=20261122f">
 <style>
   /* 첫 페인트 보장용 최소 스타일 — 외부 CSS가 늦거나 막혀도 화면이 완전히 비지 않게 한다 */
   html,body{margin:0;height:100%;background:#F6F3FA;color:#2A2540}
@@ -175,7 +175,7 @@
         </button>
 
         <div class="h-hero">
-          <img class="h-shape" id="hero-shape" src="assets/season/light-none.webp?v=20261122e" alt="" decoding="async">
+          <img class="h-shape" id="hero-shape" src="assets/season/light-none.webp?v=20261122f" alt="" decoding="async">
           <div class="h-text">
             <div class="h-date" id="hero-date"></div>
             <h1 class="h-season" id="hero-title">기록을<br>시작해보세요</h1>
@@ -271,7 +271,7 @@
       <!-- 마이 -->
       <section class="screen" id="tab-mypage" data-tab="mypage">
         <div class="sub-head">
-          <div class="sub-bar t-bar"><span class="sub-title">마이</span></div>
+          <div class="sub-bar t-bar"><span class="sub-title">마이페이지</span></div>
           <div class="head-sub" style="text-align:center">나의 기록과 설정</div>
         </div>
 
@@ -338,10 +338,10 @@
     </div>
 
     <nav class="tabbar" aria-label="화면 전환">
-      <button class="tab-btn active" data-goto="home" onclick="switchTab('home')" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/></svg><span>오늘</span></button>
-      <button class="tab-btn" data-goto="calendar" onclick="switchTab('calendar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><span>달력</span></button>
-      <button class="tab-btn" data-goto="graph" onclick="switchTab('graph')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M5 19v-5M12 19V7M19 19v-9"/></svg><span>주기</span></button>
-      <button class="tab-btn" data-goto="mypage" onclick="switchTab('mypage')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="9" r="4"/><path d="M4.5 20c1.5-3.5 4.3-5 7.5-5s6 1.5 7.5 5"/></svg><span>마이</span></button>
+      <button class="tab-btn active" data-goto="home" onclick="switchTab('home')" aria-label="오늘" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/></svg></button>
+      <button class="tab-btn" data-goto="calendar" onclick="switchTab('calendar')" aria-label="달력"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button>
+      <button class="tab-btn" data-goto="graph" onclick="switchTab('graph')" aria-label="주기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M5 19v-5M12 19V7M19 19v-9"/></svg></button>
+      <button class="tab-btn" data-goto="mypage" onclick="switchTab('mypage')" aria-label="마이페이지"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="9" r="4"/><path d="M4.5 20c1.5-3.5 4.3-5 7.5-5s6 1.5 7.5 5"/></svg></button>
     </nav>
 
   </div>
@@ -352,23 +352,23 @@
     <div class="ob-top"><span></span><span class="ob-brand">달의 기록</span><button class="ob-skip" onclick="closeOnboarding()">건너뛰기</button></div>
       <section class="ob-slide on" data-ob="0">
         <h2 class="ob-title">환영해요</h2><p class="ob-sub">기록할수록 나를 더 잘 아는 AI</p>
-        <div class="ob-visual"><img class="ob-shape" src="assets/season/light-none.webp?v=20261122e" alt="" decoding="async"></div>
+        <div class="ob-visual"><img class="ob-shape" src="assets/season/light-none.webp?v=20261122f" alt="" decoding="async"></div>
       </section>
       <section class="ob-slide" data-ob="1">
         <h2 class="ob-title">매달 AI가<br>내 사이클을 분석해요</h2>
-        <div class="ob-visual"><img class="ob-shape" src="assets/season/light-none.webp?v=20261122e" alt="" decoding="async"><div class="ob-card ob-report"><div class="ob-rk"><span></span>AI 분석</div><div class="ob-ring"><b>28<small>일</small></b></div><i></i><i></i><i></i></div></div>
+        <div class="ob-visual"><img class="ob-shape" src="assets/season/light-none.webp?v=20261122f" alt="" decoding="async"><div class="ob-card ob-report"><div class="ob-rk"><span></span>AI 분석</div><div class="ob-ring"><b>28<small>일</small></b></div><i></i><i></i><i></i></div></div>
       </section>
       <section class="ob-slide" data-ob="2">
         <h2 class="ob-title">기록할수록<br>분석이 깊어져요</h2><p class="ob-sub">하루 10초면 충분해요</p>
-        <div class="ob-visual"><img class="ob-shape" src="assets/season/light-spring.webp?v=20261122e" alt="" decoding="async"><div class="ob-bars"><div class="ob-bar"><b>28%</b><span style="height:56px" class="ob-bar-a"></span><em>가끔</em></div><div class="ob-bar"><b>62%</b><span style="height:124px" class="ob-bar-b"></span><em>주 3회</em></div><div class="ob-bar"><b>95%</b><span style="height:190px" class="ob-bar-c"></span><em>매일</em></div></div></div>
+        <div class="ob-visual"><img class="ob-shape" src="assets/season/light-spring.webp?v=20261122f" alt="" decoding="async"><div class="ob-bars"><div class="ob-bar"><b>28%</b><span style="height:56px" class="ob-bar-a"></span><em>가끔</em></div><div class="ob-bar"><b>62%</b><span style="height:124px" class="ob-bar-b"></span><em>주 3회</em></div><div class="ob-bar"><b>95%</b><span style="height:190px" class="ob-bar-c"></span><em>매일</em></div></div></div>
       </section>
       <section class="ob-slide" data-ob="3">
         <h2 class="ob-title">과거 기록도<br>큰 도움이 돼요</h2><p class="ob-sub">기억나는 것만 입력해도 괜찮아요</p>
-        <div class="ob-visual"><img class="ob-shape" src="assets/season/light-winter.webp?v=20261122e" alt="" decoding="async"><div class="ob-dots"><div class="ob-dot ob-dot-a"><span></span><em>1개월</em></div><div class="ob-dot ob-dot-b"><span></span><em>3개월</em></div><div class="ob-dot ob-dot-c"><span></span><em>6개월</em></div></div></div>
+        <div class="ob-visual"><img class="ob-shape" src="assets/season/light-winter.webp?v=20261122f" alt="" decoding="async"><div class="ob-dots"><div class="ob-dot ob-dot-a"><span></span><em>1개월</em></div><div class="ob-dot ob-dot-b"><span></span><em>3개월</em></div><div class="ob-dot ob-dot-c"><span></span><em>6개월</em></div></div></div>
       </section>
       <section class="ob-slide" data-ob="4">
         <h2 class="ob-title">지금 바로<br>시작해볼까요?</h2>
-        <div class="ob-visual"><img class="ob-shape" src="assets/season/light-summer.webp?v=20261122e" alt="" decoding="async"><div class="ob-card ob-home"><div class="ob-hs">봄</div><div class="ob-hn">다음 생리까지 <b>20일</b></div><div class="ob-hl"><i></i><i></i><i></i><i></i><u></u></div><div class="ob-hc"><span></span>오늘 기록하기<em></em></div></div></div>
+        <div class="ob-visual"><img class="ob-shape" src="assets/season/light-summer.webp?v=20261122f" alt="" decoding="async"><div class="ob-card ob-home"><div class="ob-hs">봄</div><div class="ob-hn">다음 생리까지 <b>20일</b></div><div class="ob-hl"><i></i><i></i><i></i><i></i><u></u></div><div class="ob-hc"><span></span>오늘 기록하기<em></em></div></div></div>
       </section>
     <div class="ob-bottom">
       <div class="ob-dots-ind"><i class="on"></i><i></i><i></i><i></i><i></i></div>
@@ -607,7 +607,7 @@
       </button>
       <div id="question-loading">
         <div class="q-orb">
-          <img class="orb-img" src="assets/airy-orb.webp?v=20261122e" alt="" width="760" height="837" decoding="async">
+          <img class="orb-img" src="assets/airy-orb.webp?v=20261122f" alt="" width="760" height="837" decoding="async">
         </div>
         <div class="q-loading-text">잠시, 오늘의 감정을 살펴보고 있어요</div>
       </div>
@@ -734,15 +734,15 @@
 </div>
 
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="js/config.js?v=20261122e"></script>
-<script defer src="js/auth.js?v=20261122e"></script>
-<script defer src="js/records.js?v=20261122e"></script>
-<script defer src="js/questions.js?v=20261122e"></script>
-<script defer src="js/theme.js?v=20261122e"></script>
-<script defer src="js/ui.js?v=20261122e"></script>
-<script defer src="js/report.js?v=20261122e"></script>
-<script defer src="js/share.js?v=20261122e"></script>
-<script defer src="js/app.js?v=20261122e"></script>
+<script defer src="js/config.js?v=20261122f"></script>
+<script defer src="js/auth.js?v=20261122f"></script>
+<script defer src="js/records.js?v=20261122f"></script>
+<script defer src="js/questions.js?v=20261122f"></script>
+<script defer src="js/theme.js?v=20261122f"></script>
+<script defer src="js/ui.js?v=20261122f"></script>
+<script defer src="js/report.js?v=20261122f"></script>
+<script defer src="js/share.js?v=20261122f"></script>
+<script defer src="js/app.js?v=20261122f"></script>
 <div class="share-view" id="share-view" hidden></div>
 </body>
 </html>
