@@ -915,7 +915,19 @@ html[data-mode="dark"] .app{
 #tab-home.active{display:block; height:auto; min-height:100%; padding:0 0 calc(120px + env(safe-area-inset-bottom))}
 .sub-title{color:var(--t1); font-family:var(--serif); font-size:20px; letter-spacing:-.01em; position:static; transform:none; height:44px}
 .t-bar{justify-content:center}
-.cal-top{background:var(--bg); box-shadow:none}
+/* 달력 상단 고정 띠: 앱 배경과 같은 그라데이션을 화면 크기로 깔아 이음새가 보이지 않게 한다 */
+.cal-top{box-shadow:none; background-repeat:no-repeat; background-position:0 0;
+  background-size:100% 100vh; background-size:100% 100dvh;
+  background-image:
+    radial-gradient(70% 45% at 8% 4%, var(--b1), rgba(0,0,0,0) 70%),
+    radial-gradient(70% 40% at 100% 48%, var(--b2), rgba(0,0,0,0) 70%),
+    radial-gradient(70% 40% at 0% 82%, var(--b3), rgba(0,0,0,0) 70%),
+    radial-gradient(60% 35% at 100% 100%, var(--b4), rgba(0,0,0,0) 70%);
+  background-color:var(--bg)}
+html[data-mode="dark"] .cal-top{
+  background-image:
+    radial-gradient(80% 45% at 0% 70%, color-mix(in srgb, var(--b1) 60%, transparent), rgba(0,0,0,0) 70%),
+    radial-gradient(70% 40% at 100% 100%, color-mix(in srgb, var(--b2) 18%, transparent), rgba(0,0,0,0) 70%)}
 
 /* ── 홈 상단 ── */
 .h-top{position:relative; display:flex; align-items:center; justify-content:space-between; padding:calc(10px + env(safe-area-inset-top)) 20px 0; min-height:44px}
