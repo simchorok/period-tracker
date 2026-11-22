@@ -92,6 +92,25 @@ async function saveLogToDB(logDate, entry) {
   await loadLogsFromDB();
 }
 
+// 상태 기록을 전부 비우고 저장했을 때 DB에서도 지운다.
+// AI 질문·답변이 붙은 날은 그 내용을 지키기 위해 행은 남기고 기록 항목만 비운다.
+async function clearLogInDB(logDate) {
+  if (!currentUser) return;
+  const { data, error } = await sb.from('daily_logs')
+    .select('tag_question, tag_answer')
+    .eq('user_id', currentUser.id).eq('log_date', logDate)
+    .maybeSingle();
+  if (error) { console.error('DB 조회 오류:', error); return; }
+  if (!data) return;
+  if (data.tag_question || data.tag_answer) {
+    await saveLogToDB(logDate, { mood: [], symptom: [], energy: [], etc: [] });
+  } else {
+    const { error: delErr } = await sb.from('daily_logs').delete()
+      .eq('user_id', currentUser.id).eq('log_date', logDate);
+    if (delErr) console.error('DB 삭제 오류:', delErr);
+  }
+}
+
 const STORAGE_KEY = 'period_records_v2';
 
 // ── 날짜 헬퍼 ──
@@ -417,7 +436,9 @@ async function saveLog() {
         showQuestionBanner(logTargetDate, allTags);
       }
     } else {
+      const hadLog = !!logs[logTargetDate];
       delete logs[logTargetDate];
+      if (hadLog && currentUser) await clearLogInDB(logTargetDate);
     }
   } catch(e) {
     console.error('로그 저장 오류:', e);
