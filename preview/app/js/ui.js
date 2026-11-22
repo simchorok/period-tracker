@@ -184,7 +184,7 @@ async function updateStatus() {
       if (diff === null) nextEl.textContent = '';
       else if (diff > 0) {
         const [, nm, nd] = pred.nextStart.split('-');
-        nextEl.innerHTML = `<span class="h-next-k">다음 생리</span><span class="h-next-d">${parseInt(nm, 10)}월 ${parseInt(nd, 10)}일</span><span class="h-next-left">${diff}일 남았어요</span>`;
+        nextEl.innerHTML = `<span class="h-next-k">다음 생리</span><span class="h-next-d">${parseInt(nm, 10)}월 ${parseInt(nd, 10)}일</span><span class="h-next-left">D-${diff}</span>`;
       }
       else if (diff === 0) nextEl.textContent = '오늘이 예상 시작일이에요';
       else nextEl.textContent = `예정일에서 ${Math.abs(diff)}일 지났어요`;
