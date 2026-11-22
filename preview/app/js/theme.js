@@ -376,28 +376,68 @@ function hasAnyWeight() {
   return Object.keys(logs).some(d => Number(logs[d] && logs[d].weight) > 0);
 }
 
-/* 주기 탭 — 몸무게 그래프(최근 90일, 배경 띠 = 그날의 계절) */
+/* 주기 탭 — 몸무게 그래프(최근 90일 / 월별, 배경 띠 = 그날의 계절) */
+let _wMode = 'recent';          // 'recent' | 'month'
+let _wMonth = null;             // 'YYYY-MM'
+
+function setWeightMode(mode) { _wMode = mode === 'month' ? 'month' : 'recent'; renderWeightCard(); }
+function shiftWeightMonth(n) {
+  const [y, m] = (_wMonth || getTodayStr().slice(0, 7)).split('-').map(Number);
+  const d = new Date(y, m - 1 + n, 1);
+  _wMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  renderWeightCard();
+}
+
 function renderWeightCard() {
   const card = document.getElementById('weight-card');
   if (!card) return;
 
   const today = getTodayStr();
-  const from = addDays(today, -89);
-  const series = getWeightSeries(from, today);
+  const thisMonth = today.slice(0, 7);
+  if (!_wMonth || _wMonth > thisMonth) _wMonth = thisMonth;
+  const logs = loadLogs();
+  const firstMonth = (Object.keys(logs).filter(d => Number(logs[d] && logs[d].weight) > 0).sort()[0] || today).slice(0, 7);
+
+  let from, to, label;
+  if (_wMode === 'month') {
+    const [y, m] = _wMonth.split('-').map(Number);
+    from = `${_wMonth}-01`;
+    to = `${_wMonth}-${String(new Date(y, m, 0).getDate()).padStart(2, '0')}`;
+    label = `${y}년 ${m}월`;
+  } else {
+    from = addDays(today, -89);
+    to = today;
+    label = '최근 90일';
+  }
+  const span = dateDiff(to, from);
+  const series = getWeightSeries(from, to);
   const records = loadRecords();
   const last = series.length ? series[series.length - 1] : null;
   const ws = series.map(p => p.w);
   const foot = series.length
-    ? `최근 90일 · 최저 ${_fmtKg(Math.min(...ws))}kg · 최고 ${_fmtKg(Math.max(...ws))}kg`
-    : '최근 90일';
+    ? `${label} · 최저 ${_fmtKg(Math.min(...ws))}kg · 최고 ${_fmtKg(Math.max(...ws))}kg`
+    : label;
   const legend = ['winter', 'spring', 'summer', 'autumn']
     .map(k => `<span class="w-lg"><i style="background:${W_SEASON_DOT[k]}"></i>${W_SEASON_KO[k]}</span>`).join('');
+  const nav = _wMode === 'month' ? `
+    <div class="w-month">
+      <button class="w-arrow" onclick="shiftWeightMonth(-1)" ${_wMonth <= firstMonth ? 'disabled' : ''} aria-label="이전 달"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <span class="w-month-t">${label}</span>
+      <button class="w-arrow" onclick="shiftWeightMonth(1)" ${_wMonth >= thisMonth ? 'disabled' : ''} aria-label="다음 달"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>` : '';
 
   card.innerHTML = `
-    <div class="metric-head">
-      <div class="metric-val">${last ? `${_fmtKg(last.w)}<span class="unit">kg</span>` : '—'}</div>
-      <div class="metric-label">몸무게</div>
+    <div class="w-head">
+      <div class="metric-head">
+        <div class="metric-val">${last ? `${_fmtKg(last.w)}<span class="unit">kg</span>` : '—'}</div>
+        <div class="metric-label">몸무게</div>
+      </div>
+      <div class="w-seg" role="tablist">
+        <button class="${_wMode === 'recent' ? 'on' : ''}" onclick="setWeightMode('recent')">90일</button>
+        <button class="${_wMode === 'month' ? 'on' : ''}" onclick="setWeightMode('month')">월별</button>
+      </div>
     </div>
+    ${nav}
     <div class="chart-wrap"><svg id="weight-chart" height="120"></svg></div>
     <div class="w-legend">${legend}</div>
     <div class="metric-foot">${foot}</div>`;
@@ -419,21 +459,22 @@ function renderWeightCard() {
 
   if (!series.length) {
     const t = mk('text', { x: W / 2, y: H / 2, 'text-anchor': 'middle', 'font-size': '12.5' }, 'w-empty');
-    t.textContent = '상태 기록에서 몸무게를 입력하면 그래프가 그려져요';
+    t.textContent = _wMode === 'month' ? '이 달엔 몸무게 기록이 없어요' : '상태 기록에서 몸무게를 입력하면 그래프가 그려져요';
     return;
   }
 
   const pad = { l: 10, r: 14, t: 18, b: 22 };
   const minV = Math.min(...ws) - 1, maxV = Math.max(...ws) + 1;
   const range = maxV - minV || 1;
-  const toX = ds => pad.l + (dateDiff(ds, from) / 89) * (W - pad.l - pad.r);
+  const toX = ds => pad.l + (dateDiff(ds, from) / span) * (W - pad.l - pad.r);
   const toY = v => pad.t + (1 - (v - minV) / range) * (H - pad.t - pad.b);
-  const dayW = (W - pad.l - pad.r) / 89;
+  const dayW = (W - pad.l - pad.r) / span;
 
-  // 계절 띠 — 같은 계절이 이어지는 구간을 한 칸으로 칠한다
+  // 계절 띠 — 같은 계절이 이어지는 구간을 한 칸으로 칠한다(오늘 이후는 칠하지 않는다)
   let runS = null, runStart = 0;
-  for (let i = 0; i <= 90; i++) {
-    const s = i < 90 ? seasonOfDate(addDays(from, i), records) : null;
+  for (let i = 0; i <= span + 1; i++) {
+    const ds = addDays(from, i);
+    const s = (i <= span && ds <= today) ? seasonOfDate(ds, records) : null;
     if (s !== runS) {
       if (runS) {
         const x0 = Math.max(pad.l, pad.l + (runStart - 0.5) * dayW);
@@ -444,18 +485,25 @@ function renderWeightCard() {
     }
   }
 
-  // 월 눈금
-  const [fy, fm] = from.split('-').map(Number);
-  for (let i = 1; i <= 4; i++) {
-    let y = fy, m = fm + i;
-    while (m > 12) { m -= 12; y++; }
-    const ds = `${y}-${String(m).padStart(2, '0')}-01`;
-    if (ds > today) break;
+  // 눈금 — 90일은 매월 1일, 월별은 1·8·15·22·29일
+  const ticks = [];
+  if (_wMode === 'month') {
+    [1, 8, 15, 22, 29].forEach(d => { const ds = `${_wMonth}-${String(d).padStart(2, '0')}`; if (ds <= to) ticks.push([ds, `${d}일`]); });
+  } else {
+    const [fy, fm] = from.split('-').map(Number);
+    for (let i = 1; i <= 4; i++) {
+      const d = new Date(fy, fm - 1 + i, 1);
+      const ds = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
+      if (ds > to) break;
+      ticks.push([ds, `${d.getMonth() + 1}월`]);
+    }
+  }
+  ticks.forEach(([ds, txt]) => {
     const x = toX(ds);
     mk('line', { x1: x, x2: x, y1: pad.t - 6, y2: H - pad.b }, 'w-grid');
     const t = mk('text', { x: x + 3, y: H - 6, 'font-size': '10' }, 'w-tick');
-    t.textContent = `${m}월`;
-  }
+    t.textContent = txt;
+  });
 
   if (series.length >= 2) {
     const d = series.map((p, i) => `${i ? 'L' : 'M'}${toX(p.d).toFixed(1)},${toY(p.w).toFixed(1)}`).join(' ');

@@ -1237,3 +1237,14 @@ html[data-mode="dark"] .w-dot{stroke:rgba(10,10,20,.9)}
 html[data-mode="dark"] .w-band{opacity:.24}
 html[data-mode="dark"] .rd-tip{border-top-color:rgba(255,255,255,.08)}
 html[data-mode="dark"] .w-grid{stroke:rgba(255,255,255,.10)}
+.w-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px}
+.w-seg{display:flex; flex:0 0 auto; padding:3px; border-radius:999px; background:rgba(30,34,46,.06)}
+.w-seg button{border:0; background:none; cursor:pointer; padding:6px 11px; border-radius:999px; font-size:11.5px; font-weight:400; color:var(--ink-52); letter-spacing:.02em}
+.w-seg button.on{background:#FFFFFF; color:var(--ink); box-shadow:0 4px 10px -6px rgba(58,50,92,.5)}
+.w-month{display:flex; align-items:center; justify-content:center; gap:14px; margin-top:12px}
+.w-month-t{font-size:12.5px; font-weight:400; color:var(--ink-80); letter-spacing:.04em; min-width:86px; text-align:center}
+.w-arrow{width:28px; height:28px; border:0; border-radius:50%; background:none; cursor:pointer; color:var(--ink-66); display:flex; align-items:center; justify-content:center}
+.w-arrow svg{width:16px; height:16px}
+.w-arrow:disabled{opacity:.25; cursor:default}
+html[data-mode="dark"] .w-seg{background:rgba(255,255,255,.08)}
+html[data-mode="dark"] .w-seg button.on{background:rgba(255,255,255,.9); color:#14121C}
