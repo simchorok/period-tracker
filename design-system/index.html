@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>달의 기록 — 디자인 시스템 (계절 테마)</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap">
+<style>
+
+:root{
+  --ink:#2A2540; --ink2:#3B3654; --t2:#5E5874; --t3:#8A84A0; --t4:#A9A3BC;
+  --paper:#FFFFFF; --canvas:#EFEAF7; --line:rgba(42,37,64,.08); --line2:rgba(42,37,64,.06);
+  --spring-accent:#6B5FA8;
+  --sans:'Pretendard',-apple-system,'Apple SD Gothic Neo',system-ui,sans-serif;
+  --serif:'Gowun Batang','Apple SD Gothic Neo',serif;
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;-webkit-font-smoothing:antialiased}
+html{background:var(--canvas)}
+body{margin:0;width:2240px;background:var(--canvas);color:var(--ink);font-family:var(--sans);font-weight:400}
+svg{display:block}
+
+/* ───────── 문서 크롬 ───────── */
+.page{width:2240px;padding:56px 56px 90px;display:flex;flex-direction:column;gap:60px}
+.head{width:1360px;display:flex;flex-direction:column;gap:16px}
+.eyebrow{font:600 12px/1.4 var(--sans);letter-spacing:.22em;color:var(--spring-accent)}
+.title{font:400 46px/1.25 var(--serif);letter-spacing:-.02em;margin:0;color:var(--ink)}
+.lead{margin:0;max-width:1000px;font:400 15px/1.85 var(--sans);color:var(--t2);word-break:keep-all}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:999px;background:var(--paper);border:1px solid var(--line);font:400 12px/1 var(--sans);color:var(--t2)}
+.chip b{font-weight:600;color:var(--ink)}
+.chip.code{font-family:var(--mono);font-size:11px}
+
+.section{width:1400px;display:flex;flex-direction:column;gap:28px}
+.sec-head{display:flex;align-items:flex-start;gap:18px;border-top:2px solid var(--ink);padding-top:18px}
+.sec-no{font:400 30px/1 var(--serif);color:var(--t3);min-width:52px}
+.sec-tx{display:flex;flex-direction:column;gap:6px}
+.sec-title{font:600 26px/1.3 var(--sans);letter-spacing:-.01em;margin:0}
+.sec-desc{margin:0;max-width:980px;font:400 13.5px/1.75 var(--sans);color:var(--t2);word-break:keep-all}
+.block{display:flex;flex-direction:column;gap:14px}
+.block-h{display:flex;align-items:baseline;gap:10px}
+.block-h h3{font:600 14px/1.4 var(--sans);letter-spacing:.02em;margin:0;color:var(--ink)}
+.block-h .cls{font:400 11px/1.4 var(--mono);color:var(--t3)}
+.block-note{margin:0;font:400 12.5px/1.7 var(--sans);color:var(--t3);word-break:keep-all}
+
+/* ───────── 스와치 · 팔레트 표 ───────── */
+.pal{display:flex;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.pal-row{display:grid;grid-template-columns:200px 236px 236px 1fr;gap:16px;align-items:center;padding:10px 18px;border-top:1px solid var(--line2)}
+.pal-row:first-child{border-top:0}
+.pal-season .pal-row{grid-template-columns:200px repeat(4,236px)}
+.pal-head{background:#F7F4FC;padding:12px 18px}
+.pal-label{display:flex;flex-direction:column;gap:2px}
+.pal-label b{font:500 12.5px/1.4 var(--sans);color:var(--ink)}
+.pal-label span{font:400 11px/1.4 var(--mono);color:var(--t3)}
+.pal-label-cell{font:500 11.5px/1.4 var(--sans);color:var(--t2)}
+.pal-label-cell i{font-style:normal;font-weight:400;font-size:10.5px;color:var(--t4);margin-left:4px}
+.pal-cell{display:flex;align-items:center;gap:10px}
+.pal-chip{width:46px;height:34px;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(42,37,64,.10);flex:0 0 auto}
+.pal-hex{font:400 11.5px/1.4 var(--mono);color:var(--ink)}
+.pal-use{font:400 11.5px/1.5 var(--sans);color:var(--t3)}
+
+.sw-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:12px}
+.sw{display:flex;flex-direction:column;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:10px}
+.sw-chip{height:56px;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(42,37,64,.08)}
+.sw-name{font:500 11.5px/1.35 var(--sans);color:var(--ink)}
+.sw-hex{font:400 10.5px/1.35 var(--mono);color:var(--t2)}
+.sw-var{font:400 10px/1.35 var(--mono);color:var(--t3)}
+.sw-note{font:400 10px/1.4 var(--sans);color:var(--t4)}
+
+.ramp{display:flex;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.ramp-row{display:grid;grid-template-columns:268px 1fr;gap:20px;align-items:center;padding:12px 18px;border-top:1px solid var(--line2)}
+.ramp-row:first-child{border-top:0}
+.ramp-bars{display:flex;gap:8px}
+.ramp-bar{width:118px;height:34px;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(42,37,64,.06)}
+.ramp-txt{display:flex;flex-direction:column;gap:2px}
+.ramp-txt b{font:500 12px/1.4 var(--sans);color:var(--ink)}
+.ramp-txt span{font:400 11px/1.4 var(--mono);color:var(--t3)}
+.ramp-txt em{font-style:normal;font:400 10.5px/1.4 var(--mono);color:var(--t4)}
+
+/* 타이포 */
+.font-pair{display:flex;gap:14px}
+.font-card{flex:1;display:flex;flex-direction:column;gap:8px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px 22px}
+.font-sample{font-size:34px;line-height:1.3;color:var(--ink)}
+.font-fc{font:400 11px/1.5 var(--mono);color:var(--t3)}
+.font-use{font:400 12px/1.6 var(--sans);color:var(--t2)}
+.type-block{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:4px 26px}
+.type-row{display:grid;grid-template-columns:820px 1fr;gap:32px;align-items:center;padding:16px 0;border-top:1px solid var(--line2)}
+.type-row:first-child{border-top:0}
+.type-sample{color:var(--ink);white-space:nowrap;overflow:hidden}
+.type-serif{font-family:var(--serif)}
+.type-sans{font-family:var(--sans)}
+.type-spec{display:flex;flex-direction:column;gap:3px}
+.ts-name{font:600 12.5px/1.4 var(--sans);color:var(--ink)}
+.ts-meta{font:400 11.5px/1.5 var(--mono);color:var(--t2)}
+.ts-use{font:400 10.5px/1.4 var(--mono);color:var(--t4)}
+.wline{display:flex;gap:10px;flex-wrap:wrap}
+.wpill{display:inline-flex;align-items:baseline;gap:8px;padding:8px 14px;border-radius:999px;background:var(--paper);border:1px solid var(--line)}
+.wpill b{font:500 12.5px/1.4 var(--sans)}
+.wpill span{font:400 11px/1.4 var(--mono);color:var(--t3)}
+
+/* 라운딩 · 간격 · 그림자 */
+.radius-grid{display:flex;gap:8px}
+.radius-item{width:96px;display:flex;flex-direction:column;align-items:center;gap:7px}
+.radius-box{width:66px;height:66px;background:var(--paper);border:1px solid rgba(42,37,64,.14);box-shadow:0 8px 18px -14px rgba(58,50,92,.6)}
+.radius-v{font:400 11px/1.3 var(--mono);color:var(--ink)}
+.radius-n{font:400 9.5px/1.35 var(--sans);color:var(--t3);text-align:center}
+.sp-col{display:flex;flex-direction:column;gap:2px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:14px 18px}
+.sp-row{display:flex;align-items:center;gap:14px;padding:5px 0}
+.sp-v{width:40px;text-align:right;font:400 12px/1 var(--mono);color:var(--ink)}
+.sp-bar{height:10px;border-radius:5px;background:linear-gradient(90deg,#B9CBF5,#8DA9EC)}
+.sp-n{font:400 11.5px/1.4 var(--sans);color:var(--t3)}
+.shadow-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.shadow-item{display:flex;flex-direction:column;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px}
+.shadow-box{height:64px;border-radius:14px;background:var(--paper)}
+.shadow-meta{display:flex;flex-direction:column;gap:3px}
+.shadow-meta b{font:500 11.5px/1.4 var(--mono);color:var(--ink)}
+.shadow-meta span{font:400 10px/1.45 var(--mono);color:var(--t3);word-break:break-all}
+.shadow-meta em{font-style:normal;font:400 10.5px/1.4 var(--sans);color:var(--t4)}
+
+/* 앱 배경 미니카드 */
+.bg-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.bg-card{display:flex;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.bgx{height:100px}
+.bg-lbl{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;font:400 10.5px/1.4 var(--mono);color:var(--t2)}
+.bg-lbl b{font-weight:500;color:var(--ink)}
+
+/* ───────── 컴포넌트 견본 ───────── */
+.comp-grid{display:grid;grid-template-columns:repeat(3,430px);gap:22px 26px}
+.comp-grid.two{grid-template-columns:repeat(2,430px)}
+.comp{display:flex;flex-direction:column;gap:10px}
+.comp-stage{height:132px;border-radius:20px;background:#F4F0FA;border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px;position:relative;overflow:hidden}
+.comp-stage.tall{height:auto;padding:18px}
+.comp-stage.dark{background:#14111C}
+.comp-lbl{display:flex;flex-direction:column;gap:3px}
+.comp-lbl b{font:600 12px/1.4 var(--sans);color:var(--ink)}
+.comp-lbl span{font:400 10.5px/1.45 var(--mono);color:var(--t3)}
+.comp-lbl em{font-style:normal;font:400 10.5px/1.45 var(--sans);color:var(--t4)}
+
+/* 버튼 */
+.b-cta{display:flex;align-items:center;gap:12px;width:350px;height:60px;padding:0 8px;border-radius:999px;background:rgba(255,255,255,.92);border:1px solid #FFF;box-shadow:0 10px 30px rgba(130,110,180,.18)}
+.b-cta .orb{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFFFFF,#FFF2B8 25%,#BDEBD2 55%,#C8B6FF 90%);box-shadow:0 4px 14px rgba(150,130,230,.35);flex:0 0 auto}
+.b-cta .tx{flex:1;font:600 16px/1.2 var(--sans);color:#2A2540}
+.b-cta .go{width:44px;height:44px;border-radius:50%;background:#2A2540;color:#FFF;display:grid;place-items:center;flex:0 0 auto}
+.b-cta .go svg{width:18px;height:18px}
+.b-save{display:flex;align-items:center;justify-content:center;width:350px;height:52px;border-radius:16px;background:#2A2540;color:#FFF;font:500 14.5px/1 var(--sans)}
+.b-cancel{display:flex;align-items:center;justify-content:center;width:350px;height:52px;border-radius:16px;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.9);color:rgba(42,37,64,.66);font:400 14.5px/1 var(--sans)}
+.b-kakao{display:flex;align-items:center;justify-content:center;gap:9px;width:350px;height:56px;border-radius:999px;background:#FEE500;color:#3C1E1E;font:500 15.5px/1 var(--sans);box-shadow:0 18px 34px -22px rgba(120,100,40,.55)}
+.b-kakao svg{width:20px;height:20px}
+.b-share{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:999px;background:rgba(255,255,255,.92);border:1px solid #FFF;box-shadow:0 10px 30px rgba(130,110,180,.18);font:500 14px/1 var(--sans);color:#2A2540}
+.b-share svg{width:16px;height:16px}
+.b-line{display:inline-flex;align-items:center;height:38px;padding:0 18px;border-radius:999px;background:rgba(255,255,255,.30);border:1px solid rgba(255,255,255,.44);font:300 12px/1 var(--sans);color:rgba(42,37,64,.66)}
+.b-line.danger{color:#A8544E}
+.b-disabled{display:flex;align-items:center;justify-content:center;width:350px;height:52px;border-radius:16px;background:rgba(42,37,64,.08);color:rgba(42,37,64,.40);font:400 14.5px/1 var(--sans)}
+
+/* 칩 */
+.chip-row{display:flex;flex-wrap:wrap;gap:7px;width:350px}
+.c-tag{display:inline-flex;align-items:center;padding:9px 14px;border-radius:999px;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.95);font:400 13.5px/1.2 var(--sans);color:rgba(42,37,64,.80)}
+.c-tag.on{background:#2A2540;border-color:#2A2540;color:#FFF;box-shadow:0 12px 22px -18px rgba(42,37,64,.9)}
+.c-mini{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.95);border:1px solid rgba(42,37,64,.06);font:300 11px/1.3 var(--sans);color:rgba(42,37,64,.66)}
+.c-pill{display:inline-flex;align-items:center;padding:8px 13px;border-radius:999px;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.72);font:400 11.5px/1.2 var(--sans);color:#2A2540}
+.c-badge{display:inline-flex;align-items:center;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.95);border:1px solid rgba(42,37,64,.07);font:400 11px/1.3 var(--sans);color:rgba(42,37,64,.66)}
+
+/* 카드 견본 */
+.card-350{width:350px}
+.k-metrics{display:flex;padding:20px 6px;border-radius:28px;background:rgba(255,255,255,.92);border:1px solid #FFF;box-shadow:0 10px 30px rgba(130,110,180,.18)}
+.k-metric{flex:1;text-align:center}
+.k-metric + .k-metric{border-left:1px solid rgba(42,37,64,.09)}
+.k-val{font:400 24px/1.2 var(--serif);color:#2A2540}
+.k-val i{font:400 14px/1.2 var(--sans);font-style:normal;color:#8A84A0;margin-left:2px}
+.k-lbl{display:block;margin-top:6px;font:400 12px/1.4 var(--sans);color:#8A84A0}
+.k-ai{padding:19px 17px;border-radius:22px;border:1.5px solid transparent;background:linear-gradient(#FFF,#FFF) padding-box,linear-gradient(120deg,#C9B3FF,#F2A9C4 50%,#FFC9A0) border-box;box-shadow:0 18px 36px -32px rgba(48,44,74,.5)}
+.k-ai-badge{font:400 10px/1.4 var(--sans);letter-spacing:.18em;color:#8A84A0;margin-bottom:12px}
+.k-ai-label{display:block;font:400 11px/1.4 var(--sans);letter-spacing:.12em;color:#A9A3BC;margin-bottom:8px}
+.k-ai-text{font:300 14px/1.95 var(--sans);color:rgba(42,37,64,.86);word-break:keep-all}
+.k-card{padding:16px;border-radius:20px;background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.95);box-shadow:0 16px 34px -32px rgba(48,44,74,.5)}
+.k-phase{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid rgba(42,37,64,.07)}
+.k-phase:last-child{border-bottom:0}
+.k-dot{width:7px;height:7px;border-radius:50%;margin-top:6px;flex:0 0 auto}
+.k-phase-n{font:400 13.5px/1.3 var(--sans);color:#2A2540}
+.k-phase-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.k-care{padding:20px;border-radius:28px;background:rgba(255,255,255,.88);border:1px solid #FFF;box-shadow:0 10px 30px rgba(130,110,180,.14)}
+.k-care-k{font:600 12.5px/1.4 var(--sans);color:#6B5FA8;margin-bottom:12px}
+.k-care-item{display:flex;gap:12px;padding:12px 0}
+.k-care-item + .k-care-item{border-top:1px solid rgba(42,37,64,.07)}
+.k-care-orb{width:34px;height:34px;border-radius:50%;flex:0 0 auto;background:radial-gradient(circle at 35% 30%,#FFFFFF,#FFF2B8 25%,#BDEBD2 55%,#C8B6FF 90%)}
+.k-care-t{font:600 14.5px/1.35 var(--sans);color:#2A2540}
+.k-care-x{margin-top:4px;font:400 13.5px/1.65 var(--sans);color:#5E5874;word-break:keep-all}
+.k-report-stack{position:relative;display:flex;justify-content:center;align-items:flex-start;padding:10px 0 6px}
+.rs{position:relative;width:104px;padding:15px 12px 14px;border-radius:20px;text-align:left;background:linear-gradient(165deg,rgba(255,255,255,.95),rgba(244,240,250,.9));border:1px solid rgba(255,255,255,.95);box-shadow:0 20px 36px -28px rgba(48,44,74,.55)}
+.rs.c1{transform:rotate(-7deg) translateY(20px);z-index:1;margin-right:-7px}
+.rs.c2{width:112px;transform:rotate(1deg) translateY(-6px);z-index:3;background:linear-gradient(165deg,#FFF,#F1EDF9);box-shadow:0 24px 42px -26px rgba(48,44,74,.6)}
+.rs.c3{transform:rotate(5.5deg) translateY(12px);z-index:2;margin-left:-7px}
+.rs-val{font:400 21px/1.14 var(--serif);letter-spacing:-.03em;color:#2A2540;white-space:nowrap}
+.rs-val i{font:300 11px/1 var(--sans);font-style:normal;color:#8A84A0;margin-left:2px}
+.rs-lbl{margin-top:6px;font:400 11px/1.3 var(--sans);color:#8A84A0;white-space:nowrap}
+.rs-ch{margin-top:4px;font:400 10px/1.3 var(--sans);white-space:nowrap}
+.rs-ch.up{color:#B5715F}.rs-ch.same{color:#A9A3BC}
+
+/* 탭바 · 시트 헤더 */
+.tabbar{display:flex;gap:4px;padding:6px;border-radius:999px;background:rgba(255,255,255,.9);border:1px solid #FFF;box-shadow:0 12px 36px rgba(60,40,110,.22);width:358px}
+.tab-btn{flex:1;height:52px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#8A84A0;background:transparent}
+.tab-btn svg{width:28px;height:28px}
+.tab-btn.on{background:#2A2540;color:#FFF}
+.tabbar-dark{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14)}
+.tabbar-dark .tab-btn{color:rgba(242,238,246,.52)}
+.tabbar-dark .tab-btn.on{background:rgba(255,255,255,.92);color:#16121F}
+.sheet-sample{position:relative;width:390px;border-radius:30px 30px 0 0;background:linear-gradient(180deg,#FCFBFE 0%,#F3F1F7 100%);border-top:1px solid #FFF;padding:12px 20px 20px;box-shadow:0 -24px 60px -24px rgba(48,44,74,.45)}
+.s-grip{width:38px;height:4px;border-radius:4px;background:rgba(42,37,64,.16);margin:0 auto 18px}
+.s-title{font:400 17px/1.4 var(--sans);color:#2A2540;text-align:center}
+.s-sub{margin-top:8px;font:300 12.5px/1.4 var(--sans);color:rgba(42,37,64,.52);text-align:center}
+.s-close{position:absolute;top:14px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(42,37,64,.05);display:grid;place-items:center;color:rgba(42,37,64,.66)}
+.s-close svg{width:15px;height:15px}
+.s-row{display:flex;align-items:center;gap:13px;background:rgba(255,255,255,.95);border:1px solid #FFF;border-radius:18px;padding:15px;box-shadow:0 12px 26px -24px rgba(48,44,74,.5);margin-top:8px}
+.s-row-mk{width:7px;height:7px;border-radius:50%;background:#A294D8;flex:0 0 auto}
+.s-row-mk.coral{background:#E98A78}
+.s-row-body{flex:1;display:flex;flex-direction:column;gap:4px}
+.s-row-t{font:400 15px/1.3 var(--sans);color:#2A2540}
+.s-row-s{font:300 11.5px/1.4 var(--sans);color:rgba(42,37,64,.52)}
+.s-row svg{width:14px;height:14px;color:rgba(42,37,64,.35)}
+
+/* ───────── 화면 프레임 ───────── */
+.screens-row{display:flex;gap:26px;align-items:flex-start}
+.frame-wrap{width:390px;display:flex;flex-direction:column;gap:12px}
+.frame-cap{display:flex;flex-direction:column;gap:3px;min-height:44px}
+.frame-cap b{font:600 13.5px/1.4 var(--sans);color:var(--ink)}
+.frame-cap span{font:400 10.5px/1.55 var(--mono);color:var(--t3)}
+.ph{position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;background:#F6F3FA;box-shadow:0 30px 60px -34px rgba(60,54,92,.45),0 0 0 1px rgba(42,37,64,.07)}
+.ph-bgx{position:absolute;inset:0}
+.ph-col{position:relative;height:100%;display:flex;flex-direction:column}
+
+/* 홈 */
+.hm-top{position:relative;display:flex;align-items:center;justify-content:space-between;height:44px;margin:10px 20px 0}
+.hm-ib{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.85);border:1px solid #FFF;box-shadow:0 10px 30px rgba(130,110,180,.16);display:grid;place-items:center;color:#2A2540}
+.hm-ib svg{width:20px;height:20px}
+.hm-brand{position:absolute;left:0;right:0;text-align:center;font:400 17px/1.3 var(--serif);color:#6B5FA8}
+.mode-toggle{display:flex;gap:2px;padding:4px;border-radius:999px;background:rgba(255,255,255,.85);border:1px solid #FFF;box-shadow:0 10px 30px rgba(130,110,180,.16)}
+.mt-btn{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#8A84A0}
+.mt-btn svg{width:15px;height:15px}
+.mt-btn.on{background:#2A2540;color:#FFF}
+.hm-hero{position:relative;height:290px;margin-top:6px}
+.hm-shape{position:absolute;right:0;top:-40px;width:390px;height:400px;object-fit:contain}
+.hm-text{position:absolute;left:28px;top:44px;right:28px}
+.hm-date{font:400 12.5px/1.5 var(--sans);color:#8A84A0}
+.hm-season{margin-top:12px;font:400 64px/1.05 var(--serif);letter-spacing:-.02em;color:#2A2540}
+.hm-next{margin-top:12px;display:flex;flex-direction:column}
+.hm-next-k{font:400 12.5px/1.4 var(--sans);color:#8A84A0}
+.hm-next-d{margin-top:4px;font:400 24px/1.3 var(--serif);color:#2A2540}
+.hm-next-l{margin-top:2px;font:400 13px/1.4 var(--sans);color:#5E5874}
+.hm-prog{margin:26px 30px 0}
+.cp-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;font:400 13px/1.4 var(--sans);color:#5E5874}
+.cp-head b{color:#2A2540;font-weight:700}
+.cp-head .r{font-size:12.5px;color:#8A84A0}
+.cp-track{position:relative;height:6px;display:flex;gap:4px}
+.cp-seg{height:6px;border-radius:3px;display:block}
+.cp-w{background:#C9D8FA}.cp-sp{background:#BFE8CF}.cp-su{background:#FFD7B5}.cp-au{background:#E6D2F7}
+.cp-fill{position:absolute;left:0;top:0;height:6px;border-radius:3px;background:linear-gradient(90deg,#9DB6F2,#8FD6AE)}
+.cp-knob{position:absolute;top:-7px;width:20px;height:20px;margin-left:-10px;border-radius:50%;background:#FFF;box-shadow:0 0 0 4px rgba(143,214,174,.35),0 4px 10px rgba(40,30,80,.25)}
+.cp-labs{display:flex;margin-top:12px}
+.cp-lab{text-align:center;font:400 11px/1.4 var(--sans);color:#A9A3BC}
+.cp-lab.on{color:#2A2540;font-weight:600}
+.hm-cta{display:flex;align-items:center;gap:12px;height:60px;padding:0 8px;margin:24px 20px 0;border-radius:999px;background:rgba(255,255,255,.85);border:1px solid #FFF;box-shadow:0 10px 30px rgba(130,110,180,.18)}
+.hm-cta .orb{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFFFFF,#FFF2B8 25%,#BDEBD2 55%,#C8B6FF 90%);box-shadow:0 4px 14px rgba(150,130,230,.35);flex:0 0 auto}
+.hm-cta .tx{flex:1;font:600 16px/1.2 var(--sans);color:#2A2540}
+.hm-cta .go{width:44px;height:44px;border-radius:50%;background:#2A2540;color:#FFF;display:grid;place-items:center;flex:0 0 auto}
+.hm-cta .go svg{width:18px;height:18px}
+.hm-week{display:flex;justify-content:center;margin-top:24px}
+.wk{width:46px;text-align:center;padding:10px 0;border-radius:999px}
+.wk-w{display:block;font:400 11px/1.3 var(--sans);color:#A9A3BC}
+.wk-d{display:block;margin-top:6px;font:500 15px/1.2 var(--sans);color:#5E5874;font-variant-numeric:tabular-nums}
+.wk i{display:block;width:5px;height:5px;border-radius:50%;margin:7px auto 0;background:transparent}
+.wk.today{background:#2A2540}
+.wk.today .wk-w,.wk.today .wk-d{color:#FFF}
+.wk.today .wk-d{font-weight:600}
+.hm-metrics{display:flex;margin:26px 20px 0;padding:20px 6px;border-radius:28px;background:rgba(255,255,255,.85);border:1px solid #FFF;box-shadow:0 10px 30px rgba(130,110,180,.16)}
+.hm-metric{flex:1;text-align:center}
+.hm-metric + .hm-metric{border-left:1px solid rgba(42,37,64,.09)}
+.gm-val{font:400 24px/1.2 var(--serif);color:#2A2540}
+.gm-val i{font:400 14px/1.2 var(--sans);font-style:normal;color:#8A84A0;margin-left:2px}
+.gm-label{display:block;margin-top:6px;font:400 12px/1.4 var(--sans);color:#8A84A0}
+.ph-tab{position:absolute;left:16px;right:16px;bottom:10px}
+
+/* 달력 */
+.cal-bar{height:44px;display:flex;align-items:center;justify-content:center;margin-top:10px}
+.sub-title{font:400 20px/1.3 var(--serif);color:#2A2540;letter-spacing:-.01em}
+.cal-sub{text-align:center;padding:12px 22px 0;font:300 12.5px/1.5 var(--sans);color:rgba(42,37,64,.52);letter-spacing:.02em}
+.legend{display:flex;justify-content:center;gap:13px;padding:14px 0 0}
+.legend-item{display:flex;align-items:center;gap:6px;font:400 11.5px/1.4 var(--sans);color:rgba(42,37,64,.66)}
+.lg-dot{width:6px;height:6px;border-radius:50%}
+.cal-wrap{padding:14px 18px 0}
+.cal-month{margin-bottom:24px}
+.cal-month-t{font:300 12.5px/1.4 var(--sans);letter-spacing:.14em;color:rgba(42,37,64,.66);padding:0 6px 10px}
+.cal-grid{background:rgba(255,255,255,.72);border:1px solid #FFF;border-radius:24px;padding:16px 10px 18px;box-shadow:0 20px 40px -32px rgba(58,50,92,.5)}
+.day-labels{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:6px}
+.day-label{text-align:center;font:400 11.5px/1.4 var(--sans);color:rgba(42,37,64,.52);letter-spacing:.06em}
+.day-label.sun{color:#E98A78}
+.days{display:grid;grid-template-columns:repeat(7,1fr);row-gap:2px}
+.day{position:relative;height:46px;display:flex;align-items:center;justify-content:center;font:400 14.5px/1 var(--sans);color:rgba(42,37,64,.80);border-radius:50%;font-variant-numeric:tabular-nums}
+.day.period{background:linear-gradient(150deg,#EE9C8E,#E07C72);color:#FFF;font-weight:500}
+.day.predicted{background:rgba(238,158,168,.42)}
+.day.ovulation{background:rgba(239,177,131,.62);font-weight:500}
+.day.ovp{background:rgba(239,177,131,.34)}
+.day.fertile::after,.day.fertilep::after{content:'';position:absolute;bottom:5px;width:3.5px;height:3.5px;border-radius:50%}
+.day.fertile::after{background:#A294D8}
+.day.fertilep::after{background:rgba(162,148,216,.45)}
+.day.today{background:#FFF;font-weight:500;box-shadow:0 8px 18px -12px rgba(58,50,92,.7)}
+.day.today::after{background:transparent}
+
+/* 시트(기록 · 리포트) */
+.ph-dim{position:absolute;inset:0;background:rgba(56,58,82,.26)}
+.ph-sheet{position:absolute;left:0;right:0;bottom:0;border-radius:30px 30px 0 0;background:linear-gradient(180deg,#FCFBFE 0%,#F3F1F7 100%);border-top:1px solid #FFF;box-shadow:0 -24px 60px -24px rgba(48,44,74,.45);display:flex;flex-direction:column;overflow:hidden}
+.lg-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:24px 20px 12px}
+.lg-title{font:400 17.5px/1.35 var(--sans);color:#2A2540}
+.lg-date{margin-top:7px;font:400 11.5px/1.4 var(--sans);color:rgba(42,37,64,.52);letter-spacing:.04em}
+.lg-close{width:36px;height:36px;border-radius:50%;background:rgba(42,37,64,.05);display:grid;place-items:center;color:rgba(42,37,64,.66);flex:0 0 auto}
+.lg-close svg{width:15px;height:15px}
+.lg-scroll{padding:4px 20px 0;display:flex;flex-direction:column;overflow:hidden}
+.lg-sec{margin-bottom:20px}
+.lg-sec-t{font:400 11.5px/1.4 var(--sans);letter-spacing:.12em;color:rgba(42,37,64,.52);margin-bottom:12px}
+.mood{position:relative;width:350px;height:202px}
+.mood svg{position:absolute;left:0;top:0;width:350px;height:202px}
+.mood-chip{position:absolute;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;font:400 10.5px/1.3 var(--sans);letter-spacing:-.01em;color:rgba(42,37,64,.80);background:rgba(255,255,255,.95);border:1px solid #FFF;box-shadow:0 9px 18px -14px rgba(48,44,74,.55);padding:0 3px}
+.mood-chip span{display:block;width:100%;word-break:keep-all}
+.mood-chip.on{background:#2A2540;border-color:#2A2540;color:#FFF;box-shadow:0 12px 24px -16px rgba(42,37,64,.85)}
+.star-row{display:flex;align-items:center;gap:8px}
+.star{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.95);display:grid;place-items:center}
+.star svg{width:19px;height:19px;fill:transparent;stroke:rgba(233,138,120,.75);stroke-width:1.3}
+.star.on svg{fill:#E98A78;stroke:#E98A78}
+.star-hint{font:300 11px/1.4 var(--sans);color:rgba(42,37,64,.40);margin-left:2px}
+.lg-tags{display:flex;flex-wrap:wrap;gap:7px}
+.lg-tag{display:inline-flex;align-items:center;padding:9px 14px;border-radius:999px;background:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.95);font:400 13.5px/1.2 var(--sans);color:rgba(42,37,64,.80)}
+.lg-tag.on{background:#2A2540;border-color:#2A2540;color:#FFF}
+.sleep-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.sleep-lbl{font:400 11px/1.4 var(--sans);color:rgba(42,37,64,.52);margin-bottom:8px;letter-spacing:.04em}
+.sleep-in{width:96px;height:42px;border-radius:13px;background:rgba(255,255,255,.9);border:1px solid rgba(42,37,64,.10);display:flex;align-items:center;padding:0 12px;font:400 15px/1 var(--sans);color:#2A2540}
+.lg-actions{display:flex;gap:9px;padding:14px 20px 18px;margin-top:auto;border-top:1px solid rgba(42,37,64,.05);flex:0 0 auto}
+.lg-cancel,.lg-save{flex:1;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font:400 14.5px/1 var(--sans)}
+.lg-cancel{background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.9);color:rgba(42,37,64,.66)}
+.lg-save{background:#2A2540;color:#FFF;font-weight:500}
+
+/* 리포트 */
+.rp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:26px 20px 16px}
+.rp-label{font:400 10.5px/1.4 var(--sans);letter-spacing:.2em;color:rgba(42,37,64,.40)}
+.rp-title{margin-top:9px;font:400 20px/1.3 var(--serif);color:#2A2540}
+.rp-sub{margin-top:7px;font:300 11.5px/1.4 var(--sans);color:rgba(42,37,64,.52)}
+.rp-body{padding:0 20px 20px;display:flex;flex-direction:column}
+.rp-sec{margin-top:22px}
+.rp-sec-t{font:400 11px/1.4 var(--sans);letter-spacing:.12em;color:rgba(42,37,64,.40);margin-bottom:12px}
+.rp-ai{padding:19px 17px;border-radius:22px;border:1.5px solid transparent;background:linear-gradient(#FFF,#FFF) padding-box,linear-gradient(120deg,#C9B3FF,#F2A9C4 50%,#FFC9A0) border-box;box-shadow:0 18px 36px -32px rgba(48,44,74,.5);margin-top:4px}
+.rp-ai-badge{font:400 10px/1.4 var(--sans);letter-spacing:.18em;color:rgba(42,37,64,.52);margin-bottom:12px}
+.rp-ai-label{display:block;font:400 11px/1.4 var(--sans);letter-spacing:.12em;color:rgba(42,37,64,.40);margin-bottom:8px}
+.rp-ai-text{font:300 14px/1.95 var(--sans);color:rgba(42,37,64,.86);word-break:keep-all}
+.rp-ai-enc{margin-top:14px;padding-top:13px;border-top:1px solid rgba(42,37,64,.08);font:400 14px/1.9 var(--sans);color:#2A2540;word-break:keep-all}
+.rp-stack{display:flex;justify-content:center;align-items:flex-start;padding:6px 0 2px}
+.rp-foot{margin-top:14px;text-align:right;font:300 11px/1.4 var(--sans);color:rgba(42,37,64,.52)}
+.rp-foot b{font-weight:500;color:rgba(42,37,64,.80);margin:0 5px}
+.rp-card{padding:16px;border-radius:20px;background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.95);box-shadow:0 16px 34px -32px rgba(48,44,74,.5)}
+.rp-phase{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid rgba(42,37,64,.07)}
+.rp-phase:last-child{border-bottom:0}
+.rp-phase-info{flex:1}
+.rp-phase-n{font:400 13.5px/1.3 var(--sans);color:#2A2540}
+.rp-phase-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.rp-phase-tag{font:300 11px/1.3 var(--sans);color:rgba(42,37,64,.66);background:rgba(255,255,255,.95);border:1px solid rgba(42,37,64,.06);border-radius:999px;padding:4px 9px}
+
+/* 공유 뷰 */
+.sv{position:relative;height:100%;display:flex;flex-direction:column;padding:16px 20px 24px}
+.sv-brand{text-align:center;font:400 17px/1.3 var(--serif);color:#6B5FA8}
+.sv-hero{position:relative;height:250px}
+.sv-shape{position:absolute;right:-30px;top:-40px;width:390px;height:400px;object-fit:contain}
+.sv-hero-tx{position:absolute;left:6px;top:110px}
+.sv-name{font:400 14px/1.4 var(--sans);color:#5E5874}
+.sv-season{margin-top:6px;font:400 52px/1.1 var(--serif);color:#2A2540}
+.sv-day{display:inline-flex;align-items:center;margin-top:10px;height:28px;padding:0 12px;border-radius:999px;font:600 12.5px/1 var(--sans);color:#6B5FA8;background:rgba(255,255,255,.88);border:1px solid #FFF}
+.sv-card{margin-top:12px;padding:20px;border-radius:28px;background:rgba(255,255,255,.85);border:1px solid #FFF;box-shadow:0 10px 30px rgba(130,110,180,.14)}
+.sv-k{font:600 12.5px/1.4 var(--sans);color:#6B5FA8;margin-bottom:12px}
+.sv-insight{margin:0;font:400 17px/1.7 var(--serif);color:#2A2540;word-break:keep-all}
+.sv-tags{display:flex;flex-wrap:wrap;gap:8px}
+.sv-tag{display:inline-flex;align-items:center;height:34px;padding:0 14px;border-radius:999px;background:#FFF;border:1px solid #EFEAF6;font:400 13.5px/1 var(--sans);color:#2A2540}
+.sv-care{display:flex;gap:12px;padding:12px 0}
+.sv-care + .sv-care{border-top:1px solid rgba(42,37,64,.07)}
+.sv-orb{width:34px;height:34px;border-radius:50%;flex:0 0 auto;background:radial-gradient(circle at 35% 30%,#FFFFFF,#FFF2B8 25%,#BDEBD2 55%,#C8B6FF 90%)}
+.sv-care-t{font:600 14.5px/1.35 var(--sans);color:#2A2540}
+.sv-care-x{margin-top:4px;font:400 13.5px/1.65 var(--sans);color:#5E5874;word-break:keep-all}
+.sv-cta{display:flex;align-items:center;gap:12px;height:60px;padding:0 8px;margin-top:22px;border-radius:999px;background:rgba(255,255,255,.92);border:1px solid #FFF;box-shadow:0 12px 30px rgba(130,110,180,.2)}
+.sv-cta .orb{width:44px;height:44px;border-radius:50%;flex:0 0 auto;background:radial-gradient(circle at 35% 30%,#FFFFFF,#FFF2B8 25%,#BDEBD2 55%,#C8B6FF 90%)}
+.sv-cta .tx{flex:1;font:600 16px/1.2 var(--sans);color:#2A2540}
+.sv-cta .go{width:44px;height:44px;border-radius:50%;background:#2A2540;color:#FFF;display:grid;place-items:center;flex:0 0 auto}
+.sv-cta .go svg{width:18px;height:18px}
+.sv-foot{margin-top:14px;text-align:center;font:400 12.5px/1.5 var(--sans);color:#8A84A0}
+
+/* 사용법 · 푸터 */
+.how{width:1360px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.how-card{display:flex;flex-direction:column;gap:8px;padding:22px 24px;border-radius:18px;background:var(--paper);border:1px solid var(--line)}
+.how-n{font:400 12px/1 var(--mono);color:var(--spring-accent)}
+.how-t{font:600 14px/1.4 var(--sans);color:var(--ink)}
+.how-x{font:400 12.5px/1.75 var(--sans);color:var(--t2);word-break:keep-all}
+.foot{width:1360px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:18px;font:400 11.5px/1.6 var(--mono);color:var(--t3)}
+
+/* 앱 배경(계절 안개) */
+.bgx-light-winter{background:radial-gradient(70% 45% at 8% 4%,#DCE5FB,rgba(0,0,0,0) 70%),radial-gradient(70% 40% at 100% 48%,#EAF1FF,rgba(0,0,0,0) 70%),radial-gradient(70% 40% at 0% 82%,#E3E9F8,rgba(0,0,0,0) 70%),radial-gradient(60% 35% at 100% 100%,#F0F4FF,rgba(0,0,0,0) 70%),#F6F3FA}
+.bgx-light-spring{background:radial-gradient(70% 45% at 8% 4%,#E3D9FA,rgba(0,0,0,0) 70%),radial-gradient(70% 40% at 100% 48%,#D9F2E3,rgba(0,0,0,0) 70%),radial-gradient(70% 40% at 0% 82%,#FFF0C9,rgba(0,0,0,0) 70%),radial-gradient(60% 35% at 100% 100%,#F9DDEA,rgba(0,0,0,0) 70%),#F6F3FA}
+.bgx-light-summer{background:radial-gradient(70% 45% at 8% 4%,#FFE3D3,rgba(0,0,0,0) 70%),radial-gradient(70% 40% at 100% 48%,#FFF0D2,rgba(0,0,0,0) 70%),radial-gradient(70% 40% at 0% 82%,#FFDCCB,rgba(0,0,0,0) 70%),radial-gradient(60% 35% at 100% 100%,#FFEBDD,rgba(0,0,0,0) 70%),#F6F3FA}
+.bgx-light-autumn{background:radial-gradient(70% 45% at 8% 4%,#EEDFFA,rgba(0,0,0,0) 70%),radial-gradient(70% 40% at 100% 48%,#FBE1EC,rgba(0,0,0,0) 70%),radial-gradient(70% 40% at 0% 82%,#FFE7DA,rgba(0,0,0,0) 70%),radial-gradient(60% 35% at 100% 100%,#F3E3F8,rgba(0,0,0,0) 70%),#F6F3FA}
+.bgx-light-none{background:radial-gradient(70% 45% at 8% 4%,#FBE0EC,rgba(0,0,0,0) 70%),radial-gradient(70% 40% at 100% 48%,#FFEFF5,rgba(0,0,0,0) 70%),radial-gradient(70% 40% at 0% 82%,#F1E4FA,rgba(0,0,0,0) 70%),radial-gradient(60% 35% at 100% 100%,#FFE9F0,rgba(0,0,0,0) 70%),#F6F3FA}
+.bgx-dark-winter{background:radial-gradient(80% 45% at 0% 70%,rgba(26,36,144,.60),rgba(0,0,0,0) 70%),radial-gradient(70% 40% at 100% 100%,rgba(61,155,255,.18),rgba(0,0,0,0) 70%),#06081A}
+.bgx-dark-spring{background:radial-gradient(80% 45% at 0% 70%,rgba(31,90,42,.60),rgba(0,0,0,0) 70%),radial-gradient(70% 40% at 100% 100%,rgba(139,61,255,.18),rgba(0,0,0,0) 70%),#070C06}
+.bgx-dark-summer{background:radial-gradient(80% 45% at 0% 70%,rgba(122,20,8,.60),rgba(0,0,0,0) 70%),radial-gradient(70% 40% at 100% 100%,rgba(255,177,58,.18),rgba(0,0,0,0) 70%),#0E0504}
+.bgx-dark-autumn{background:radial-gradient(80% 45% at 0% 70%,rgba(58,15,102,.60),rgba(0,0,0,0) 70%),radial-gradient(70% 40% at 100% 100%,rgba(224,69,123,.18),rgba(0,0,0,0) 70%),#0D0610}
+.bgx-dark-none{background:radial-gradient(80% 45% at 0% 70%,rgba(90,34,56,.60),rgba(0,0,0,0) 70%),radial-gradient(70% 40% at 100% 100%,rgba(111,168,255,.18),rgba(0,0,0,0) 70%),#110A0F}
+
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="head">
+    <div class="eyebrow">달의 기록 · DESIGN SYSTEM</div>
+    <h1 class="title">달의 기록 — 계절 테마 디자인 시스템</h1>
+    <p class="lead">라이브 코드(styles/main.css · js/theme.js · js/share.js)의 실제 토큰과 컴포넌트를 그대로 옮긴 페이지입니다.
+      html.to.design 플러그인으로 이 URL을 불러오면 Figma에서 바로 수정할 수 있는 프레임이 됩니다.
+      색·타이포·라운딩 값은 모두 CSS 변수 이름과 함께 적어 두었으니, Figma 스타일을 만들 때 그대로 옮겨 쓰면 됩니다.</p>
+    <div class="meta">
+      <span class="chip"><b>기준</b> origin/main · b1fe409</span>
+      <span class="chip code">/design-system/</span>
+      <span class="chip"><b>테마</b> light / dark × winter · spring · summer · autumn · none</span>
+      <span class="chip"><b>프레임</b> 390×844 (iPhone 14) · iOS 상태바·홈 인디케이터 제외</span>
+      <span class="chip"><b>폰트</b> Pretendard · Gowun Batang</span>
+    </div>
+  </header>
+
+  <section class="section" id="foundations">
+    <div class="sec-head"><div class="sec-no">01</div>
+      <div class="sec-tx"><h2 class="sec-title">Foundations</h2>
+        <p class="sec-desc">색은 <b>계절 × 모드</b>로만 바뀌고, 글자·레이아웃·생리일(주황)·가임기(보라) 표시는 고정입니다.
+          라이브에서는 <span style="font-family:var(--mono)">html[data-season][data-mode]</span> 속성이 CSS 변수를 갈아끼웁니다.</p>
+      </div></div>
+
+    <div class="block"><div class="block-h"><h3>1.1 컬러 · 코어 (라이트 / 다크)</h3><span class="cls">:root · html[data-mode="dark"]</span></div>
+      <div class="pal pal-core"><div class="pal-row pal-head"><div class="pal-label">토큰</div><div class="pal-label-cell">라이트 (data-mode="light")</div><div class="pal-label-cell">다크 (data-mode="dark")</div><div class="pal-use">쓰임</div></div><div class="pal-row"><div class="pal-label"><b>앱 배경</b><span>--bg</span></div><div class="pal-cell"><div class="pal-chip" style="background:#F6F3FA"></div><span class="pal-hex">#F6F3FA</span></div><div class="pal-cell"><div class="pal-chip" style="background:#110A0F"></div><span class="pal-hex">#110A0F</span></div><div class="pal-use">body/.app 바탕</div></div><div class="pal-row"><div class="pal-label"><b>기본 텍스트</b><span>--t1</span></div><div class="pal-cell"><div class="pal-chip" style="background:#2A2540"></div><span class="pal-hex">#2A2540</span></div><div class="pal-cell"><div class="pal-chip" style="background:#F2EEF6"></div><span class="pal-hex">#F2EEF6</span></div><div class="pal-use">제목·본문 강조</div></div><div class="pal-row"><div class="pal-label"><b>보조 텍스트</b><span>--t2</span></div><div class="pal-cell"><div class="pal-chip" style="background:#5E5874"></div><span class="pal-hex">#5E5874</span></div><div class="pal-cell"><div class="pal-chip" style="background:#CFC8DC"></div><span class="pal-hex">#CFC8DC</span></div><div class="pal-use">본문·라벨</div></div><div class="pal-row"><div class="pal-label"><b>약한 텍스트</b><span>--t3</span></div><div class="pal-cell"><div class="pal-chip" style="background:#8A84A0"></div><span class="pal-hex">#8A84A0</span></div><div class="pal-cell"><div class="pal-chip" style="background:#9C95AD"></div><span class="pal-hex">#9C95AD</span></div><div class="pal-use">메타·설명</div></div><div class="pal-row"><div class="pal-label"><b>가장 약한 텍스트</b><span>--t4</span></div><div class="pal-cell"><div class="pal-chip" style="background:#A9A3BC"></div><span class="pal-hex">#A9A3BC</span></div><div class="pal-cell"><div class="pal-chip" style="background:#7E7790"></div><span class="pal-hex">#7E7790</span></div><div class="pal-use">비활성·축</div></div><div class="pal-row"><div class="pal-label"><b>표면(카드)</b><span>--surf</span></div><div class="pal-cell"><div class="pal-chip" style="background:rgba(255,255,255,.85)"></div><span class="pal-hex">rgba(255,255,255,.85)</span></div><div class="pal-cell"><div class="pal-chip" style="background:rgba(255,255,255,.08)"></div><span class="pal-hex">rgba(255,255,255,.08)</span></div><div class="pal-use">카드·칩 바탕</div></div><div class="pal-row"><div class="pal-label"><b>표면 테두리</b><span>--surf-line</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFFFFF"></div><span class="pal-hex">#FFFFFF</span></div><div class="pal-cell"><div class="pal-chip" style="background:rgba(255,255,255,.14)"></div><span class="pal-hex">rgba(255,255,255,.14)</span></div><div class="pal-use">카드 1px 테두리</div></div><div class="pal-row"><div class="pal-label"><b>불투명 표면</b><span>--surf-solid</span></div><div class="pal-cell"><div class="pal-chip" style="background:rgba(255,255,255,.94)"></div><span class="pal-hex">rgba(255,255,255,.94)</span></div><div class="pal-cell"><div class="pal-chip" style="background:#1A1622"></div><span class="pal-hex">#1A1622</span></div><div class="pal-use">리포트 띠·아이콘 컷</div></div><div class="pal-row"><div class="pal-label"><b>강조 채움</b><span>--strong</span></div><div class="pal-cell"><div class="pal-chip" style="background:#2A2540"></div><span class="pal-hex">#2A2540</span></div><div class="pal-cell"><div class="pal-chip" style="background:rgba(255,255,255,.92)"></div><span class="pal-hex">rgba(255,255,255,.92)</span></div><div class="pal-use">선택 칩·활성 탭</div></div><div class="pal-row"><div class="pal-label"><b>강조 위 텍스트</b><span>--on-strong</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFFFFF"></div><span class="pal-hex">#FFFFFF</span></div><div class="pal-cell"><div class="pal-chip" style="background:#16121F"></div><span class="pal-hex">#16121F</span></div><div class="pal-use">강조 채움 위 글자</div></div></div>
+      <p class="block-note">표면(--surf)과 테두리(--surf-line)는 라이트에서 흰색 85% + 흰 1px, 다크에서 흰색 8% + 14%로 뒤집힙니다.
+        강조 채움(--strong)과 그 위 글자(--on-strong)도 모드에 따라 반대가 됩니다.</p>
+    </div>
+
+    <div class="block"><div class="block-h"><h3>1.2 계절 팔레트 · 라이트</h3><span class="cls">html[data-mode="light"][data-season="…"]</span></div>
+      <div class="pal pal-season"><div class="pal-row pal-head"><div class="pal-label">토큰</div><div class="pal-label-cell">겨울 <i>생리기 1–6일</i></div><div class="pal-label-cell">봄 <i>여포기 7–13일</i></div><div class="pal-label-cell">여름 <i>배란기 14–18일</i></div><div class="pal-label-cell">가을 <i>황체기 19–28일</i></div></div><div class="pal-row"><div class="pal-label"><b>안개 1 · 좌상단</b><span>--b1</span></div><div class="pal-cell"><div class="pal-chip" style="background:#DCE5FB"></div><span class="pal-hex">#DCE5FB</span></div><div class="pal-cell"><div class="pal-chip" style="background:#E3D9FA"></div><span class="pal-hex">#E3D9FA</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFE3D3"></div><span class="pal-hex">#FFE3D3</span></div><div class="pal-cell"><div class="pal-chip" style="background:#EEDFFA"></div><span class="pal-hex">#EEDFFA</span></div></div><div class="pal-row"><div class="pal-label"><b>안개 2 · 우중단</b><span>--b2</span></div><div class="pal-cell"><div class="pal-chip" style="background:#EAF1FF"></div><span class="pal-hex">#EAF1FF</span></div><div class="pal-cell"><div class="pal-chip" style="background:#D9F2E3"></div><span class="pal-hex">#D9F2E3</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFF0D2"></div><span class="pal-hex">#FFF0D2</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FBE1EC"></div><span class="pal-hex">#FBE1EC</span></div></div><div class="pal-row"><div class="pal-label"><b>안개 3 · 좌하단</b><span>--b3</span></div><div class="pal-cell"><div class="pal-chip" style="background:#E3E9F8"></div><span class="pal-hex">#E3E9F8</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFF0C9"></div><span class="pal-hex">#FFF0C9</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFDCCB"></div><span class="pal-hex">#FFDCCB</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFE7DA"></div><span class="pal-hex">#FFE7DA</span></div></div><div class="pal-row"><div class="pal-label"><b>안개 4 · 우하단</b><span>--b4</span></div><div class="pal-cell"><div class="pal-chip" style="background:#F0F4FF"></div><span class="pal-hex">#F0F4FF</span></div><div class="pal-cell"><div class="pal-chip" style="background:#F9DDEA"></div><span class="pal-hex">#F9DDEA</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFEBDD"></div><span class="pal-hex">#FFEBDD</span></div><div class="pal-cell"><div class="pal-chip" style="background:#F3E3F8"></div><span class="pal-hex">#F3E3F8</span></div></div><div class="pal-row"><div class="pal-label"><b>포인트 (브랜드·킥커)</b><span>--accent</span></div><div class="pal-cell"><div class="pal-chip" style="background:#5B76C4"></div><span class="pal-hex">#5B76C4</span></div><div class="pal-cell"><div class="pal-chip" style="background:#6B5FA8"></div><span class="pal-hex">#6B5FA8</span></div><div class="pal-cell"><div class="pal-chip" style="background:#C9663A"></div><span class="pal-hex">#C9663A</span></div><div class="pal-cell"><div class="pal-chip" style="background:#9358C4"></div><span class="pal-hex">#9358C4</span></div></div><div class="pal-row"><div class="pal-label"><b>진행바 시작</b><span>--fill-a</span></div><div class="pal-cell"><div class="pal-chip" style="background:#B9CBF5"></div><span class="pal-hex">#B9CBF5</span></div><div class="pal-cell"><div class="pal-chip" style="background:#9DB6F2"></div><span class="pal-hex">#9DB6F2</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFC29E"></div><span class="pal-hex">#FFC29E</span></div><div class="pal-cell"><div class="pal-chip" style="background:#D4B5F2"></div><span class="pal-hex">#D4B5F2</span></div></div><div class="pal-row"><div class="pal-label"><b>진행바 끝</b><span>--fill-b</span></div><div class="pal-cell"><div class="pal-chip" style="background:#8DA9EC"></div><span class="pal-hex">#8DA9EC</span></div><div class="pal-cell"><div class="pal-chip" style="background:#8FD6AE"></div><span class="pal-hex">#8FD6AE</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FF9F7A"></div><span class="pal-hex">#FF9F7A</span></div><div class="pal-cell"><div class="pal-chip" style="background:#F2A9C4"></div><span class="pal-hex">#F2A9C4</span></div></div><div class="pal-row"><div class="pal-label"><b>진행 노브 링</b><span>--ring</span></div><div class="pal-cell"><div class="pal-chip" style="background:#8DA9EC"></div><span class="pal-hex">#8DA9EC</span></div><div class="pal-cell"><div class="pal-chip" style="background:#8FD6AE"></div><span class="pal-hex">#8FD6AE</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FF9F7A"></div><span class="pal-hex">#FF9F7A</span></div><div class="pal-cell"><div class="pal-chip" style="background:#E7A3C8"></div><span class="pal-hex">#E7A3C8</span></div></div><div class="pal-row"><div class="pal-label"><b>오늘의 질문 도트</b><span>--qdot</span></div><div class="pal-cell"><div class="pal-chip" style="background:#8DA9EC"></div><span class="pal-hex">#8DA9EC</span></div><div class="pal-cell"><div class="pal-chip" style="background:#8FD6AE"></div><span class="pal-hex">#8FD6AE</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFAA80"></div><span class="pal-hex">#FFAA80</span></div><div class="pal-cell"><div class="pal-chip" style="background:#E7A3C8"></div><span class="pal-hex">#E7A3C8</span></div></div></div>
+      <p class="block-note">라이트에서 배경(--bg)은 계절과 무관하게 #F6F3FA 하나입니다. 계절은 네 개의 안개색(--b1~--b4)을
+        앱 배경 radial-gradient 네 모서리에 깔아 만듭니다. 포인트(--accent)는 브랜드 글자·킥커·강조 라벨에만 씁니다.</p>
+    </div>
+
+    <div class="block"><div class="block-h"><h3>1.3 계절 팔레트 · 다크</h3><span class="cls">html[data-mode="dark"][data-season="…"]</span></div>
+      <div class="pal pal-season pal-darkset"><div class="pal-row pal-head"><div class="pal-label">토큰</div><div class="pal-label-cell">겨울 <i>생리기 1–6일</i></div><div class="pal-label-cell">봄 <i>여포기 7–13일</i></div><div class="pal-label-cell">여름 <i>배란기 14–18일</i></div><div class="pal-label-cell">가을 <i>황체기 19–28일</i></div></div><div class="pal-row"><div class="pal-label"><b>앱 배경</b><span>--bg</span></div><div class="pal-cell"><div class="pal-chip" style="background:#06081A"></div><span class="pal-hex">#06081A</span></div><div class="pal-cell"><div class="pal-chip" style="background:#070C06"></div><span class="pal-hex">#070C06</span></div><div class="pal-cell"><div class="pal-chip" style="background:#0E0504"></div><span class="pal-hex">#0E0504</span></div><div class="pal-cell"><div class="pal-chip" style="background:#0D0610"></div><span class="pal-hex">#0D0610</span></div></div><div class="pal-row"><div class="pal-label"><b>안개 1 · 좌하단</b><span>--b1</span></div><div class="pal-cell"><div class="pal-chip" style="background:#1A2490"></div><span class="pal-hex">#1A2490</span></div><div class="pal-cell"><div class="pal-chip" style="background:#1F5A2A"></div><span class="pal-hex">#1F5A2A</span></div><div class="pal-cell"><div class="pal-chip" style="background:#7A1408"></div><span class="pal-hex">#7A1408</span></div><div class="pal-cell"><div class="pal-chip" style="background:#3A0F66"></div><span class="pal-hex">#3A0F66</span></div></div><div class="pal-row"><div class="pal-label"><b>안개 2 · 우하단</b><span>--b2</span></div><div class="pal-cell"><div class="pal-chip" style="background:#3D9BFF"></div><span class="pal-hex">#3D9BFF</span></div><div class="pal-cell"><div class="pal-chip" style="background:#8B3DFF"></div><span class="pal-hex">#8B3DFF</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFB13A"></div><span class="pal-hex">#FFB13A</span></div><div class="pal-cell"><div class="pal-chip" style="background:#E0457B"></div><span class="pal-hex">#E0457B</span></div></div><div class="pal-row"><div class="pal-label"><b>안개 3</b><span>--b3</span></div><div class="pal-cell"><div class="pal-chip" style="background:#1A2490"></div><span class="pal-hex">#1A2490</span></div><div class="pal-cell"><div class="pal-chip" style="background:#1F5A2A"></div><span class="pal-hex">#1F5A2A</span></div><div class="pal-cell"><div class="pal-chip" style="background:#7A1408"></div><span class="pal-hex">#7A1408</span></div><div class="pal-cell"><div class="pal-chip" style="background:#3A0F66"></div><span class="pal-hex">#3A0F66</span></div></div><div class="pal-row"><div class="pal-label"><b>안개 4</b><span>--b4</span></div><div class="pal-cell"><div class="pal-chip" style="background:#3D5BFF"></div><span class="pal-hex">#3D5BFF</span></div><div class="pal-cell"><div class="pal-chip" style="background:#5BE37D"></div><span class="pal-hex">#5BE37D</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FF3B1F"></div><span class="pal-hex">#FF3B1F</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FF9A7A"></div><span class="pal-hex">#FF9A7A</span></div></div><div class="pal-row"><div class="pal-label"><b>포인트 (브랜드·킥커)</b><span>--accent</span></div><div class="pal-cell"><div class="pal-chip" style="background:#A9D8FF"></div><span class="pal-hex">#A9D8FF</span></div><div class="pal-cell"><div class="pal-chip" style="background:#E2F76A"></div><span class="pal-hex">#E2F76A</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFB36B"></div><span class="pal-hex">#FFB36B</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFB39A"></div><span class="pal-hex">#FFB39A</span></div></div><div class="pal-row"><div class="pal-label"><b>진행바 시작</b><span>--fill-a</span></div><div class="pal-cell"><div class="pal-chip" style="background:#3D5BFF"></div><span class="pal-hex">#3D5BFF</span></div><div class="pal-cell"><div class="pal-chip" style="background:#5BE37D"></div><span class="pal-hex">#5BE37D</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FF3B1F"></div><span class="pal-hex">#FF3B1F</span></div><div class="pal-cell"><div class="pal-chip" style="background:#7A2BC8"></div><span class="pal-hex">#7A2BC8</span></div></div><div class="pal-row"><div class="pal-label"><b>진행바 끝</b><span>--fill-b</span></div><div class="pal-cell"><div class="pal-chip" style="background:#8FD3FF"></div><span class="pal-hex">#8FD3FF</span></div><div class="pal-cell"><div class="pal-chip" style="background:#F5F23A"></div><span class="pal-hex">#F5F23A</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFD25A"></div><span class="pal-hex">#FFD25A</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FF9A7A"></div><span class="pal-hex">#FF9A7A</span></div></div><div class="pal-row"><div class="pal-label"><b>진행 노브 링</b><span>--ring</span></div><div class="pal-cell"><div class="pal-chip" style="background:#8FD3FF"></div><span class="pal-hex">#8FD3FF</span></div><div class="pal-cell"><div class="pal-chip" style="background:#F5F23A"></div><span class="pal-hex">#F5F23A</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFD25A"></div><span class="pal-hex">#FFD25A</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FF9A7A"></div><span class="pal-hex">#FF9A7A</span></div></div><div class="pal-row"><div class="pal-label"><b>오늘의 질문 도트</b><span>--qdot</span></div><div class="pal-cell"><div class="pal-chip" style="background:#A9D8FF"></div><span class="pal-hex">#A9D8FF</span></div><div class="pal-cell"><div class="pal-chip" style="background:#E2F76A"></div><span class="pal-hex">#E2F76A</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFB36B"></div><span class="pal-hex">#FFB36B</span></div><div class="pal-cell"><div class="pal-chip" style="background:#FFB39A"></div><span class="pal-hex">#FFB39A</span></div></div></div>
+      <p class="block-note">다크는 배경 자체가 계절마다 달라집니다(겨울 #06081A ~ 여름 #0E0504). 안개는 두 겹만(좌하단 60% · 우하단 18%).
+        시트·모달은 다크에서도 라이트 팔레트를 유지합니다(라이브 규칙 그대로).</p>
+    </div>
+
+    <div class="block"><div class="block-h"><h3>1.4 고정 색 · 계절과 무관</h3><span class="cls">.day-cell · .lg-dot · .w-band · .btn-kakao</span></div>
+      <div class="sw-grid"><div class="sw"><div class="sw-chip" style="background:#E4796C"></div><div class="sw-name">생리 표시</div><div class="sw-hex">#E4796C</div><div class="sw-var">--period</div><div class="sw-note">달력 범례 · 생리 실제 기록</div></div><div class="sw"><div class="sw-chip" style="background:linear-gradient(150deg,#EE9C8E,#E07C72)"></div><div class="sw-name">생리 셀 채움</div><div class="sw-hex">그라데이션</div><div class="sw-var">--period-cell</div><div class="sw-note">달력 셀 — 항상 주황 계열</div></div><div class="sw"><div class="sw-chip" style="background:#F0A23C"></div><div class="sw-name">주간 생리 점</div><div class="sw-hex">#F0A23C</div><div class="sw-var">--period-week</div><div class="sw-note">홈 주간 스트립 도트</div></div><div class="sw"><div class="sw-chip" style="background:#EFB0B6"></div><div class="sw-name">예상 생리</div><div class="sw-hex">#EFB0B6</div><div class="sw-var">--period-predicted</div><div class="sw-note">예상 생리 셀 · 범례</div></div><div class="sw"><div class="sw-chip" style="background:#EFB183"></div><div class="sw-name">배란일</div><div class="sw-hex">#EFB183</div><div class="sw-var">--ovulation</div><div class="sw-note">배란일 셀 · 범례 (앰버)</div></div><div class="sw"><div class="sw-chip" style="background:#B9A8EA"></div><div class="sw-name">가임기 점</div><div class="sw-hex">#B9A8EA</div><div class="sw-var">--fertile</div><div class="sw-note">가임기 셀 아래 도트 (보라)</div></div><div class="sw"><div class="sw-chip" style="background:#9B6BF0"></div><div class="sw-name">주간 가임기 점</div><div class="sw-hex">#9B6BF0</div><div class="sw-var">--fertile-week</div><div class="sw-note">홈 주간 스트립 도트</div></div><div class="sw"><div class="sw-chip" style="background:#C9D8FA"></div><div class="sw-name">진행바 겨울</div><div class="sw-hex">#C9D8FA</div><div class="sw-var">--seg-winter</div><div class="sw-note">사이클 진행 라인 세그먼트</div></div><div class="sw"><div class="sw-chip" style="background:#BFE8CF"></div><div class="sw-name">진행바 봄</div><div class="sw-hex">#BFE8CF</div><div class="sw-var">--seg-spring</div></div><div class="sw"><div class="sw-chip" style="background:#FFD7B5"></div><div class="sw-name">진행바 여름</div><div class="sw-hex">#FFD7B5</div><div class="sw-var">--seg-summer</div></div><div class="sw"><div class="sw-chip" style="background:#E6D2F7"></div><div class="sw-name">진행바 가을</div><div class="sw-hex">#E6D2F7</div><div class="sw-var">--seg-autumn</div></div><div class="sw"><div class="sw-chip" style="background:#8DA9EC"></div><div class="sw-name">몸무게 띠 겨울</div><div class="sw-hex">#8DA9EC</div><div class="sw-var">--weight-winter</div><div class="sw-note">주기 탭 몸무게 그래프 배경 띠</div></div><div class="sw"><div class="sw-chip" style="background:#7FCFA2"></div><div class="sw-name">몸무게 띠 봄</div><div class="sw-hex">#7FCFA2</div><div class="sw-var">--weight-spring</div></div><div class="sw"><div class="sw-chip" style="background:#FF9F7A"></div><div class="sw-name">몸무게 띠 여름</div><div class="sw-hex">#FF9F7A</div><div class="sw-var">--weight-summer</div></div><div class="sw"><div class="sw-chip" style="background:#E79AC2"></div><div class="sw-name">몸무게 띠 가을</div><div class="sw-hex">#E79AC2</div><div class="sw-var">--weight-autumn</div></div><div class="sw"><div class="sw-chip" style="background:#A8544E"></div><div class="sw-name">경고 텍스트</div><div class="sw-hex">#A8544E</div><div class="sw-var">--warn</div><div class="sw-note">삭제·오류 문구</div></div><div class="sw"><div class="sw-chip" style="background:#4E7A5E"></div><div class="sw-name">긍정 텍스트</div><div class="sw-hex">#4E7A5E</div><div class="sw-var">--positive</div><div class="sw-note">저장 완료 문구</div></div><div class="sw"><div class="sw-chip" style="background:rgba(150,196,168,.28)"></div><div class="sw-name">긍정 배지 배경</div><div class="sw-hex">rgba(150,196,168,.28)</div><div class="sw-var">--positive-bg</div><div class="sw-note">저장 완료 배지</div></div><div class="sw"><div class="sw-chip" style="background:#FEE500"></div><div class="sw-name">카카오 브랜드</div><div class="sw-hex">#FEE500</div><div class="sw-var">--kakao</div><div class="sw-note">카카오 로그인 버튼</div></div><div class="sw"><div class="sw-chip" style="background:#3C1E1E"></div><div class="sw-name">카카오 텍스트</div><div class="sw-hex">#3C1E1E</div><div class="sw-var">--kakao-ink</div><div class="sw-note">카카오 버튼 글자·심볼</div></div><div class="sw"><div class="sw-chip" style="background:#E98A78"></div><div class="sw-name">코랄 (레거시 포인트)</div><div class="sw-hex">#E98A78</div><div class="sw-var">--coral</div><div class="sw-note">별점·질문 도트</div></div><div class="sw"><div class="sw-chip" style="background:#A294D8"></div><div class="sw-name">라벤더 (레거시 포인트)</div><div class="sw-hex">#A294D8</div><div class="sw-var">--lav</div><div class="sw-note">시트 행 마크</div></div></div>
+      <p class="block-note">생리(주황)·배란(앰버)·가임기(보라)는 계절 테마에서도 바뀌지 않습니다.
+        사용자가 "생리일"로 읽는 색이라 브랜드 톤보다 우선합니다.</p>
+    </div>
+
+    <div class="block"><div class="block-h"><h3>1.5 텍스트 오퍼시티 램프</h3><span class="cls">--ink-80 / --ink-66 / --ink-52 / --ink-40 / --ink-30</span></div>
+      <div class="ramp"><div class="ramp-row"><div class="ramp-bars"><div class="ramp-bar" style="background:rgba(42,37,64,.80)"></div><div class="ramp-bar" style="background:rgba(242,238,246,.80)"></div></div><div class="ramp-txt"><b>본문 강조</b><span>--ink-80</span><em>light rgba(42,37,64,.80) · dark rgba(242,238,246,.80)</em></div></div><div class="ramp-row"><div class="ramp-bars"><div class="ramp-bar" style="background:rgba(42,37,64,.66)"></div><div class="ramp-bar" style="background:rgba(242,238,246,.66)"></div></div><div class="ramp-txt"><b>보조 본문</b><span>--ink-66</span><em>light rgba(42,37,64,.66) · dark rgba(242,238,246,.66)</em></div></div><div class="ramp-row"><div class="ramp-bars"><div class="ramp-bar" style="background:rgba(42,37,64,.52)"></div><div class="ramp-bar" style="background:rgba(242,238,246,.52)"></div></div><div class="ramp-txt"><b>라벨·설명</b><span>--ink-52</span><em>light rgba(42,37,64,.52) · dark rgba(242,238,246,.52)</em></div></div><div class="ramp-row"><div class="ramp-bars"><div class="ramp-bar" style="background:rgba(42,37,64,.40)"></div><div class="ramp-bar" style="background:rgba(242,238,246,.40)"></div></div><div class="ramp-txt"><b>캡션·비활성</b><span>--ink-40</span><em>light rgba(42,37,64,.40) · dark rgba(242,238,246,.40)</em></div></div><div class="ramp-row"><div class="ramp-bars"><div class="ramp-bar" style="background:rgba(42,37,64,.30)"></div><div class="ramp-bar" style="background:rgba(242,238,246,.30)"></div></div><div class="ramp-txt"><b>빈 값 표시</b><span>--ink-30</span><em>light rgba(42,37,64,.30) · dark rgba(242,238,246,.30)</em></div></div></div>
+      <p class="block-note">본문·라벨은 --t1~--t4 네 단계로만 쓰고, 같은 색을 더 옅게 써야 할 때만 알파 램프를 씁니다.</p>
+    </div>
+
+    <div class="block"><div class="block-h"><h3>1.6 앱 배경 · 계절 안개</h3><span class="cls">.app background</span></div>
+      <div class="bg-grid"><div class="bg-card"><div class="bgx bgx bgx-light-winter"></div><div class="bg-lbl"><b>겨울</b><span>light</span></div></div><div class="bg-card"><div class="bgx bgx bgx-light-spring"></div><div class="bg-lbl"><b>봄</b><span>light</span></div></div><div class="bg-card"><div class="bgx bgx bgx-light-summer"></div><div class="bg-lbl"><b>여름</b><span>light</span></div></div><div class="bg-card"><div class="bgx bgx bgx-light-autumn"></div><div class="bg-lbl"><b>가을</b><span>light</span></div></div><div class="bg-card"><div class="bgx bgx bgx-light-none"></div><div class="bg-lbl"><b>기록 없음</b><span>light</span></div></div><div class="bg-card"><div class="bgx bgx bgx-dark-winter"></div><div class="bg-lbl"><b>겨울</b><span>dark</span></div></div><div class="bg-card"><div class="bgx bgx bgx-dark-spring"></div><div class="bg-lbl"><b>봄</b><span>dark</span></div></div><div class="bg-card"><div class="bgx bgx bgx-dark-summer"></div><div class="bg-lbl"><b>여름</b><span>dark</span></div></div><div class="bg-card"><div class="bgx bgx bgx-dark-autumn"></div><div class="bg-lbl"><b>가을</b><span>dark</span></div></div><div class="bg-card"><div class="bgx bgx bgx-dark-none"></div><div class="bg-lbl"><b>기록 없음</b><span>dark</span></div></div></div>
+      <p class="block-note">blur·backdrop-filter 없이 넓은 radial-gradient 네 겹으로 안개를 만듭니다(iOS Safari 안전 규칙).
+        Figma에서는 프레임 배경에 같은 radial gradient를 4개 레이어로 얹으면 동일합니다.</p>
+    </div>
+
+    <div class="block"><div class="block-h"><h3>1.7 타이포그래피</h3><span class="cls">--serif · --sans</span></div>
+      
+      <div class="font-pair">
+        <div class="font-card">
+          <div class="font-sample" style="font-family:var(--serif)">달의 기록 봄 · 여름 12월 14일</div>
+          <div class="font-fc">Gowun Batang 400 · Google Fonts</div>
+          <div class="font-use">제목·계절 히어로·큰 숫자 전용. 굵기는 400 하나만 씁니다. 라이브 로드: fonts.googleapis.com</div>
+        </div>
+        <div class="font-card">
+          <div class="font-sample" style="font-family:var(--sans);font-weight:400">달의 기록 · 오늘 기록하기 24일째</div>
+          <div class="font-fc">Pretendard 300 / 400 / 500 / 600 / 700 · jsDelivr</div>
+          <div class="font-use">본문·라벨·버튼 기본. 300을 본문 기본으로 쓰고, 600은 CTA·강조 라벨에만.</div>
+        </div>
+      </div>
+      <div class="wline"><span class="wpill"><b style="font-weight:300">Light</b><span>300</span></span><span class="wpill"><b style="font-weight:400">Regular</b><span>400</span></span><span class="wpill"><b style="font-weight:500">Medium</b><span>500</span></span><span class="wpill"><b style="font-weight:600">SemiBold</b><span>600</span></span><span class="wpill"><b style="font-weight:700">Bold</b><span>700</span></span></div>
+      <div class="type-block" style="margin-top:6px"><div class="type-row"><div class="type-sample type-serif" style="font-size:64px;line-height:1.05;letter-spacing:-.02em;font-weight:400">봄</div><div class="type-spec"><div class="ts-name">히어로 · 계절</div><div class="ts-meta">Gowun Batang 400 · 64px / 1.05 · -.02em</div><div class="ts-use">.h-season</div></div></div><div class="type-row"><div class="type-sample type-serif" style="font-size:52px;line-height:1.1;letter-spacing:0;font-weight:400">봄</div><div class="type-spec"><div class="ts-name">공유뷰 · 계절</div><div class="ts-meta">Gowun Batang 400 · 52px / 1.1 · 0</div><div class="ts-use">.sv-season</div></div></div><div class="type-row"><div class="type-sample type-serif" style="font-size:34px;line-height:1.2;letter-spacing:.01em;font-weight:400">달의 기록</div><div class="type-spec"><div class="ts-name">스플래시 타이틀</div><div class="ts-meta">Gowun Batang 400 · 34px / 1.2 · .01em</div><div class="ts-use">.splash-title</div></div></div><div class="type-row"><div class="type-sample type-serif" style="font-size:24px;line-height:1.4;letter-spacing:0;font-weight:400">12월 14일</div><div class="type-spec"><div class="ts-name">큰 숫자 · 다음 생리</div><div class="ts-meta">Gowun Batang 400 · 24px / 1.4 · 0</div><div class="ts-use">.h-next-d · .gm-val</div></div></div><div class="type-row"><div class="type-sample type-serif" style="font-size:20px;line-height:1.3;letter-spacing:-.01em;font-weight:400">사이클 리포트</div><div class="type-spec"><div class="ts-name">리포트 제목</div><div class="ts-meta">Gowun Batang 400 · 20px / 1.3 · -.01em</div><div class="ts-use">.report-header-title</div></div></div><div class="type-row"><div class="type-sample type-serif" style="font-size:19px;line-height:1.65;letter-spacing:0;font-weight:400">기운이 차오르는 때</div><div class="type-spec"><div class="ts-name">인사이트 리드</div><div class="ts-meta">Gowun Batang 400 · 19px / 1.65 · 0</div><div class="ts-use">.h-ins-lead</div></div></div><div class="type-row"><div class="type-sample type-serif" style="font-size:17px;line-height:1.3;letter-spacing:0;font-weight:400">달의 기록</div><div class="type-spec"><div class="ts-name">브랜드 · 시트 라벨</div><div class="ts-meta">Gowun Batang 400 · 17px / 1.3 · 0</div><div class="ts-use">.h-brand · .sv-brand</div></div></div></div>
+      <div class="type-block" style="margin-top:14px"><div class="type-row"><div class="type-sample type-sans" style="font-size:16px;line-height:1.2;letter-spacing:0;font-weight:600">오늘 기록하기</div><div class="type-spec"><div class="ts-name">CTA 라벨</div><div class="ts-meta">Pretendard 600 · 16px / 1.2 · 0</div><div class="ts-use">.h-cta-t · .sv-cta-t</div></div></div><div class="type-row"><div class="type-sample type-sans" style="font-size:15.5px;line-height:1.2;letter-spacing:-.01em;font-weight:500">카카오로 시작하기</div><div class="type-spec"><div class="ts-name">주 버튼 라벨</div><div class="ts-meta">Pretendard 500 · 15.5px / 1.2 · -.01em</div><div class="ts-use">.cta-white · .btn-kakao</div></div></div><div class="type-row"><div class="type-sample type-sans" style="font-size:15px;line-height:1.75;letter-spacing:0;font-weight:400">기록할수록 나를 더 잘 아는 AI</div><div class="type-spec"><div class="ts-name">본문 · 큰 글</div><div class="ts-meta">Pretendard 400 · 15px / 1.75 · 0</div><div class="ts-use">.h-note · .sheet-row-title</div></div></div><div class="type-row"><div class="type-sample type-sans" style="font-size:14px;line-height:1.95;letter-spacing:.005em;font-weight:300">이번 사이클은 28일로 일정하게 이어졌어요</div><div class="type-spec"><div class="ts-name">리포트 본문</div><div class="ts-meta">Pretendard 300 · 14px / 1.95 · .005em</div><div class="ts-use">.report-ai-text</div></div></div><div class="type-row"><div class="type-sample type-sans" style="font-size:13.5px;line-height:1.3;letter-spacing:.01em;font-weight:400">두통</div><div class="type-spec"><div class="ts-name">태그 칩</div><div class="ts-meta">Pretendard 400 · 13.5px / 1.3 · .01em</div><div class="ts-use">.log-tag</div></div></div><div class="type-row"><div class="type-sample type-sans" style="font-size:12.5px;line-height:1.65;letter-spacing:.02em;font-weight:400">초록님의 오늘 · 11월 27일</div><div class="type-spec"><div class="ts-name">보조 라벨</div><div class="ts-meta">Pretendard 400 · 12.5px / 1.65 · .02em</div><div class="ts-use">.h-date · .gc-note</div></div></div><div class="type-row"><div class="type-sample type-sans" style="font-size:11.5px;line-height:1.4;letter-spacing:.02em;font-weight:400">기분 · 몸 · 수면 · 메모</div><div class="type-spec"><div class="ts-name">작은 라벨</div><div class="ts-meta">Pretendard 400 · 11.5px / 1.4 · .02em</div><div class="ts-use">.sheet-row-sub · .gm-label</div></div></div><div class="type-row"><div class="type-sample type-sans" style="font-size:11px;line-height:1.4;letter-spacing:.12em;font-weight:400">MONTHLY CYCLE REPORT</div><div class="type-spec"><div class="ts-name">캡션 · 섹션 제목</div><div class="ts-meta">Pretendard 400 · 11px / 1.4 · .12em</div><div class="ts-use">.report-section-title</div></div></div><div class="type-row"><div class="type-sample type-sans" style="font-size:10.5px;line-height:1.4;letter-spacing:.2em;font-weight:400">AI 분석</div><div class="type-spec"><div class="ts-name">킥커</div><div class="ts-meta">Pretendard 400 · 10.5px / 1.4 · .2em</div><div class="ts-use">.report-header-label · .gc-kicker</div></div></div></div>
+      <p class="block-note">세리프는 7단계, 산세리프는 9단계만 씁니다. 실제 크기·행간·자간을 그대로 적었으니
+        Figma 텍스트 스타일로 만들면 됩니다. (Pretendard는 Figma 기본 폰트가 아니므로 로컬 설치 후 임포트하면 폰트가 유지됩니다.)</p>
+    </div>
+
+    <div class="block"><div class="block-h"><h3>1.8 라운딩</h3><span class="cls">border-radius</span></div>
+      <div class="radius-grid"><div class="radius-item"><div class="radius-box" style="border-radius:4px"></div><div class="radius-v">4px</div><div class="radius-n">도트·진행 바</div></div><div class="radius-item"><div class="radius-box" style="border-radius:8px"></div><div class="radius-v">8px</div><div class="radius-n">스와치</div></div><div class="radius-item"><div class="radius-box" style="border-radius:12px"></div><div class="radius-v">12px</div><div class="radius-n">작은 입력</div></div><div class="radius-item"><div class="radius-box" style="border-radius:14px"></div><div class="radius-v">14px</div><div class="radius-n">닉네임 입력</div></div><div class="radius-item"><div class="radius-box" style="border-radius:16px"></div><div class="radius-v">16px</div><div class="radius-n">사각 버튼</div></div><div class="radius-item"><div class="radius-box" style="border-radius:18px"></div><div class="radius-v">18px</div><div class="radius-n">시트 행</div></div><div class="radius-item"><div class="radius-box" style="border-radius:20px"></div><div class="radius-v">20px</div><div class="radius-n">리포트 카드</div></div><div class="radius-item"><div class="radius-box" style="border-radius:22px"></div><div class="radius-v">22px</div><div class="radius-n">AI 분석 카드</div></div><div class="radius-item"><div class="radius-box" style="border-radius:24px"></div><div class="radius-v">24px</div><div class="radius-n">달력 그리드</div></div><div class="radius-item"><div class="radius-box" style="border-radius:28px"></div><div class="radius-v">28px</div><div class="radius-n">홈 요약 카드</div></div><div class="radius-item"><div class="radius-box" style="border-radius:30px"></div><div class="radius-v">30px</div><div class="radius-n">바텀시트 상단</div></div><div class="radius-item"><div class="radius-box" style="border-radius:44px"></div><div class="radius-v">44px</div><div class="radius-n">앱 셸</div></div><div class="radius-item"><div class="radius-box" style="border-radius:999px"></div><div class="radius-v">999px</div><div class="radius-n">필 · 원형</div></div></div>
+    </div>
+
+    <div class="block"><div class="block-h"><h3>1.9 간격</h3><span class="cls">padding · gap · margin</span></div>
+      <div class="sp-col"><div class="sp-row"><span class="sp-v">4</span><span class="sp-bar" style="width:38px"></span><span class="sp-n">도트 · 세그먼트 간격</span></div><div class="sp-row"><span class="sp-v">6</span><span class="sp-bar" style="width:57px"></span><span class="sp-n">진행 바 gap · 아이콘 gap</span></div><div class="sp-row"><span class="sp-v">8</span><span class="sp-bar" style="width:76px"></span><span class="sp-n">칩 간 gap</span></div><div class="sp-row"><span class="sp-v">10</span><span class="sp-bar" style="width:95px"></span><span class="sp-n">상단 바 패딩</span></div><div class="sp-row"><span class="sp-v">12</span><span class="sp-bar" style="width:114px"></span><span class="sp-n">카드 내부 소간격</span></div><div class="sp-row"><span class="sp-v">14</span><span class="sp-bar" style="width:133px"></span><span class="sp-n">칩 세로 패딩 · 요약 간격</span></div><div class="sp-row"><span class="sp-v">16</span><span class="sp-bar" style="width:152px"></span><span class="sp-n">카드 내부 기본</span></div><div class="sp-row"><span class="sp-v">18</span><span class="sp-bar" style="width:171px"></span><span class="sp-n">스와치 라운드 여백</span></div><div class="sp-row"><span class="sp-v">20</span><span class="sp-bar" style="width:190px"></span><span class="sp-n">화면 좌–우 기본</span></div><div class="sp-row"><span class="sp-v">24</span><span class="sp-bar" style="width:229px"></span><span class="sp-n">섹션 간 (모달)</span></div><div class="sp-row"><span class="sp-v">26</span><span class="sp-bar" style="width:248px"></span><span class="sp-n">섹션 간 (홈)</span></div><div class="sp-row"><span class="sp-v">28</span><span class="sp-bar" style="width:267px"></span><span class="sp-n">블록 간 (히어로 아래)</span></div><div class="sp-row"><span class="sp-v">30</span><span class="sp-bar" style="width:286px"></span><span class="sp-n">바텀시트 상단 라운드 기준</span></div><div class="sp-row"><span class="sp-v">44</span><span class="sp-bar" style="width:420px"></span><span class="sp-n">터치 타깃 · 아이콘 버튼</span></div></div>
+      <p class="block-note">기본 격자는 4px. 화면 좌우 20px, 카드 내부 16–20px, 섹션 간 24–28px이 반복됩니다.</p>
+    </div>
+
+    <div class="block"><div class="block-h"><h3>1.10 그림자</h3><span class="cls">box-shadow</span></div>
+      <div class="shadow-grid"><div class="shadow-item"><div class="shadow-box" style="box-shadow:0 10px 30px rgba(130,110,180,.16)"></div><div class="shadow-meta"><b>--surf-shadow</b><span>0 10px 30px rgba(130,110,180,.16)</span><em>기본 표면(카드·탭바·CTA)</em></div></div><div class="shadow-item"><div class="shadow-box" style="box-shadow:0 20px 40px -32px rgba(58,50,92,.5)"></div><div class="shadow-meta"><b>--card-shadow</b><span>0 20px 40px -32px rgba(58,50,92,.5)</span><em>유리 카드 · 달력 그리드</em></div></div><div class="shadow-item"><div class="shadow-box" style="box-shadow:0 12px 30px rgba(150,120,200,.2)"></div><div class="shadow-meta"><b>--report-shadow</b><span>0 12px 30px rgba(150,120,200,.2)</span><em>리포트 도착 띠</em></div></div><div class="shadow-item"><div class="shadow-box" style="box-shadow:0 -24px 60px -24px rgba(48,44,74,.45)"></div><div class="shadow-meta"><b>--sheet-shadow</b><span>0 -24px 60px -24px rgba(48,44,74,.45)</span><em>바텀시트 · 모달</em></div></div><div class="shadow-item"><div class="shadow-box" style="box-shadow:0 0 0 4px rgba(143,214,174,.35), 0 4px 10px rgba(40,30,80,.25)"></div><div class="shadow-meta"><b>--knob-shadow</b><span>0 0 0 4px rgba(143,214,174,.35), 0 4px 10px rgba(40,30,80,.25)</span><em>진행 라인 노브(봄)</em></div></div></div>
+    </div>
+  </section>
+
+  <section class="section" id="components">
+    <div class="sec-head"><div class="sec-no">02</div>
+      <div class="sec-tx"><h2 class="sec-title">Components</h2>
+        <p class="sec-desc">라이브 마크업과 같은 구조로 만든 견본입니다. 폭은 실제 화면 기준(390px 프레임 안 350px)이고,
+          라벨의 <span style="font-family:var(--mono)">.class</span>는 라이브 CSS 클래스 이름입니다.</p>
+      </div></div>
+    <div class="block"><div class="block-h"><h3>2.1 버튼</h3><span class="cls">.h-cta · .btn-save · .btn-cancel · .btn-kakao · .h-share · .btn-line</span></div><p class="block-note">모든 버튼은 radius 16px(사각) 또는 999px(필). 높이는 44 / 52 / 56 / 60px의 네 단계만 씁니다. 채움은 기본 CTA가 흰 표면, 주요 액션이 딥 슬레이트(#2A2540) 채움 — 라이트·다크 모두 같은 규칙입니다.</p><div class="comp-grid"><div class="comp"><div class="comp-stage"><div class="b-cta"><span class="orb"></span><span class="tx">오늘 기록하기</span><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12h15M13.4 5.9l6.1 6.1-6.1 6.1"/></svg></span></div></div><div class="comp-lbl"><b>기본 CTA · 홈</b><span>.h-cta</span><em>흰 필 + 계절 오브 + 딥 슬레이트 화살표. 화면당 1개.</em></div></div><div class="comp"><div class="comp-stage"><div class="b-save">기록 완성하기</div></div><div class="comp-lbl"><b>주요 액션</b><span>.btn-save</span><em>딥 슬레이트 채움 52px · radius 16</em></div></div><div class="comp"><div class="comp-stage"><div class="b-cancel">취소</div></div><div class="comp-lbl"><b>보조 액션</b><span>.btn-cancel</span><em>반투명 흰 표면 + 흰 테두리</em></div></div><div class="comp"><div class="comp-stage"><div class="b-kakao"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#3C1E1E" d="M12 3C6.477 3 2 6.477 2 10.5c0 2.548 1.516 4.787 3.81 6.132l-.972 3.604a.3.3 0 0 0 .44.337L9.67 18.2A11.3 11.3 0 0 0 12 18c5.523 0 10-3.477 10-7.5S17.523 3 12 3z"/></svg>카카오로 시작하기</div></div><div class="comp-lbl"><b>카카오 로그인</b><span>.btn-kakao</span><em>#FEE500 · 텍스트 #3C1E1E · 56px 필</em></div></div><div class="comp"><div class="comp-stage"><div class="b-share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M5 13v5a2 2 0 002 2h10a2 2 0 002-2v-5"/></svg><span>오늘 상태 공유</span></div></div><div class="comp-lbl"><b>공유</b><span>.h-share</span><em>44px 필 · 업로드 아이콘 + 라벨</em></div></div><div class="comp"><div class="comp-stage"><div class="b-line">로그아웃</div><div class="b-line danger">탈퇴하기</div></div><div class="comp-lbl"><b>라인 · 위험</b><span>.btn-line / .btn-line.danger</span><em>마이페이지 하단 보조 액션</em></div></div><div class="comp"><div class="comp-stage"><div class="b-disabled">리포트 완성하기</div></div><div class="comp-lbl"><b>비활성</b><span>.report-save-btn[disabled]</span><em>딥 슬레이트 8% 채움 + 40% 글자</em></div></div></div></div><div class="block"><div class="block-h"><h3>2.2 태그 칩 · 배지</h3><span class="cls">.log-tag · .log-tag.selected · .log-tag-chip · .pill-chip · .report-forecast-badge</span></div><p class="block-note">감정·증상·에너지는 같은 칩을 쓰고, 선택 상태만 딥 슬레이트 채움으로 바뀝니다. 읽기 전용 표시는 더 작은 11px 칩으로 한 단계 낮춥니다.</p><div class="comp-grid"><div class="comp"><div class="comp-stage"><div class="chip-row"><span class="c-tag">평온해요</span><span class="c-tag">집중이 잘 돼요</span><span class="c-tag on">예민해요</span><span class="c-tag">불안해요</span><span class="c-tag">두통</span><span class="c-tag on">생리통</span></div></div><div class="comp-lbl"><b>상태 · 감정 · 증상 (선택 전 / 후)</b><span>.log-tag / .log-tag.selected</span><em>선택 = #2A2540 채움 + 흰 글자</em></div></div><div class="comp"><div class="comp-stage"><div class="chip-row"><span class="c-mini">생리통</span><span class="c-mini">복통</span><span class="c-mini">무기력해요</span></div></div><div class="comp-lbl"><b>작은 표시 칩</b><span>.log-tag-chip</span><em>기록 상세·리포트 단계 태그 (11px / 300)</em></div></div><div class="comp"><div class="comp-stage"><div style="display:flex;gap:8px;align-items:center"><span class="c-pill">AI 리포트</span><span class="c-pill">MONTHLY</span></div><div style="display:flex;gap:8px;align-items:center"><span class="c-badge">생리기</span><span class="c-badge">여포기</span><span class="c-badge">황체기</span></div></div><div class="comp-lbl"><b>필 칩 · 단계 배지</b><span>.pill-chip / .report-forecast-badge</span><em>주기 탭 상단 칩 · 예측 배지</em></div></div></div></div><div class="block"><div class="block-h"><h3>2.3 카드</h3><span class="cls">.h-metrics · .report-ai-section · .sv-card · .rs-card · .report-card</span></div><p class="block-note">카드는 모두 흰 표면(#FFF 계열)에 radius 20–28px, 그림자는 위쪽 1px 하이라이트 + 아래로 긴 소프트 섀도. AI 분석 카드만 계절 그라데이션 1.5px 테두리(봄: #C9B3FF → #F2A9C4 → #FFC9A0)를 씁니다.</p><div class="comp-grid"><div class="comp"><div class="comp-stage"><div class="card-350"><div class="k-metrics"><div class="k-metric"><span class="k-val">28<i>일</i></span><span class="k-lbl">평균 주기</span></div><div class="k-metric"><span class="k-val">4<i>회</i></span><span class="k-lbl">기록 횟수</span></div><div class="k-metric"><span class="k-val">11/16</span><span class="k-lbl">마지막 기록</span></div></div></div></div><div class="comp-lbl"><b>홈 상태 카드</b><span>.h-metrics / .gm-val</span><em>값은 세리프 24px, 라벨은 12px</em></div></div><div class="comp"><div class="comp-stage"><div class="card-350"><div class="k-ai"><div class="k-ai-badge">AI 분석</div><span class="k-ai-label">이번 사이클 요약</span><div class="k-ai-text">이번 사이클은 28일로 일정하게 이어졌어요. 생리 기간은 6일로 평소와 비슷했고, 여포기 후반에 기운이 눈에 띄게 올라왔어요.</div></div></div></div><div class="comp-lbl"><b>리포트 AI 카드</b><span>.report-ai-section</span><em>본문 14px / 300 / 1.95</em></div></div><div class="comp"><div class="comp-stage"><div class="card-350"><div class="k-care"><div class="k-care-k">이렇게 챙겨주면 좋아요</div><div class="k-care-item"><span class="k-care-orb"></span><div><div class="k-care-t">따뜻하게</div><div class="k-care-x">핫팩이나 따뜻한 차로 몸을 따뜻하게 해주면 훨씬 편해져요.</div></div></div><div class="k-care-item"><span class="k-care-orb"></span><div><div class="k-care-t">조용한 휴식</div><div class="k-care-x">불을 조금 낮추고 물을 자주 마시면서 조용히 쉬게 해주세요.</div></div></div></div></div></div><div class="comp-lbl"><b>케어 힌트 카드</b><span>.sv-card / .sv-care-item</span><em>공유 받는 사람 화면의 케어 문구</em></div></div><div class="comp"><div class="comp-stage"><div class="card-350"><div class="k-report-stack"><div class="rs c1"><div class="rs-val">28<i>일</i></div><div class="rs-lbl">평균 주기</div><div class="rs-ch same">변화 없음</div></div><div class="rs c2"><div class="rs-val">6<i>일</i></div><div class="rs-lbl">생리 기간</div><div class="rs-ch same">변화 없음</div></div><div class="rs c3"><div class="rs-val">21<i>일</i></div><div class="rs-lbl">기록 일수</div><div class="rs-ch up">+4일</div></div></div></div></div><div class="comp-lbl"><b>리포트 요약 3카드</b><span>.rs-card.c1–c3</span><em>살짝 기울고 겹치는 비대칭 스택</em></div></div><div class="comp"><div class="comp-stage"><div class="card-350"><div class="k-card"><div class="k-phase"><span class="k-dot" style="background:#8DA9EC"></span><div><div class="k-phase-n">겨울 · 생리기</div><div class="k-phase-tags"><span class="c-mini">생리통</span><span class="c-mini">무기력해요</span></div></div></div><div class="k-phase"><span class="k-dot" style="background:#7FCFA2"></span><div><div class="k-phase-n">봄 · 여포기</div><div class="k-phase-tags"><span class="c-mini">평온해요</span><span class="c-mini">집중이 잘 돼요</span></div></div></div><div class="k-phase"><span class="k-dot" style="background:#FF9F7A"></span><div><div class="k-phase-n">여름 · 배란기</div><div class="k-phase-tags"><span class="c-mini">자신감 넘쳐요</span></div></div></div><div class="k-phase"><span class="k-dot" style="background:#E79AC2"></span><div><div class="k-phase-n">가을 · 황체기</div><div class="k-phase-tags"><span class="c-mini">예민해요</span><span class="c-mini">식욕이 늘었어요</span></div></div></div></div></div></div><div class="comp-lbl"><b>리포트 단계 카드</b><span>.report-card / .report-phase-row</span><em>단계 색 = 몸무게 띠 색과 동일</em></div></div></div></div><div class="block"><div class="block-h"><h3>2.4 하단 탭바 (아이콘형)</h3><span class="cls">.tabbar · .tab-btn · .tab-btn.active</span></div><p class="block-note">글자 없이 아이콘 28px만. 활성 탭만 딥 슬레이트(라이트) / 화이트(다크) 알약으로 채웁니다. 탭 4개: 오늘(달) · 달력 · 주기(막대) · 마이페이지.</p><div class="comp-grid two"><div class="comp"><div class="comp-stage"><div class="tabbar"><span class="tab-btn on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/></svg></span><span class="tab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="5" width="16" height="15" rx="3.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></span><span class="tab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 19v-5M12 19V7M19 19v-9"/></svg></span><span class="tab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="9" r="4"/><path d="M4.5 20c1.5-3.5 4.3-5 7.5-5s6 1.5 7.5 5"/></svg></span></div></div><div class="comp-lbl"><b>탭바 · 라이트</b><span>.tabbar (data-mode=light)</span><em>358×64 · radius 999 · 하단 10px</em></div></div><div class="comp"><div class="comp-stage"><div style="padding:0"><div class="tabbar tabbar-dark"><span class="tab-btn on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/></svg></span><span class="tab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="5" width="16" height="15" rx="3.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></span><span class="tab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 19v-5M12 19V7M19 19v-9"/></svg></span><span class="tab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="9" r="4"/><path d="M4.5 20c1.5-3.5 4.3-5 7.5-5s6 1.5 7.5 5"/></svg></span></div></div></div><div class="comp-lbl"><b>탭바 · 다크</b><span>.tabbar (data-mode=dark)</span><em>8% 화이트 표면 · 활성은 92% 화이트 채움</em></div></div></div></div><div class="block"><div class="block-h"><h3>2.5 바텀 시트 헤더</h3><span class="cls">.sheet · .sheet-grip · .sheet-title · .sheet-sub · .sheet-row</span></div><p class="block-note">모든 시트·모달이 같은 머리를 씁니다. 위 30px 라운드 + 흰 1px 상단선, 그립 38×4, 제목 17px 중앙 정렬. 시트 배경은 #FCFBFE → #F1EEF6으로 아주 옅게 내려갑니다.</p><div class="comp-grid two"><div class="comp"><div class="comp-stage"><div style="width:390px;border-radius:18px;overflow:hidden;background:#EFEAF7;padding-top:26px"><div class="sheet-sample"><div class="s-grip"></div><span class="s-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span><div class="s-title">오늘의 상태</div><div class="s-sub">가볍게 한 가지만 남겨도 달이 이어서 읽어요</div><div class="s-row"><span class="s-row-mk"></span><span class="s-row-body"><span class="s-row-t">오늘의 상태</span><span class="s-row-s">기분 · 몸 · 수면 · 메모</span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 5 7 7-7 7"/></svg></div><div class="s-row"><span class="s-row-mk coral"></span><span class="s-row-body"><span class="s-row-t">생리 기간</span><span class="s-row-s">시작일과 종료일</span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 5 7 7-7 7"/></svg></div></div></div></div><div class="comp-lbl"><b>시트 헤더 + 행</b><span>.sheet / .sheet-row</span><em>390px 기준 · 그립 → 제목 → 부제 → 행</em></div></div></div></div>
+  </section>
+
+  <section class="section" id="screens" style="width:2070px">
+    <div class="sec-head"><div class="sec-no">03</div>
+      <div class="sec-tx"><h2 class="sec-title">Screens</h2>
+        <p class="sec-desc">390×844 모바일 프레임 5종. 봄 · 라이트 테마와 28일 주기(오늘 = 11일째가 아닌 <b>12일째</b>, 여포기) 샘플 데이터로 구성했습니다.
+          생리 기록 4회(8.24 · 9.21 · 10.19 · 11.16), 평균 28일, 예상 생리는 12월 14일. 리포트·시트는 화면 위로 올라온 상태를 그대로 담았습니다.
+          하단 탭바는 홈 프레임에만 넣었습니다(나머지는 콘텐츠 확인용).</p>
+      </div></div>
+    <div class="screens-row"><div class="frame-wrap"><div class="frame-cap"><b>01 · 홈 (Home)</b><span>390×844 · 봄 라이트 · 28일 주기 12일째 (여포기)</span></div><div class="ph">
+      <div class="ph-bgx bgx-light-spring"></div>
+      <div class="ph-col">
+        <div class="hm-top">
+          <span class="hm-ib"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 8.2h16M4 13h16M4 17.8h10"/></svg></span>
+          <span class="hm-brand">달의 기록</span>
+          <span class="mode-toggle"><span class="mt-btn on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></span><span class="mt-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/></svg></span></span>
+        </div>
+        <div class="hm-hero">
+          <img class="hm-shape" src="../assets/season/light-spring.webp" alt="">
+          <div class="hm-text">
+            <div class="hm-date">초록님의 오늘 · 11월 27일 금요일</div>
+            <div class="hm-season">봄</div>
+            <div class="hm-next">
+              <span class="hm-next-k">다음 생리</span>
+              <span class="hm-next-d">12월 14일</span>
+              <span class="hm-next-l">17일 남았어요</span>
+            </div>
+          </div>
+        </div>
+        <div class="hm-prog">
+          <div class="cp-head"><span>생리 시작 후 <b>12일째</b></span><span class="r">28일 주기</span></div>
+          <div class="cp-track"><span class="cp-seg cp-w" style="width:calc(21.429% - 4px)"></span><span class="cp-seg cp-sp" style="width:calc(25.0% - 4px)"></span><span class="cp-seg cp-su" style="width:calc(17.857% - 4px)"></span><span class="cp-seg cp-au" style="width:calc(35.714% - 4px)"></span><span class="cp-fill" style="width:41.071%"></span><span class="cp-knob" style="left:41.071%"></span></div>
+          <div class="cp-labs"><span class="cp-lab" style="width:21.429%">겨울</span><span class="cp-lab on" style="width:25.0%">봄</span><span class="cp-lab" style="width:17.857%">여름</span><span class="cp-lab" style="width:35.714%">가을</span></div>
+        </div>
+        <div class="hm-cta"><span class="orb"></span><span class="tx">오늘 기록하기</span><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12h15M13.4 5.9l6.1 6.1-6.1 6.1"/></svg></span></div>
+        <div class="hm-week"><div class="wk"><span class="wk-w">화</span><span class="wk-d">24</span><i style="background:transparent"></i></div><div class="wk"><span class="wk-w">수</span><span class="wk-d">25</span><i style="background:#9B6BF0"></i></div><div class="wk"><span class="wk-w">목</span><span class="wk-d">26</span><i style="background:#9B6BF0"></i></div><div class="wk today"><span class="wk-w">금</span><span class="wk-d">27</span><i style="background:rgba(255,255,255,.55)"></i></div><div class="wk"><span class="wk-w">토</span><span class="wk-d">28</span><i style="background:#9B6BF0"></i></div><div class="wk"><span class="wk-w">일</span><span class="wk-d">29</span><i style="background:#9B6BF0"></i></div><div class="wk"><span class="wk-w">월</span><span class="wk-d">30</span><i style="background:#9B6BF0"></i></div></div>
+        <div class="hm-metrics">
+          <div class="hm-metric"><span class="gm-val">28<i>일</i></span><span class="gm-label">평균 주기</span></div>
+          <div class="hm-metric"><span class="gm-val">4<i>회</i></span><span class="gm-label">기록 횟수</span></div>
+          <div class="hm-metric"><span class="gm-val">11/16</span><span class="gm-label">마지막 기록</span></div>
+        </div>
+        <div class="tabbar ph-tab"><span class="tab-btn on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/></svg></span><span class="tab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="5" width="16" height="15" rx="3.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></span><span class="tab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 19v-5M12 19V7M19 19v-9"/></svg></span><span class="tab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="9" r="4"/><path d="M4.5 20c1.5-3.5 4.3-5 7.5-5s6 1.5 7.5 5"/></svg></span></div>
+      </div></div></div><div class="frame-wrap"><div class="frame-cap"><b>02 · 달력 (Calendar)</b><span>390×844 · 2026.11 / 12 · 생리 11.16–21 · 예상 12.14–19</span></div><div class="ph">
+      <div class="ph-bgx bgx-light-spring"></div>
+      <div class="ph-col">
+        <div class="cal-bar"><span class="sub-title">달력</span></div>
+        <div class="cal-sub">28일 주기 · 예상 생리 12월 14일</div>
+        <div class="legend">
+          <span class="legend-item"><i class="lg-dot" style="background:#E4796C"></i>생리</span>
+          <span class="legend-item"><i class="lg-dot" style="background:#EFB0B6"></i>예상 생리</span>
+          <span class="legend-item"><i class="lg-dot" style="background:#EFB183"></i>배란일</span>
+          <span class="legend-item"><i class="lg-dot" style="background:#B9A8EA;width:4px;height:4px"></i>가임기</span>
+        </div>
+        <div class="cal-wrap"><div class="cal-month"><div class="cal-month-t">2026. 11</div><div class="cal-grid"><div class="day-labels"><div class="day-label sun">일</div><div class="day-label">월</div><div class="day-label">화</div><div class="day-label">수</div><div class="day-label">목</div><div class="day-label">금</div><div class="day-label">토</div></div><div class="days"><div class="day fertile">1</div><div class="day ovulation">2</div><div class="day fertile">3</div><div class="day">4</div><div class="day">5</div><div class="day">6</div><div class="day">7</div><div class="day">8</div><div class="day">9</div><div class="day">10</div><div class="day">11</div><div class="day">12</div><div class="day">13</div><div class="day">14</div><div class="day">15</div><div class="day period">16</div><div class="day period">17</div><div class="day period">18</div><div class="day period">19</div><div class="day period">20</div><div class="day period">21</div><div class="day">22</div><div class="day">23</div><div class="day">24</div><div class="day fertilep">25</div><div class="day fertilep">26</div><div class="day fertilep today">27</div><div class="day fertilep">28</div><div class="day fertilep">29</div><div class="day ovp">30</div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div></div></div></div><div class="cal-month"><div class="cal-month-t">2026. 12</div><div class="cal-grid"><div class="day-labels"><div class="day-label sun">일</div><div class="day-label">월</div><div class="day-label">화</div><div class="day-label">수</div><div class="day-label">목</div><div class="day-label">금</div><div class="day-label">토</div></div><div class="days"><div class="day"></div><div class="day"></div><div class="day fertilep">1</div><div class="day">2</div><div class="day">3</div><div class="day">4</div><div class="day">5</div><div class="day">6</div><div class="day">7</div><div class="day">8</div><div class="day">9</div><div class="day">10</div><div class="day">11</div><div class="day">12</div><div class="day">13</div><div class="day predicted">14</div><div class="day predicted">15</div><div class="day predicted">16</div><div class="day predicted">17</div><div class="day predicted">18</div><div class="day predicted">19</div><div class="day">20</div><div class="day">21</div><div class="day">22</div><div class="day">23</div><div class="day fertilep">24</div><div class="day fertilep">25</div><div class="day fertilep">26</div><div class="day fertilep">27</div><div class="day ovp">28</div><div class="day fertilep">29</div><div class="day">30</div><div class="day">31</div><div class="day"></div><div class="day"></div></div></div></div></div>
+      </div></div></div><div class="frame-wrap"><div class="frame-cap"><b>03 · 기록 (Log · 상태 시트)</b><span>390×844 · 오늘의 상태 기록 시트 (위에서 68px부터)</span></div><div class="ph">
+      <div class="ph-bgx bgx-light-spring"></div>
+      <div class="ph-dim"></div>
+      <div class="ph-sheet" style="top:68px">
+        <div class="lg-head">
+          <div><div class="lg-title">오늘의 상태</div><div class="lg-date">2026년 11월 27일 금요일</div></div>
+          <span class="lg-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+        </div>
+        <div class="lg-scroll">
+          <div class="lg-sec">
+            <div class="lg-sec-t">기분</div>
+            <div class="mood"><svg viewBox="0 0 350 202" preserveAspectRatio="none" aria-hidden="true"><path d="M28 161A152 152 0 0 1 322 161" fill="none" stroke="rgba(42,37,64,.16)" stroke-width="1.2" stroke-linecap="round"/><path d="M28 161A152 152 0 0 1 322 161" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="14" stroke-linecap="round"/><path d="M93 153A94 94 0 0 1 257 153" fill="none" stroke="rgba(42,37,64,.16)" stroke-width="1.2" stroke-linecap="round"/></svg><span class="mood-chip" style="left:-0.6px;top:132px"><span>행복해요</span></span><span class="mood-chip on" style="left:29.5px;top:73px"><span>평온해요</span></span><span class="mood-chip" style="left:82.0px;top:33px"><span>자신감 넘쳐요</span></span><span class="mood-chip on" style="left:146.0px;top:19px"><span>집중이 잘 돼요</span></span><span class="mood-chip" style="left:210.1px;top:33px"><span>예민해요</span></span><span class="mood-chip" style="left:262.6px;top:73px"><span>감정이 오락가락해요</span></span><span class="mood-chip" style="left:292.6px;top:132px"><span>불안해요</span></span><span class="mood-chip" style="left:64.5px;top:124px"><span>무기력해요</span></span><span class="mood-chip" style="left:113.8px;top:83px"><span>슬퍼요</span></span><span class="mood-chip" style="left:178.2px;top:83px"><span>갑자기 눈물이 나요</span></span><span class="mood-chip" style="left:227.6px;top:124px"><span>우울해요</span></span></div>
+          </div>
+          <div class="lg-sec">
+            <div class="lg-sec-t">생리 강도</div>
+            <div class="star-row"><span class="star on"><svg viewBox="0 0 24 24"><path d="M12 3.2c2.6 3.6 5.2 6.4 5.2 9.6a5.2 5.2 0 1 1-10.4 0c0-3.2 2.6-6 5.2-9.6Z"/></svg></span><span class="star on"><svg viewBox="0 0 24 24"><path d="M12 3.2c2.6 3.6 5.2 6.4 5.2 9.6a5.2 5.2 0 1 1-10.4 0c0-3.2 2.6-6 5.2-9.6Z"/></svg></span><span class="star on"><svg viewBox="0 0 24 24"><path d="M12 3.2c2.6 3.6 5.2 6.4 5.2 9.6a5.2 5.2 0 1 1-10.4 0c0-3.2 2.6-6 5.2-9.6Z"/></svg></span><span class="star"><svg viewBox="0 0 24 24"><path d="M12 3.2c2.6 3.6 5.2 6.4 5.2 9.6a5.2 5.2 0 1 1-10.4 0c0-3.2 2.6-6 5.2-9.6Z"/></svg></span><span class="star"><svg viewBox="0 0 24 24"><path d="M12 3.2c2.6 3.6 5.2 6.4 5.2 9.6a5.2 5.2 0 1 1-10.4 0c0-3.2 2.6-6 5.2-9.6Z"/></svg></span><span class="star-hint">해당 없으면 비워두세요</span></div>
+          </div>
+          <div class="lg-sec">
+            <div class="lg-sec-t">신체 불편함</div>
+            <div class="lg-tags"><span class="lg-tag">생리통</span><span class="lg-tag">복통</span><span class="lg-tag on">두통</span><span class="lg-tag">허리통증</span><span class="lg-tag">유방통</span><span class="lg-tag">식욕이 늘었어요</span><span class="lg-tag">기력이 없어요</span><span class="lg-tag">어지러워요</span><span class="lg-tag on">입맛이 없어요</span></div>
+          </div>
+          <div class="lg-sec">
+            <div class="lg-sec-t">수면</div>
+            <div class="sleep-row">
+              <div><div class="sleep-lbl">수면의 질</div>
+                <div class="lg-tags"><span class="lg-tag">푹 잤어요</span><span class="lg-tag on">피곤해요</span></div></div>
+              <div><div class="sleep-lbl">수면 시간</div><div class="sleep-in">7.5</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="lg-actions"><span class="lg-cancel">취소</span><span class="lg-save">기록 완성하기</span></div>
+      </div></div></div><div class="frame-wrap"><div class="frame-cap"><b>04 · 리포트 (Report)</b><span>390×844 · 월간 사이클 리포트 · 계절 그라데이션 테두리 카드</span></div><div class="ph">
+      <div class="ph-bgx bgx-light-spring"></div>
+      <div class="ph-dim"></div>
+      <div class="ph-sheet" style="top:52px">
+        <div class="rp-head">
+          <div><div class="rp-label">MONTHLY CYCLE REPORT</div><div class="rp-title">사이클 리포트</div>
+            <div class="rp-sub">2026.10.19 – 11.15 · 28일 주기</div></div>
+          <span class="lg-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+        </div>
+        <div class="rp-body">
+          <div class="rp-ai">
+            <div class="rp-ai-badge">AI 분석</div>
+            <span class="rp-ai-label">이번 사이클 요약</span>
+            <div class="rp-ai-text">이번 사이클은 28일로 일정하게 이어졌어요. 생리 기간은 6일로 평소와 비슷했고, 여포기 후반에 기운이 눈에 띄게 올라왔어요. 황체기에는 잠들기까지 오래 걸리는 날이 늘었어요.</div>
+            <div class="rp-ai-enc">기록이 쌓일수록 달이 더 정확하게 읽어요. 다음 사이클도 가볍게 남겨봐요.</div>
+          </div>
+          <div class="rp-sec">
+            <div class="rp-sec-t">이번 사이클 요약</div>
+            <div class="rp-stack">
+              <div class="rs c1"><div class="rs-val">28<i>일</i></div><div class="rs-lbl">평균 주기</div><div class="rs-ch same">변화 없음</div></div>
+              <div class="rs c2"><div class="rs-val">6<i>일</i></div><div class="rs-lbl">생리 기간</div><div class="rs-ch same">변화 없음</div></div>
+              <div class="rs c3"><div class="rs-val">21<i>일</i></div><div class="rs-lbl">기록 일수</div><div class="rs-ch up">+4일</div></div>
+            </div>
+            <div class="rp-foot">총 기록<b>4</b>사이클 · 몸무게<b>52.4kg</b></div>
+          </div>
+          <div class="rp-sec">
+            <div class="rp-sec-t">사이클 단계별 패턴</div>
+            <div class="rp-card"><div class="rp-phase"><span class="k-dot" style="background:#8DA9EC"></span><div class="rp-phase-info"><div class="rp-phase-n">겨울 · 생리기</div><div class="rp-phase-tags"><span class="rp-phase-tag">생리통</span><span class="rp-phase-tag">무기력해요</span><span class="rp-phase-tag">복통</span></div></div></div><div class="rp-phase"><span class="k-dot" style="background:#7FCFA2"></span><div class="rp-phase-info"><div class="rp-phase-n">봄 · 여포기</div><div class="rp-phase-tags"><span class="rp-phase-tag">평온해요</span><span class="rp-phase-tag">집중이 잘 돼요</span></div></div></div><div class="rp-phase"><span class="k-dot" style="background:#FF9F7A"></span><div class="rp-phase-info"><div class="rp-phase-n">여름 · 배란기</div><div class="rp-phase-tags"><span class="rp-phase-tag">자신감 넘쳐요</span><span class="rp-phase-tag">활력 넘쳐요</span></div></div></div><div class="rp-phase"><span class="k-dot" style="background:#E79AC2"></span><div class="rp-phase-info"><div class="rp-phase-n">가을 · 황체기</div><div class="rp-phase-tags"><span class="rp-phase-tag">예민해요</span><span class="rp-phase-tag">식욕이 늘었어요</span></div></div></div></div>
+          </div>
+          <div class="rp-sec">
+            <div class="rp-sec-t">에너지 흐름</div>
+            <div class="rp-card"><svg viewBox="0 0 310 80" style="width:310px;height:80px"><line x1="0" y1="20" x2="310" y2="20" stroke="rgba(42,37,64,.08)" stroke-width="1" stroke-dasharray="2 4"/><line x1="0" y1="40" x2="310" y2="40" stroke="rgba(42,37,64,.08)" stroke-width="1" stroke-dasharray="2 4"/><line x1="0" y1="60" x2="310" y2="60" stroke="rgba(42,37,64,.08)" stroke-width="1" stroke-dasharray="2 4"/><polyline points="6,62 32,58 58,40 84,22 110,12 136,26 162,34 188,52 214,46 240,60 266,66 292,58" fill="none" stroke="#8FD6AE" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="6" cy="62" r="3" fill="#7FCFA2" stroke="#FFF" stroke-width="1.5"/><circle cx="32" cy="58" r="3" fill="#7FCFA2" stroke="#FFF" stroke-width="1.5"/><circle cx="58" cy="40" r="3" fill="#7FCFA2" stroke="#FFF" stroke-width="1.5"/><circle cx="84" cy="22" r="3" fill="#7FCFA2" stroke="#FFF" stroke-width="1.5"/><circle cx="110" cy="12" r="3" fill="#7FCFA2" stroke="#FFF" stroke-width="1.5"/><circle cx="136" cy="26" r="3" fill="#7FCFA2" stroke="#FFF" stroke-width="1.5"/><circle cx="162" cy="34" r="3" fill="#7FCFA2" stroke="#FFF" stroke-width="1.5"/><circle cx="188" cy="52" r="3" fill="#7FCFA2" stroke="#FFF" stroke-width="1.5"/><circle cx="214" cy="46" r="3" fill="#7FCFA2" stroke="#FFF" stroke-width="1.5"/><circle cx="240" cy="60" r="3" fill="#7FCFA2" stroke="#FFF" stroke-width="1.5"/><circle cx="266" cy="66" r="3" fill="#7FCFA2" stroke="#FFF" stroke-width="1.5"/><circle cx="292" cy="58" r="3" fill="#7FCFA2" stroke="#FFF" stroke-width="1.5"/></svg></div>
+          </div>
+        </div>
+      </div></div></div><div class="frame-wrap"><div class="frame-cap"><b>05 · 공유 뷰 (?share=)</b><span>390×844 · 받는 사람 화면 · 로그인 없이 열림</span></div><div class="ph">
+      <div class="ph-bgx bgx-light-spring"></div>
+      <div class="sv">
+        <div class="sv-brand">달의 기록</div>
+        <div class="sv-hero">
+          <img class="sv-shape" src="../assets/season/light-spring.webp" alt="">
+          <div class="sv-hero-tx">
+            <div class="sv-name">초록님의 오늘</div>
+            <div class="sv-season">봄</div>
+            <div class="sv-day">생리 시작 후 12일째</div>
+          </div>
+        </div>
+        <div class="sv-card">
+          <div class="sv-k">지금은 기운이 차오르는 때</div>
+          <p class="sv-insight">에스트로겐이 다시 올라오며 기운과 기분이 함께 살아나는 시기예요. 새로운 걸 시작하기 좋은 때예요.</p>
+        </div>
+        <div class="sv-card">
+          <div class="sv-k">오늘의 상태</div>
+          <div class="sv-tags"><span class="sv-tag">평온해요</span><span class="sv-tag">두통</span><span class="sv-tag">생리통</span></div>
+        </div>
+        <div class="sv-card">
+          <div class="sv-k">이렇게 챙겨주면 좋아요</div>
+          <div class="sv-care"><span class="sv-orb"></span><div><div class="sv-care-t">따뜻하게</div>
+            <div class="sv-care-x">핫팩이나 따뜻한 차로 몸을 따뜻하게 해주면 훨씬 편해져요.</div></div></div>
+          <div class="sv-care"><span class="sv-orb"></span><div><div class="sv-care-t">조용한 휴식</div>
+            <div class="sv-care-x">불을 조금 낮추고 물을 자주 마시면서 조용히 쉬게 해주세요.</div></div></div>
+        </div>
+        <div class="sv-cta"><span class="orb"></span><span class="tx">나도 달의 기록 시작하기</span><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12h15M13.4 5.9l6.1 6.1-6.1 6.1"/></svg></span></div>
+        <div class="sv-foot">달마다 달라지는 몸과 마음의 리듬을 기록해요</div>
+      </div></div></div></div>
+  </section>
+
+  <section class="section" style="width:1360px;gap:18px">
+    <div class="sec-head"><div class="sec-no">＋</div>
+      <div class="sec-tx"><h2 class="sec-title">html.to.design 으로 가져오는 법</h2>
+        <p class="sec-desc">이 페이지는 Figma 변환에 깨지기 쉬운 CSS(backdrop-filter · filter: blur · mix-blend-mode)를 쓰지 않았습니다.
+          그라데이션은 Figma 그라데이션 레이어로, 그림자는 이펙트로 그대로 넘어갑니다.</p>
+      </div></div>
+    <div class="how">
+      <div class="how-card"><div class="how-n">01</div><div class="how-t">URL로 임포트</div>
+        <div class="how-x">Figma → 플러그인 html.to.design → 웹사이트 URL에 이 페이지 주소를 넣습니다.
+          프레임 폭은 2,240px(페이지 전체)로 지정하면 03의 5개 화면이 잘리지 않습니다.</div></div>
+      <div class="how-card"><div class="how-n">02</div><div class="how-t">폰트 먼저 설치</div>
+        <div class="how-x">Pretendard는 Figma 기본 폰트가 아닙니다. 로컬에 설치한 뒤 임포트하면 글자가 유지되고,
+          없으면 시스템 폰트로 대체됩니다. Gowun Batang은 Google Fonts에 있습니다.</div></div>
+      <div class="how-card"><div class="how-n">03</div><div class="how-t">스타일로 저장</div>
+        <div class="how-x">01의 스와치·타이포 표를 Figma 색상/텍스트 스타일로 저장하고, 02 견본을 컴포넌트로 만들면
+          03 화면을 고칠 때 같은 값을 재사용할 수 있습니다. tokens.json도 같은 값입니다.</div></div>
+    </div>
+    <div class="foot"><span>달의 기록 · design-system/index.html · 토큰 단일 소스 tokens.json</span>
+      <span>기준 origin/main b1fe409 · 2026-11-27</span></div>
+  </section>
+</div>
+</body>
+</html>
