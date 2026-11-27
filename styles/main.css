@@ -1007,10 +1007,10 @@ html:not([data-season="winter"]):not([data-season="spring"]):not([data-season="s
 .h-q-row .q-hint-dot{width:7px; height:7px; background:var(--qdot)}
 
 /* ── 하단 탭바 ── */
-.tabbar{position:absolute; left:16px; right:16px; bottom:calc(16px + env(safe-area-inset-bottom)); z-index:20; display:flex; gap:4px; padding:6px; border-radius:999px;
+.tabbar{position:absolute; left:16px; right:16px; bottom:max(10px, calc(env(safe-area-inset-bottom) * 0.45)); z-index:20; display:flex; gap:4px; padding:6px; border-radius:999px;
   background:color-mix(in srgb, var(--bg) 82%, transparent); border:1px solid var(--surf-line); box-shadow:0 12px 36px rgba(60,40,110,.22)}
 html[data-mode="light"] .tabbar{background:rgba(255,255,255,.9)}
-.tab-btn{flex:1; height:58px; border:0; border-radius:999px; background:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; font-size:11px; color:var(--t3)}
+.tab-btn{flex:1; height:52px; border:0; border-radius:999px; background:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; font-size:11px; color:var(--t3)}
 .tab-btn svg{width:28px; height:28px}
 .tab-btn.active{background:var(--strong); color:var(--on-strong); font-weight:600}
 
