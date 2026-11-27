@@ -291,7 +291,7 @@ async function copyShareLink(url) {
 // ── 카카오 SDK (키가 설정된 경우에만 동적 로드) ──
 let shareKakaoSdkPromise = null;
 function loadKakaoSdk() {
-  if (window.Kakao && window.Kakao.Share) return Promise.resolve(window.Kakao);
+  if (window.Kakao && typeof window.Kakao.init === 'function') return Promise.resolve(window.Kakao);
   if (shareKakaoSdkPromise) return shareKakaoSdkPromise;
   shareKakaoSdkPromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
@@ -306,8 +306,10 @@ function loadKakaoSdk() {
 
 async function shareViaKakao(snap, url) {
   const Kakao = await loadKakaoSdk();
-  if (!Kakao || !Kakao.Share) throw new Error('kakao sdk unavailable');
+  if (!Kakao || typeof Kakao.init !== 'function') throw new Error('kakao sdk unavailable');
+  // SDK 2.7.x는 init() 뒤에야 Share 같은 모듈이 붙는다 → 키 초기화를 먼저 한다.
   if (!Kakao.isInitialized()) Kakao.init(KAKAO_JS_KEY);
+  if (!Kakao.Share || typeof Kakao.Share.sendDefault !== 'function') throw new Error('kakao share unavailable');
   Kakao.Share.sendDefault({
     objectType: 'feed',
     content: {
