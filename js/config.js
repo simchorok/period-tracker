@@ -52,12 +52,12 @@ if (!sb) sb = makeOfflineClient();
 const APP_BASE_PATH = location.origin + location.pathname.replace(/index\.html$/, '');
 // 공유 링크는 기존 라이브 공유 뷰(?share=)를 그대로 사용한다.
 const SHARE_BASE_PATH = 'https://simchorok.github.io/period-tracker/';
-const SHARE_IMAGE_URL = 'https://simchorok.github.io/period-tracker/og-image.png';
+const SHARE_IMAGE_URL = 'https://simchorok.github.io/period-tracker/og-image.png?v=20261121';
 
 // ── 카카오 공유 설정 ──
 // 카카오 JavaScript 키를 넣으면 카카오톡 피드 카드로 공유하고,
 // 비어 있으면 navigator.share(모바일 공유 시트) → 링크 복사 순서로 동작해요.
-const KAKAO_JS_KEY = '';
+const KAKAO_JS_KEY = '0c4c0e8016786b7e1f922b848cb85d11';
 
 // ── XSS 방지 ──
 function escapeHtml(str) {
